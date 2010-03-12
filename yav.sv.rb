@@ -24,13 +24,13 @@ class Yav
 
     @kanji = @kanjis.sort_by {rand}[0] if @step == 0
 
-    le_bubun,link = if @step < 2
-                      [touch( '/yav/', '', '', '', '' ),'/yav/']
-                    else
-                      [touch( '/yav/', 'n', 'y', 'y', 'h' ),'/yav/y']
-                    end
+    le_bubun = if @step < 2
+                 touch( '/yav/', '', '', '', '' )
+               else
+                 touch( '/yav/', 'n', 'y', 'y', 'h' )
+               end
 
-    reply = le_bubun + @kanji.to_html( @step ).a( link ) #+ Style
+    reply = le_bubun + @kanji.to_html( @step )#.a( link ) #+ Style
     @step += 1
     reply
   end
