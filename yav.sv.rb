@@ -14,23 +14,23 @@ class Yav
 
     @list = KList.new( request['lid'] ) if request['lid']
 
-    Pool_size.times do @kanjis << @list.next_kanji end if @kanjis.size == 0
-
     case request[1]
     when 'y' : @kanjis.delete( @kanji ); @step = 0
     when 'n' : @step = 0
     when 'h' : @list.toggle_sleepy( @kanji ); @kanjis.delete( @kanji ); @step = 0
     end
 
+    Pool_size.times do @kanjis << @list.next_kanji end if @kanjis.size == 0
+
     @kanji = @kanjis.sort_by {rand}[0] if @step == 0
 
-    le_bubun = if @step < 2
-                 touch( '/yav/', '', '', '', '' )
-               else
-                 touch( '/yav/', 'n', 'y', 'y', 'h' )
-               end
+    le_bubun,link = if @step < 2
+                      [touch( '/yav/', '', '', '', '' ),'/yav/']
+                    else
+                      [touch( '/yav/', 'n', 'y', 'y', 'h' ),'/yav/y']
+                    end
 
-    reply = le_bubun + @kanji.to_html( @step ) #+ Style
+    reply = le_bubun + @kanji.to_html( @step ).a( link ) #+ Style
     @step += 1
     reply
   end
