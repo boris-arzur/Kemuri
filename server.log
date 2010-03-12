@@ -1,0 +1,6 @@
+{"kan"=>#<Kan:0xb7b73704>, "sk"=>#<Sk:0xb7b757d4>, "yav"=>#<Yav:0xb7b782b8 @kanjis=[], @list=nil, @kanji=[], @step=0>, "lists"=>#<Lists:0xb7b79a50 @confirm_create="">, "log"=>#<Log:0xb7b75374>, "yad"=>#<Yad:0xb7b76314>, "quatrecentquatre"=>#<Quatrecentquatre:0xb7b74ed8>, "pos"=>#<Pos:0xb7b72d18>, "rad"=>#<Rad:0xb7b7bc4c>}
+#<Request:0xb7b723e0 @path=["yav"], @options={}>
+#<Request:0xb7b714cc @path=["yav"], @options={"lid"=>"3"}>
+#<Request:0xb7b67468 @path=["yav"], @options={}>
+#<Request:0xb7b66928 @path=["yav"], @options={}>
+#<Request:0xb7b65cf8 @path=["yav"], @options={}>
