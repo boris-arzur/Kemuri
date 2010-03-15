@@ -23,6 +23,6 @@ class Kan
       end
     end
 
-    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals 
+    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals + tabi_button
   end
 end

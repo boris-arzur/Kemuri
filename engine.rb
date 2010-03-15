@@ -81,7 +81,7 @@ class String
  <meta name=\"viewport\" content=\"width=device-width, user-scalable=no\"/>
  <title>煙</title>
 </head>
-<body>
+<body onload="javascript:window.scrollTo(0, 1)">
  #{self}
 </body>
 </html>
