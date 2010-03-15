@@ -79,6 +79,7 @@ class String
 <head>
  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>
  <meta name=\"viewport\" content=\"width=device-width, user-scalable=no\"/>
+ <title>煙</title>
 </head>
 <body>
  #{self}
@@ -124,7 +125,7 @@ def protect( name )
     return yield
   rescue Exception => e
     log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}"
-    "503. internal error.".tag( 'a' , 'href' => '/log' )
+    "503. internal error.".a( '/log' )
   end
 end
 
