@@ -39,7 +39,7 @@ function glisse_handle_end(event) {
 }
 
 function glisse_scroll_hdl(event) {
-  document.getElementById( 'glisse' ).style.top = window.innerHeight - 80  + window.scrollY;
+  document.getElementById( 'glisse' ).style.top = window.innerHeight - 75  + window.scrollY;
 };
 
 function show(o)

@@ -25,14 +25,14 @@ class Yav
     @kanji = @kanjis.sort_by {rand}[0] if @step == 0
 
     le_bubun = if @step < 2
-                 touch( '/yav/', '', '', '', '' )
+                 Iphone::glisse( '/yav/', '', '', '', '' )
                else
-                 touch( '/yav/', 'n', 'y', 'y', 'h' )
+                 Iphone::glisse( '/yav/', 'n', 'h', 'n', 'y' )
                end
 
     reply = le_bubun + @kanji.to_html( @step )#.a( link ) #+ Style
     @step += 1
-    reply
+    reply + Iphone::voyage
   end
 end
 

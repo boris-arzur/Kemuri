@@ -12,7 +12,7 @@ end
 
 require 'engine.rb'
 require 'dbs.rb'
-require 'touch_helper.rb'
+require 'iphone.rb'
 
 class Server
   def initialize( options = {} )

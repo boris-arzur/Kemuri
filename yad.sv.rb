@@ -38,6 +38,6 @@ class Yad
 
       r2 = "SELECT * FROM examples WHERE " + condition
       $db.execute( r1 ).to_table + $db.execute( r2 ).to_table
-    end
+    end + Iphone::voyage
   end
 end

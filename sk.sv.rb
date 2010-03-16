@@ -7,7 +7,7 @@ class Sk
 
     r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code}' ORDER BY forder DESC"
 
-    touch( '/sk/#{t}-','#{a-1}-#{b}','#{a+1}-#{b}','#{a}-#{b+1}','#{a}-#{b-1}') + 
-      $db.execute( r1 ).map {|i,e| e.a( "/kan/#{i}" )} * " "
+    Iphone::glisse( '/sk/#{t}-','#{a+1}-#{b}','#{a-1}-#{b}','#{a}-#{b-1}','#{a}-#{b+1}' ) + 
+      $db.execute( r1 ).map {|i,e| e.a( "/kan/#{i}" )} * " " + Iphone::voyage
   end
 end

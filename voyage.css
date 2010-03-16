@@ -1,7 +1,10 @@
 #voyage {
   background-color: #ccccff;
-  width: 40px; height: 40px; bottom: 60px; right: 50px;
+  opacity: 0.3;
+  width: 0%; height: 20px; bottom: 20px;
+  display: table; margin-left: 0px; margin-right: 0px;
   -webkit-border-radius: 7px;
+  -webkit-appearance:searchfield;
   -webkit-transition: top 0.3s ease-in-out;
   -webkit-box-shadow: rgba(0,0,0,.5) 0px 1px 1px;
   position: absolute;

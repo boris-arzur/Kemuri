@@ -5,19 +5,26 @@ class Iphone
   Voyage_style = File::read( 'voyage.css' ).style
   Voyage_script = File::read( 'voyage.js' ).script
 
-  def glisse( url_base, haut, bas, gauche, droite )
-#<script type="text/javascript" charset="utf-8" src="http://127.0.0.1/iphone.js"></script>
-#<link rel="stylesheet" href="http://127.0.0.1/iphone.css" type="text/css" charset="utf-8"/>
-<<EOS
+  def self.glisse( url_base, haut, bas, gauche, droite )
+    res = <<-EOS
 <script type="text/javascript" charset="utf-8">
 function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}'); };
 window.addEventListener("load", load, false);
 </script>
 <div id="glisse"></div>
-EOS + Glisse_style + Glisse_script
+EOS
+    res + Glisse_style + Glisse_script
   end
 
-  def voyage
-    "<div id=\"voyage\"></div>" + Voyage_style + Voyage_script
+  def self.voyage
+    res = <<-EOS
+<div id="voyage">
+<input type="text" id="dokomade" 
+       onchange="javascript:voyage_update_options()"
+       onfocus="javascript:voyage_focus_input()"
+       value="" size=10/>
+</div>
+EOS
+    res + Voyage_style + Voyage_script
   end
 end

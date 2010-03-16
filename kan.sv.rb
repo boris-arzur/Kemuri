@@ -10,7 +10,7 @@ class Kan
 
     kanji = Kanji.new( kan )
     kid = kanji.kid.to_i
-    res = touch( '/kan/', kid+1, kid-1, kid+10, kid-10 ) + kanji.to_html
+    res = Iphone::glisse( '/kan/', kid+10, kid-10, kid-1, kid+1 ) + kanji.to_html
     
     kan_lists = kanji.lists
 
@@ -23,6 +23,6 @@ class Kan
       end
     end
 
-    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals + tabi_button
+    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals + Iphone::voyage()
   end
 end
