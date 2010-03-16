@@ -30,14 +30,13 @@ class Server
       Thread.new do
         request = ''
         protect( 'reading' ) do
-          while (new_content = connection.gets).chop.length != 0
-            request += new_content
-          end
+          IO.select([connection]) 
+          request = connection.recv_nonblock(100000)
         end
 
         request = protect('parsing') {request.parse()}
         answer = protect('executing') {Servlet::execute( request )}
-        protect('replying') {connection.print( answer.in_skel.to_http )}
+        protect('replying') {connection.print( request.xml ? answer : answer.in_skel.to_http )}  
         connection.close()
       end
     end

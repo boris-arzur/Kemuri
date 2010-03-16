@@ -5,11 +5,13 @@ class Iphone
   Voyage_style = File::read( 'voyage.css' ).style
   Voyage_script = File::read( 'voyage.js' ).script
 
+  Next_page_script =  File::read( 'next_page.js' ).script
+
   def self.glisse( url_base, haut, bas, gauche, droite )
     res = <<-EOS
 <script type="text/javascript" charset="utf-8">
-function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}'); };
-window.addEventListener("load", load, false);
+  function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}'); };
+  window.addEventListener("load", load, false);
 </script>
 <div id="glisse"></div>
 EOS
@@ -26,5 +28,16 @@ EOS
 </div>
 EOS
     res + Voyage_style + Voyage_script
+  end
+
+  def self.next_page base
+res = <<-EOS
+<script type="text/javascript" charset="utf-8">
+  var next_page_url_base = "#{base}";
+</script>
+<div id='add'></div>
+<div id='bottom'></div>
+EOS
+    res + Next_page_script
   end
 end

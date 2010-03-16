@@ -14,14 +14,24 @@ class ITPP
 end
 
 class Request
-  def initialize path , options
+  attr_accessor :type, :xml
+  def initialize type, path, options, post
     @path = path
+    @xml = path[0] =~ /\.xml$/
+    path[0].gsub!( /\.xml$/, '' )
     @options = options
+    @type = type
+    @post = post
 
     log self.inspect
   end
 
   def to_url
+    $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
+  end
+
+  def to_urlxml
+    @path[0] += '.xml' unless @xml
     $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
   end
 
@@ -52,10 +62,9 @@ class String
   end
 
   def parse()
-    raw_path = self.split( "\n" ).select {|l| 
-      l =~ /^GET/
-    }[0].match( /^GET ([^\s]*)\s/ )[1]
-
+    raw_path = self.split( "\n" ).find {|l| l =~ /^([^ ]+) /}
+    type = $1
+    raw_path = raw_path.match( /^#{type} ([^\s]*)\s/ )[1]
     real_path,options = raw_path.split( '?' )
     options ||= ''
     real_path = real_path.split( '/' ).select {|e| e.size > 0}
@@ -63,10 +72,10 @@ class String
     options.split( '&' ).each {|p| 
       k,v = p.split( '=' )
       v ||= true
-      options_hash.store( k,v )
+      options_hash[k] = v
     }
-
-    Request.new( real_path,options_hash )
+    p post_data = self.match( /^\r\n\r\n(.*)$/m )[1] rescue ''
+    Request.new( type, real_path, options_hash, post_data )
   end
 
   def to_http()
