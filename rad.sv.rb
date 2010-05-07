@@ -2,19 +2,18 @@ class Rad
   def execute request
     rad = request[1]
     
-    unless rad =~ /^\d+$/
-      bytes = request[-1].split( '%' )[1..-1]
-      utf8 = " " * bytes.size
-      bytes.each_with_index {|b,i|
-        utf8[i] = b[0].hex_to_i * 16 + b[1].hex_to_i
-      }
+    rads = unless rad =~ /^\d+$/
+                request[-1].split( '+' ).map {|blk|
+                blk.url_utf8
+           }.map {|kan|
+             $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" ).to_i
+           }
+          else
+            [rad.to_i]
+          end
 
-      rad = $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{utf8}'" )
-    end
-
-    rad = rad.to_i
-
-    r1 = "SELECT kanjis.oid,kanjis.kanji FROM (SELECT kid FROM kan2rad WHERE rid = #{rad}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid;"
+    rad_cond = "SELECT kid,rid FROM kan2rad WHERE " + rads.map {|rid| "rid = #{rid}"} * " OR "
+    r1 = "SELECT kanjis.oid,kanjis.kanji FROM (#{rad_cond}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid ORDER BY kids.rid"
     $db.execute( r1 ).map {|i,e| e.a( '/kan/'+i )} * " "
   end
 end

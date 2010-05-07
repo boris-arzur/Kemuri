@@ -60,7 +60,7 @@ class Kanji
     res = [[@kanji.style( color )]]
     res << [@meanings] if i > 0
     res << [@readings] if i > 1
-    res << [@skip.a( '/sk/'+@skip )] << [@forder.to_s] if i > 990
+    res << [@skip.a( '/sk/'+@skip )] << [@forder.to_s] if i > 990 and @skip
     
     #ajouter lien pour mettre ds liste
     return res.to_table

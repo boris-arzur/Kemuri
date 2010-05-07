@@ -45,6 +45,17 @@ class Request
 end
 
 class String
+  def url_utf8
+    bytes = self.split( '%' )[1..-1]
+
+    utf8 = " " * bytes.size
+    bytes.each_with_index {|b,i|
+      utf8[i] = b[0].hex_to_i * 16 + b[1].hex_to_i
+    }
+
+    utf8
+  end
+
   def is_num
      self =~ /^\d+$/
   end

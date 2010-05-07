@@ -8,11 +8,7 @@ class Yad
       cond_r1 = "meanings LIKE '%#{ascii}%'" 
       cond_r2 = "english LIKE '%#{ascii}%'"
     else
-      bytes = request[1].split( '%' )[1..-1]
-      kanji = " " * bytes.size
-      bytes.each_with_index {|b,i|
-        kanji[i] = b[0].hex_to_i * 16 + b[1].hex_to_i
-      }
+      kanji = request[1].url_utf8
 
       #kana ? kanji ?
       kanji_as_num = kanji[1] * 256 + kanji[2]
@@ -41,7 +37,7 @@ class Yad
     if request['p']
       #si p est def c'est un appel de xmlhttpreq...
       r2 += " OFFSET #{request['p'].to_i*limit.to_i}"
-      p r2
+      #p r2
       $db.execute( r2 ).to_table
     else
       r1 = "SELECT kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"

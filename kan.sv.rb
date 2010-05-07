@@ -2,11 +2,7 @@ class Kan
   def execute request
     kan = request[1]
 
-    unless kan.is_num
-      bytes = kan.split( '%' )[1..-1]
-      kan = " " * bytes.size
-      bytes.each_with_index {|b,i| kan[i] = b[0].hex_to_i * 16 + b[1].hex_to_i}
-    end
+    kan = kan.url_utf8 unless kan.is_num
 
     kanji = Kanji.new( kan )
     kid = kanji.kid.to_i
