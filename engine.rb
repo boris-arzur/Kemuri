@@ -60,7 +60,7 @@ class String
      self =~ /^\d+$/
   end
 
-  def tag( u , p = nil )
+  def tag u , p = nil
      if p
        "<#{u} #{p.map{|k,v| k.to_s + "=\"" + v.to_s + "\" "}}>#{self}</#{u}>"
      else
@@ -72,7 +72,7 @@ class String
     self.gsub( /</ , '&lt;' ).gsub( />/ , '&gt;' )
   end
 
-  def parse()
+  def parse
     raw_path = self.split( "\n" ).find {|l| l =~ /^([^ ]+) /}
     type = $1
     raw_path = raw_path.match( /^#{type} ([^\s]*)\s/ )[1]
@@ -83,17 +83,21 @@ class String
     options.split( '&' ).each {|p| 
       k,v = p.split( '=' )
       v ||= true
-      options_hash[k] = v
+      if options_hash[k]
+        options_hash[k] = [options_hash[k],v]
+      else
+        options_hash[k] = v
+      end
     }
-    p post_data = self.match( /^\r\n\r\n(.*)$/m )[1] rescue ''
+    post_data = self.match( /^\r\n\r\n(.*)$/m )[1] rescue ''
     Request.new( type, real_path, options_hash, post_data )
   end
 
-  def to_http()
+  def to_http
     "HTTP/1.0 200 OK\n\r\n\r" + self
   end
 
-  def in_skel()
+  def in_skel
 <<EOP
 <html>
 <head>
