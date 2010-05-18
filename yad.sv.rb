@@ -1,5 +1,6 @@
 class Yad
   def execute request
+    request[1] ||= 'start'
     cond_r1 = nil
     cond_r2 = nil
 
