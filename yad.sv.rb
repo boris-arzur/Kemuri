@@ -1,15 +1,16 @@
 class Yad
   def execute request
-    request[1] ||= 'start'
+    entry = request[1] || 'start'
+
     cond_r1 = nil
     cond_r2 = nil
 
-    unless request[1].include?( '%' )
-      ascii = request[1]
+    unless entry.include?( '%' )
+      ascii = entry
       cond_r1 = "meanings LIKE '%#{ascii}%'" 
       cond_r2 = "english LIKE '%#{ascii}%'"
     else
-      kanji = request[1].url_utf8
+      kanji = entry.url_utf8
 
       #kana ? kanji ?
       kanji_as_num = kanji[1] * 256 + kanji[2]
