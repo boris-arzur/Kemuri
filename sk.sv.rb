@@ -25,7 +25,7 @@ class Sk
     style = "TD{font-size:4em;}".tag( 'style', 'type' => 'text/css' )
     table_of_matches = table_of_matches.tag( 'table' )
 
-    Iphone::glisse( "/sk/#{t}-","#{a+1}-#{b}","#{a-1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" ) + 
+    Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" ) + 
       table_of_matches + style + Iphone::voyage
   end
 end
