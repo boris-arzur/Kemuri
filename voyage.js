@@ -19,6 +19,9 @@ function voyage_update_options() {
 	if( dokomade.match(/^\d-\d+-\d+$/) ) {
 	    select.appendChild( voyage_create_option( '/sk/' ) );
 	    direct_commit = true;
+        } else if( dokomade.match(/^rad$/) ) {
+	    select.appendChild( voyage_create_option( '/' ) );
+	    direct_commit = true;
 	} else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
 	    select.appendChild( voyage_create_option( '/yad/' ) );
 	    select.appendChild( voyage_create_option( '/kan/' ) );
