@@ -1,0 +1,70 @@
+ ** Description **
+
+   == Japanese dictionary & flashcards like software for jailbroken
+   == iphone/ipad/ipod touch.
+
+This software only works on _jailbroken_ igadgets, since it needs ruby
+& sqlite3 bindings for said language.
+
+It's based on the KANJIDIC and KRADFILE projects, more
+specifically on their xml versions and includes a sql version of these
+projects, feel free to reuse them.
+See http://www.csse.monash.edu.au/~jwb/kradinf.html for Kradfile and
+http://www.csse.monash.edu.au/~jwb/kanjidic_doc.html for Kanjidic.
+
+It creates a web server on 127.0.0.1:8185 that you can access with
+safari and query for skip codes/kanjis/prononciations/translations of
+english words, it also features jlpt's lists, and your own if you
+spend some time building them.
+
+I provide sqlite3 ruby bindings as a gzipped tarball (see
+kemuri.sf.net) of the build tree, it's a not so old, not so recent
+version, by all means please use the lastest one you may find at
+sqlite-ruby's project page (http://rubyforge.org/projects/sqlite-ruby).
+
+ ** License **
+
+See file COPYING for license information.
+
+The dictionary files (iphone.db and its source iphone.sql) are on a
+different Copyright regime :
+
+  KANJIDIC, KANJD212 and KANJIDIC2 can be freely used provided
+  satisfactory acknowledgement is made in any software product,
+  server, etc. that uses them. There are a few other conditions
+  relating to distributing copies of the files with or without
+  modification. Copyright is vested in the EDRG (Electronic Dictionary
+  Research Group, see http://www.edrdg.org/). You can see the specific
+  licence statement at the Group's site :
+  http://www.edrdg.org/edrdg/licence.html.
+
+  The files are available from the Monash University ftp site
+  http://ftp.monash.edu.au/pub/nihongo/kanjidic.gz and
+  http://ftp.monash.edu.au/pub/nihongo/kanjd212.gz.
+
+  The RADKFILE and KRADFILE files are copright and available under the
+  EDRDG Licence. The copyright of the RADKFILE2 and KRADFILE2 files is
+  held by Jim Rose.
+
+  ** Installation **
+
+Upload all directory 'as-is' to your igadget & run 'ruby kemuri.rb' in
+it, it will need to stay running so it might be more convienent to
+execute 'ruby kemuri.rb & disown'.
+
+Direct your browser to one of the sub-module :
+  - http://127.0.0.1:8185/yad for the dictionary;
+  - http://127.0.0.1:8185/yav for the flashcards;
+  - http://127.0.0.1:8185/kan for Kanji info;
+  - http://127.0.0.1:8185/skip for skip codes;
+  - http://127.0.0.1:8185/rad for radical based search.
+
+Basically each .sv.rb induced servlet is available through
+http://127.0.0.1:8185/`basename ${file} .sv.rb`.
+
+Please note this software uses ruby, sqlite3 and sqlite3-ruby, you
+might need to get that installed before you can use Kemuri.
+
+  ** Author **
+
+Brought to you by boris <d0t/> arzur <4t/> gmail.
