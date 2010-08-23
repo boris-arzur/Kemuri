@@ -17,7 +17,7 @@
 
 class Yad
   def execute request
-    entry = request[1] || 'start'
+    entry = request[1].gsub( '%20' ,' ' ) || 'start'
 
     cond_r1 = nil
     cond_r2 = nil

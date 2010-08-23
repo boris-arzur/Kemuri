@@ -43,7 +43,7 @@ class Rad
 
     style = "TD{font-size:3em;}".tag( 'style', 'type' => 'text/css' )
 
-    style + table_of_matches.tag( "table" ).tag( "form", :action => "/rad/", :method => "get" )
+    style + table_of_matches.tag( "table" ).tag( "form", :action => "/rad/", :method => "get" ) + Iphone::voyage
   end
 
   def execute request

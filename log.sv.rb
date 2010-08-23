@@ -17,6 +17,6 @@
 
 class Log
   def execute request
-    File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' )
+    File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' ) + Iphone::voyage
   end
 end

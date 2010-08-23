@@ -31,43 +31,40 @@ function voyage_create_option( nani ) {
 function voyage_update_options() {
     var dokomade = document.getElementById( 'dokomade' ).value;
     if( dokomade.size != 0) {
-	var select = document.createElement( 'select' );
-	select.setAttribute( 'id', 'douyatte' );
-	var direct_commit = false;
+    	var select = document.createElement( 'select' );
+    	select.setAttribute( 'id', 'douyatte' );
+    	var direct_commit = true;
 
-	if( dokomade.match(/^\d-\d+-\d+$/) ) {
-	    select.appendChild( voyage_create_option( '/sk/' ) );
-	    direct_commit = true;
-        } else if( dokomade.match(/^rad$/) ) {
-	    select.appendChild( voyage_create_option( '/' ) );
-	    direct_commit = true;
-	} else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
-	    select.appendChild( voyage_create_option( '/yad/' ) );
-	    select.appendChild( voyage_create_option( '/kan/' ) );
-	} else if( dokomade.match(/^[\u4E00-\u9FAF]+$/) || dokomade.match(/^[\u3040-\u3096]+$/) ) {
-	    select.appendChild( voyage_create_option( '/yad/' ) );
-	    direct_commit = true;
-	} else {
-	    select.appendChild( voyage_create_option( '/yad/' ) );
-	    direct_commit = true;
-	}
-	
-	select.firstChild.setAttribute( 'selected', 'selected' );
-	select.setAttribute( 'onchange', 'javascript:voyage_shuppatsu()' );
-	voyage_placeholder.appendChild( select );
-	
-	if( direct_commit )
-	    voyage_shuppatsu();
-	else {
-	    var go_btn = document.createElement( 'input' );
-	    go_btn.setAttribute( 'type', 'button' );
-	    go_btn.setAttribute( 'value', '出発' );
-	    go_btn.setAttribute( 'onclick', 'javascript:voyage_shuppatsu()' );
-	    voyage_placeholder.appendChild( go_btn );
-	    voyage_scroll_offset = 70;
-	    voyage_scroll_hdl(null);
-	}
-    }
+    	if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) ) select.appendChild( voyage_create_option( '/sk/' ) );
+      if( dokomade.match(/^\d-\d+-\d+&\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
+      if( dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
+
+      else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )   select.appendChild( voyage_create_option( '/' ) );
+    	else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
+    	    select.appendChild( voyage_create_option( '/yad/' ) );
+    	    select.appendChild( voyage_create_option( '/kan/' ) );
+    	    direct_commit = false;
+    	} 
+      else if( dokomade.match(/^[\u4E00-\u9FAF]+$/) || dokomade.match(/^[\u3040-\u3096]+$/) ) 
+        select.appendChild( voyage_create_option( '/yad/' ) );
+    	else select.appendChild( voyage_create_option( '/yad/' ) );
+    		
+    	select.firstChild.setAttribute( 'selected', 'selected' );
+    	select.setAttribute( 'onchange', 'javascript:voyage_shuppatsu()' );
+    	voyage_placeholder.appendChild( select );
+    	
+    	if( direct_commit )
+    	    voyage_shuppatsu();
+    	else {
+    	    var go_btn = document.createElement( 'input' );
+    	    go_btn.setAttribute( 'type', 'button' );
+    	    go_btn.setAttribute( 'value', '出発' );
+    	    go_btn.setAttribute( 'onclick', 'javascript:voyage_shuppatsu()' );
+    	    voyage_placeholder.appendChild( go_btn );
+    	    voyage_scroll_offset = 70;
+    	    voyage_scroll_hdl(null);
+    	}
+   }
 };
 
 function voyage_shuppatsu() {
