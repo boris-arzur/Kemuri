@@ -98,7 +98,7 @@ Direct your browser to one of the sub-module :
 <li>http://127.0.0.1:8185/yad for the dictionary;</li>
 <li>http://127.0.0.1:8185/yav for the flashcards;</li>
 <li>http://127.0.0.1:8185/kan for Kanji info;</li>
-<li>http://127.0.0.1:8185/skip for skip codes;</li>
+<li>http://127.0.0.1:8185/sk for skip codes;</li>
 <li>http://127.0.0.1:8185/rad for radical based search.</li>
 </ul>
 
@@ -106,7 +106,7 @@ These modules are as RESTful as possible :
 <ul>
 <li>/yad/start looks for start in the dictionary;</li>
 <li>/kan/漢 looks for 漢 in the database;</li>
-<li>/skip/1-2-3 tries to match 1-2-3.</li>
+<li>/sk/1-2-3 tries to match the skip 1-2-3.</li>
 </ul>
 
 Basically each .sv.rb induced servlet is available through<br/>
@@ -116,10 +116,10 @@ On most modules, you will find a 'smart' input box, you can push<br/>
 text (we call it $1 in what follows) in it, it will try to redirect you :
 <ul>
 <li>'rad' and 'his' go to the modules /rad &amp; /his;</li>
-<li>*-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /skip/$1;</li>
+<li>*-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /sk/$1;</li>
 <li>/^\d-\d+-\d+&amp;\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of<br/>
     skip-codes, a bit slow);</li>
-<li>/^\d-\d+-\d+-\d-\d+-\d+$/ to /skip/$1;</li>
+<li>/^\d-\d+-\d+-\d-\d+-\d+$/ to /sk/$1;</li>
 <li>a single kanji to /kan/$1 or /yad/$1 (you have to choose);</li>
 <li>multiple kanjis or kana to /yad/$1.</li>
 </ul>
