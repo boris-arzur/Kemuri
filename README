@@ -71,7 +71,7 @@ On most modules, you will find a 'smart' input box, you can push
 text (we call it $1 in what follows) in it, it will try to redirect you :
   - 'rad' and 'his' go to the modules /rad & /his;
   - *-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /skip/$1;
-  - /^\d-\d+-\d+&\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of 
+  - /^\d-\d+-\d++\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of 
     skip-codes, a bit slow);
   - /^\d-\d+-\d+-\d-\d+-\d+$/ to /skip/$1;
   - a single kanji to /kan/$1 or /yad/$1 (you have to choose);
