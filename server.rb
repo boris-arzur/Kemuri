@@ -27,6 +27,10 @@ def log( t )
   File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
 end
 
+def to_history( t )
+  File::open( 'history.log' , 'a' ) {|f| f.puts( t )}
+end
+
 require 'engine.rb'
 require 'dbs.rb'
 require 'iphone.rb'

@@ -41,6 +41,7 @@ class Request
     @post = post
 
     log self.inspect
+    to_history( to_url )# keep this for the record
   end
 
   def to_url
