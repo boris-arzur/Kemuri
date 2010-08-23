@@ -80,7 +80,15 @@ class String
 
   def tag u , p = nil
      if p
-       "<#{u} #{p.map{|k,v| k.to_s + "=\"" + v.to_s + "\" "}}>#{self}</#{u}>"
+       s = p.map {|k,v|
+          #if v.is_a? Array
+          #  v.map{|e| k.to_s + "=\"" + e.to_s + "\" "}.join
+          #else
+            k.to_s + "=\"" + v.to_s + "\" "
+          #end
+      }.join
+       #log "tag:#{u} & #{s}"  
+       "<#{u} #{s}>#{self}</#{u}>"
      else
        "<#{u}>#{self}</#{u}>"
      end

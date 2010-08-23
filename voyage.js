@@ -36,9 +36,8 @@ function voyage_update_options() {
     	var direct_commit = true;
 
     	if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) ) select.appendChild( voyage_create_option( '/sk/' ) );
-      if( dokomade.match(/^\d-\d+-\d+&\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
-      if( dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
-
+      if( dokomade.match(/^\d-\d+-\d+\+\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
+      if( dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/sk/' ) );
       else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )   select.appendChild( voyage_create_option( '/' ) );
     	else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
     	    select.appendChild( voyage_create_option( '/yad/' ) );

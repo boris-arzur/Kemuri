@@ -22,14 +22,20 @@ class Sk
     code = request[1]
     return "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4" + Iphone::voyage unless code
 
+    
     t,a,b = code.split( '-' ).map {|e| e.to_i}
 
     r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code}' ORDER BY forder DESC"
 
     table_of_matches = ""
     curr_line = ""
+    all_rids = []
 
-    $db.execute( r1 ).map {|i,e| e.a( "/kan/#{i}" )}.each_with_index do |l,i|
+    $db.execute( r1 ).map {|i,e|
+      rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{i}" ).map{|r| r[0]}
+      all_rids |= rids
+      e.a( "/kan/#{i}" ).tag( "div", (['kanji']+rids.map{|r| 'r'+r})*" " )
+    }.each_with_index do |l,i|
       if i>0 && i % RowSize == 0
         table_of_matches << curr_line.tag( 'tr' )
         curr_line = ""
@@ -42,7 +48,32 @@ class Sk
     style = "TD{font-size:3.5em;}".tag( 'style', 'type' => 'text/css' )
     table_of_matches = table_of_matches.tag( 'table' )
 
-    Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" ) + 
+    radi_cond = all_rids.map{|r| "radicals.oid == #{r}"}*' OR '
+    radicals = $db.execute( "SELECT radicals.oid,radicals.radical FROM radicals WHERE #{radi_cond};" )
+    radicals.map! {|i,r| r.a( "javascript:show_only(\"r#{i}\")" )}
+
+    show_only = <<-EOS
+function show_only(id) {
+  var elements = document.getElementsByClassName('kanji');
+  var debug = "";
+  var content = "c";
+  var o = elements[0];
+  for (var key in o){ content += key +":"+o[key]+"\\n"; };
+  alert( content );
+  for(var i = 0;i < elements.length;i++){
+    var ele = elements[i];
+    if( ele.className.indexOf( id ) == -1 ) {
+      debug += ele.className;
+      debug += " | ";
+      ele.style.display = "none";
+    };
+  };
+
+  alert( debug );
+};
+EOS
+
+    show_only.script + radicals*" " + Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" ) + 
       table_of_matches + style + Iphone::voyage
   end
 end

@@ -75,6 +75,6 @@ class Biskip
     cond = '('+r_matches+') AND ('+l_matches+')'
     
     r = "SELECT * FROM examples WHERE #{cond}"
-    $db.execute( r ).to_table
+    $db.execute( r ).to_table + Iphone::voyage
   end
 end
