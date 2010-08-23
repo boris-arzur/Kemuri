@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+ <title>Kemuri</title>
+ <style type="text/css">
+	.ita { font-style:italic; }
+  .indented { padding-left: 25pt;padding-right: 25pt; }
+ </style>
+</head>
+<body>
+
+<h2>** Description **</h2>
+
+<div>
+&nbsp;&nbsp;&nbsp;== Japanese dictionary &amp; flashcards like software for jailbroken
+<br/>&nbsp;&nbsp;&nbsp;== iphone/ipad/ipod touch.
+<br/>
+<br/>This software only works on <span class="ita">jailbroken</span> igadgets, since it needs ruby
+<br/>&amp; sqlite3 bindings for said language.
+<br/>
+<br/>It's based on the KANJIDIC and KRADFILE projects, more
+<br/>specifically on their xml versions and includes a sql version of these
+<br/>projects, feel free to reuse them.
+<br/>See <a href="http://www.csse.monash.edu.au/~jwb/kradinf.html">Kradfile</a> and <a href="http://www.csse.monash.edu.au/~jwb/kanjidic_doc.html">Kanjidic</a>.
+<br/>
+<br/>It creates a web server on 127.0.0.1:8185 that you can access with
+<br/>safari and query for skip codes, radicals, kanjis, prononciations
+<br/>or translations of english words, it also features jlpt's lists,
+<br/>and your own if you spend some time building them.
+<br/>
+<br/>I provide sqlite3 ruby bindings as a gzipped tarball (see
+<br/><a href="https://sourceforge.net/projects/kemuri/">https://sourceforge.net/projects/kemuri/</a>) of the build tree,
+<br/> it's a not so old, not so recent version, by all means
+<br/> please use the lastest one you may find at sqlite-ruby's
+<br/> project page (http://rubyforge.org/projects/sqlite-ruby).  
+</div>
+
+<h2> ** Download **</h2>
+<div><a href="https://sourceforge.net/projects/kemuri/files/kemuri-1.0.tar.gz/download">Version 1.0 Here.</a></div>
+
+<h2> ** License **</h2>
+
+<div>
+<a href="http://www.gnu.org/licenses/agpl.html">AGPLv3</a>, as mentionned in the source files :
+<pre>
+#    Copyright 2008, 2009, 2010 Boris ARZUR
+#
+#    This file is part of Kemuri.
+#
+#    Kemuri is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of
+#    the License, or (at your option) any later version.
+#
+#    Kemuri is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public
+#    License along with Kemuri. If not, see http://www.gnu.org/licenses.
+</pre>
+
+ 
+<br/>The dictionary files (iphone.db and its source iphone.sql) are on a
+<br/>different Copyright regime :
+<br/><p class='indented'> 
+<br/>  KANJIDIC, KANJD212 and KANJIDIC2 can be freely used provided
+<br/>  satisfactory acknowledgement is made in any software product,
+<br/>  server, etc. that uses them. There are a few other conditions
+<br/>  relating to distributing copies of the files with or without
+<br/>   modification. Copyright is vested in the EDRG (Electronic Dictionary
+<br/>   Research Group, see http://www.edrdg.org/). You can see the specific
+<br/>   licence statement at the Group's site :
+<br/>   http://www.edrdg.org/edrdg/licence.html.
+<br/>  
+<br/>   The files are available from the Monash University ftp site
+<br/>   http://ftp.monash.edu.au/pub/nihongo/kanjidic.gz and
+<br/>   http://ftp.monash.edu.au/pub/nihongo/kanjd212.gz.
+<br/>  
+<br/>   The RADKFILE and KRADFILE files are copright and available under the
+<br/>   EDRDG Licence. The copyright of the RADKFILE2 and KRADFILE2 files is
+<br/>   held by Jim Rose.
+</p>
+
+<h2> ** Installation &amp; Usage ** </h2>
+
+<div>
+Upload all directory 'as-is' to your igadget &amp; run 'ruby kemuri.rb' in<br/>
+it, it will need to stay running so it might be more convenient to<br/>
+execute 'ruby kemuri.rb &amp; disown' or 'exec ruby kemuri.rb' in a 'screen' instance.<br/>
+
+<br/>
+Direct your browser to one of the sub-module :
+<ul>
+<li>http://127.0.0.1:8185/yad for the dictionary;</li>
+<li>http://127.0.0.1:8185/yav for the flashcards;</li>
+<li>http://127.0.0.1:8185/kan for Kanji info;</li>
+<li>http://127.0.0.1:8185/skip for skip codes;</li>
+<li>http://127.0.0.1:8185/rad for radical based search.</li>
+</ul>
+
+These modules are as RESTful as possible :
+<ul>
+<li>/yad/start looks for start in the dictionary;</li>
+<li>/kan/漢 looks for 漢 in the database;</li>
+<li>/skip/1-2-3 tries to match 1-2-3.</li>
+</ul>
+
+Basically each .sv.rb induced servlet is available through<br/>
+http://127.0.0.1:8185/`basename ${file} .sv.rb`.<br/>
+<br/>
+On most modules, you will find a 'smart' input box, you can push<br/>
+text (we call it $1 in what follows) in it, it will try to redirect you :
+<ul>
+<li>'rad' and 'his' go to the modules /rad &amp; /his;</li>
+<li>*-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /skip/$1;</li>
+<li>/^\d-\d+-\d+&amp;\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of<br/>
+    skip-codes, a bit slow);</li>
+<li>/^\d-\d+-\d+-\d-\d+-\d+$/ to /skip/$1;</li>
+<li>a single kanji to /kan/$1 or /yad/$1 (you have to choose);</li>
+<li>multiple kanjis or kana to /yad/$1.</li>
+</ul>
+
+In some modules, you will find a blue button, try to drag it, it can be used<br/>
+to navigate and will show in its center where it is going to send you.<br/>
+For example, in /yav, it is used to answer : 'y' is 'yes, I know the kanji',<br/>
+'n' is 'no', 'h' is 'hibernate' and 'yy' is 'double yes'. Different answers have<br/>
+different effects on the learning algorithm, please refer to the code.<br/>
+
+Please note this software uses ruby, sqlite3 and sqlite3-ruby, you<br/>
+might need to get that installed before you can use Kemuri.<br/>
+
+
+<h2>   ** Author ** </h2>
+
+<div>  
+Brought to you by [RemoveTheCaps] BBBborisSSS |δοτ| AAAarzurRRR |ατ| our_google_overlords_operated_mail_service [/RemoveTheCaps].
+<br/>
+<br/>
+<br/>
+<a href="http://sourceforge.net/projects/kemuri"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=342334&amp;type=10" width="80" height="15" alt="Get Kemuri at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+<p>
+<a href="http://validator.w3.org/check?uri=referer"><img
+   src="http://www.w3.org/Icons/valid-xhtml10-blue"
+   alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
+</p>
+</div>
+
+</body>
+</html>
