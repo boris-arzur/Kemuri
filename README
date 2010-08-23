@@ -46,7 +46,7 @@ different Copyright regime :
   EDRDG Licence. The copyright of the RADKFILE2 and KRADFILE2 files is
   held by Jim Rose.
 
-  ** Installation **
+  ** Installation & Usage **
 
 Upload all directory 'as-is' to your igadget & run 'ruby kemuri.rb' in
 it, it will need to stay running so it might be more convienent to
@@ -59,8 +59,32 @@ Direct your browser to one of the sub-module :
   - http://127.0.0.1:8185/skip for skip codes;
   - http://127.0.0.1:8185/rad for radical based search.
 
+These modules are as RESTful as possible :
+  - /yad/start looks for start in the dictionary;
+  - /kan/漢 looks for 漢 in the database;
+  - /skip/1-2-3 tries to match 1-2-3.
+
 Basically each .sv.rb induced servlet is available through
 http://127.0.0.1:8185/`basename ${file} .sv.rb`.
+
+On most modules, you will find a 'smart' input box, you can push
+text (we call it $1 in what follows) in it, it will try to redirect you :
+  - 'rad' and 'his' go to the modules /rad & /his;
+  - *-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /skip/$1;
+  - /^\d-\d+-\d+&\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of 
+    skip-codes, a bit slow);
+  - /^\d-\d+-\d+-\d-\d+-\d+$/ to /skip/$1;
+  - a single kanji to /kan/$1 or /yad/$1 (you have to choose);
+  - multiple kanjis or kana to /yad/$1.
+
+In some modules, you will find a blue button, try to drag it, it can be used
+to navigate and will show in its center where it is going to send you.
+
+In some modules, you will find a blue button, try to drag it, it can be used
+to navigate and will show in its center where it is going to send you
+For example, in /yav, it is used to answer : 'y' is 'yes, I know the kanji',
+'n' is 'no', 'h' is 'hibernate' and 'yy' is 'double yes'. Different answers
+have different effects on the learning algorithm, please refer to the code.
 
 Please note this software uses ruby, sqlite3 and sqlite3-ruby, you
 might need to get that installed before you can use Kemuri.
