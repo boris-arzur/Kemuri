@@ -28,7 +28,7 @@ class Sk
   RowSize = 5
   Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
   GuessSwitch = <<-EOS
-<input type='checkbox' id='guess'/>guess next<br/>
+<input type='checkbox' id='guess' checked='true'/>guess next<br/>
 <script type="text/javascript">
 function catchLinks(event) {
   if( event.target.href && // user is clicking a link
