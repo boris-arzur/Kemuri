@@ -98,7 +98,7 @@ Direct your browser to one of the sub-module :
 <li>http://127.0.0.1:8185/yad for the dictionary;</li>
 <li>http://127.0.0.1:8185/yav for the flashcards;</li>
 <li>http://127.0.0.1:8185/kan for Kanji info;</li>
-<li>http://127.0.0.1:8185/sk for skip codes;</li>
+<li>http://127.0.0.1:8185/sk for skip codes, stroke count based searches;</li>
 <li>http://127.0.0.1:8185/rad for radical based search.</li>
 </ul>
 
@@ -120,7 +120,8 @@ text (we call it $1 in what follows) in it, it will try to redirect you :
 <li>/^\d-\d+-\d++\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of<br/>
     skip-codes, a bit slow);</li>
 <li>/^\d-\d+-\d+-\d-\d+-\d+$/ to /sk/$1;</li>
-<li>a single kanji to /kan/$1 or /yad/$1 (you have to choose);</li>
+<li>numbers and hyphen separated pairs of numbers go to /sk/$1;</li>
+<li>single kanjis to /kan/$1 or /yad/$1 (you have to choose);</li>
 <li>multiple kanjis or kana to /yad/$1.</li>
 </ul>
 

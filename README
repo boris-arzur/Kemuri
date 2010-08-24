@@ -56,7 +56,7 @@ Direct your browser to one of the sub-module :
   - http://127.0.0.1:8185/yad for the dictionary;
   - http://127.0.0.1:8185/yav for the flashcards;
   - http://127.0.0.1:8185/kan for Kanji info;
-  - http://127.0.0.1:8185/skip for skip codes;
+  - http://127.0.0.1:8185/skip for skip codes, stroke count based searches;
   - http://127.0.0.1:8185/rad for radical based search.
 
 These modules are as RESTful as possible :
@@ -70,11 +70,12 @@ http://127.0.0.1:8185/`basename ${file} .sv.rb`.
 On most modules, you will find a 'smart' input box, you can push
 text (we call it $1 in what follows) in it, it will try to redirect you :
   - 'rad' and 'his' go to the modules /rad & /his;
-  - *-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /skip/$1;
+  - *-*-* (more specifically /^\d-\d+-\d+$/ ) and /^\d+$/ to /sk/$1;
   - /^\d-\d+-\d++\d-\d+-\d+$/ to /biskip/$1 (bruteforce a pair of 
     skip-codes, a bit slow);
-  - /^\d-\d+-\d+-\d-\d+-\d+$/ to /skip/$1;
-  - a single kanji to /kan/$1 or /yad/$1 (you have to choose);
+  - /^\d-\d+-\d+-\d-\d+-\d+$/ to /sk/$1;
+  - numbers and hyphen separated pairs of numbers go to /sk/$1;
+  - single kanjis to /kan/$1 or /yad/$1 (you have to choose);
   - multiple kanjis or kana to /yad/$1.
 
 In some modules, you will find a blue button, try to drag it, it can be used
