@@ -41,7 +41,7 @@ EOS
 <input type="text" id="dokomade" 
        onchange="javascript:voyage_update_options()"
        onfocus="javascript:voyage_focus_input()"
-       value="" size=10/>
+       value="" autocapitalize="off" size=10/>
 </div>
 EOS
     res + Voyage_style + Voyage_script
