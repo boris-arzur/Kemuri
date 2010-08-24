@@ -27,14 +27,14 @@
 class Sk
   RowSize = 5
   Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
-  BruteforceSwitch = <<-EOS
-<input type='checkbox' id='bruteforce'/>bruteforce<br/>
+  GuessSwitch = <<-EOS
+<input type='checkbox' id='guess'/>guess next<br/>
 <script type="text/javascript">
 function catchLinks(event) {
   if( event.target.href && // user is clicking a link
       event.target.href.indexOf( 'javascript' ) == '-1' && // not clicking a radical
-      document.getElementById( 'bruteforce' ).checked ) { // we actually are bruteforcing
-    window.location = event.target + '&bruteforce';
+      document.getElementById( 'guess' ).checked ) { // we actually want to guess :)
+    window.location = event.target + '&guess';
     return false;
   };
 
@@ -66,16 +66,33 @@ EOS
     text.a( link_to ).tag( type, 'class' => classnames )
   end
 
+  def guess request
+    log "guess : #{request[1]} with #{request['first'].url_utf8}"
+    r = "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
+    cond = "japanese LIKE '%#{request['first'].url_utf8}%' AND (" + $db.execute( r ).map{|k| "japanese LIKE '%#{k}%'"}.join( ' OR ' ) + ')'
+    
+    r = "SELECT * FROM examples WHERE #{cond}"
+    $db.execute( r ).to_table + Iphone::voyage
+  end
+
   def execute request
     code = request[1]
     return Help + Iphone::voyage unless code
+    return guess( request ) if request['guess']
     
     code = code.split( '-' )
 
     double_skip = code.size == 6
  
-    req_path = double_skip ? "/sk/#{code[3..5]*'-'}?first=" : '/kan/'
-    bruteforce_switch = double_skip ? BruteforceSwitch : ''
+    req_path = if double_skip
+                 "/sk/#{code[3..5]*'-'}?first="
+               elsif request['first']
+                 "/yad/"+request['first'].url_utf8
+               else
+                 '/kan/'
+               end
+
+    guess_switch = double_skip ? GuessSwitch : ''
 
     r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
 
@@ -95,6 +112,6 @@ EOS
     t,a,b = code[0..2].map {|e| e.to_i}
     glisse = Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
 
-    bruteforce_switch + ShowOnly + radicals + glisse + table_of_matches + TableStyle + Iphone::voyage
+    guess_switch + ShowOnly + radicals + glisse + table_of_matches + TableStyle + Iphone::voyage
   end
 end
