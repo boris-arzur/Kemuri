@@ -15,46 +15,8 @@
 #    You should have received a copy of the GNU Affero General Public
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
-class Sk
-  RowSize = 5
-
-  def execute request
-    code = request[1]
-    return "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4" + Iphone::voyage unless code
-
-    
-    t,a,b = code.split( '-' ).map {|e| e.to_i}
-
-    r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code}' ORDER BY forder DESC"
-
-    table_of_matches = ""
-    curr_line = ""
-    all_rids = Hash.new {|h,k| h[k]=[]} 
-
-    $db.execute( r1 ).map {|i,e|
-      rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{i}" ).map{|r| r[0]}
-      rids.each{|r| all_rids[r] |= (rids - [r])}
-      e.a( "/kan/#{i}" ).tag( "div", "class" => (['hideable']+rids.map{|r| 'r'+r})*" " )
-    }.each_with_index do |l,i|
-      if i>0 && i % RowSize == 0
-        table_of_matches << curr_line.tag( 'tr' )
-        curr_line = ""
-      end
-      curr_line << l.tag( 'td' )
-    end
-
-    table_of_matches << curr_line.tag( 'tr' )
-
-    style = "TD{font-size:3.5em;}".tag( 'style', 'type' => 'text/css' )
-    table_of_matches = table_of_matches.tag( 'table' )
-
-    radi_cond = all_rids.keys.map{|r| "oid == #{r}"}*' OR '
-    radicals = $db.execute( "SELECT oid,radical FROM radicals WHERE #{radi_cond} ORDER BY radical;" )
-    radicals.map! {|r,k|
-      k.a( "javascript:show_only(\"r#{r}\")" ).tag( "span", "class" => (['hideable']+all_rids[r].map{|e| 'r'+e})*" " )
-    }
-
 =begin
+  // debug code in js
   var debug = "";
   var content = "c";
   var o = elements[0];
@@ -62,7 +24,29 @@ class Sk
   alert( content );
 =end
 
-    show_only = <<-EOS
+class Sk
+  RowSize = 5
+  Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
+  BruteforceSwitch = <<-EOS
+<input type='checkbox' id='bruteforce'/>bruteforce<br/>
+<script type="text/javascript">
+function catchLinks(event) {
+  if( event.target.href && // user is clicking a link
+      event.target.href.indexOf( 'javascript' ) == '-1' && // not clicking a radical
+      document.getElementById( 'bruteforce' ).checked ) { // we actually are bruteforcing
+    window.location = event.target + '&bruteforce';
+    return false;
+  };
+
+  return true;
+}
+
+document.onclick=catchLinks;
+</script>
+EOS
+
+  ShowOnly = <<-EOS
+<script type="text/javascript">
 function show_only(id) {
   var elements = document.getElementsByClassName('hideable');
   for(var i = 0;i < elements.length;i++){
@@ -70,9 +54,47 @@ function show_only(id) {
     if( ele.className.indexOf( id ) == -1 ) ele.style.display = "none";
   };
 };
+</script>
 EOS
 
-    show_only.script + radicals*" " + Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" ) + 
-      table_of_matches + style + Iphone::voyage
+  TableStyle = <<-EOS
+<style type="text/css" >TD{font-size:3.5em;}</style>
+EOS
+
+  def hideable_actionable_content type, text, link_to, tags
+    classnames = 'hideable ' + tags.map{|r| 'r'+r}.join( " " )
+    text.a( link_to ).tag( type, 'class' => classnames )
+  end
+
+  def execute request
+    code = request[1]
+    return Help + Iphone::voyage unless code
+    
+    code = code.split( '-' )
+
+    double_skip = code.size == 6
+ 
+    req_path = double_skip ? "/sk/#{code[3..5]*'-'}?first=" : '/kan/'
+    bruteforce_switch = double_skip ? BruteforceSwitch : ''
+
+    r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
+
+    all_rids = Hash.new {|h,k| h[k]=[]} 
+    
+    table_of_matches = $db.execute( r1 ).map {|kid,kanji|
+      rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{kid}" ).map{|rid| rid[0]}
+      rids.each{|rid| all_rids[rid] |= (rids - [rid])}
+      hideable_actionable_content( 'td', kanji, req_path+kanji, rids )
+    }.cut( RowSize ).map{|row| row.join.tag( 'tr' )}.join.tag( 'table' )
+
+    radi_cond = all_rids.keys.map{|r| "oid == #{r}"}*' OR '
+    radicals = $db.execute( "SELECT oid,radical FROM radicals WHERE #{radi_cond} ORDER BY radical" ).map {|rid,radi|
+      hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\")", all_rids[rid] )
+    }.join( " " )
+
+    t,a,b = code[0..2].map {|e| e.to_i}
+    glisse = Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
+
+    bruteforce_switch + ShowOnly + radicals + glisse + table_of_matches + TableStyle + Iphone::voyage
   end
 end

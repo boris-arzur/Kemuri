@@ -63,6 +63,16 @@ class Request
 end
 
 class String
+  def cut n
+    return [] if size == 0
+    res = []
+    split( // ).each_with_index do |c,i|
+      res << "" if i % n == 0
+      res[-1] << c
+    end
+    res
+  end
+
   def url_utf8
     bytes = self.split( '%' )[1..-1]
 
@@ -140,7 +150,7 @@ class String
 EOP
   end
 
-  def to_row()
+  def to_row
     "<td>#{self}</td>"
   end
 
@@ -148,7 +158,7 @@ EOP
     "<a href='#{url}'>#{self}</a>"
   end
 
-  def style( ele = nil )
+  def style ele = nil
     return "<style type='text/css'>#{self}</style>" unless ele
     "<span style='#{ele}'>#{self}</span>"
   end
@@ -160,19 +170,38 @@ end
 
 
 class Array
-  def to_table()
+  def map_i
+    i = 0
+    map {|e|
+      r = yield( e,i )
+      i += 1
+      r
+    }
+  end
+ 
+  def cut n
+    return [] if size == 0
+    res = []
+    each_with_index do |c,i|
+      res << [] if i % n == 0
+      res[-1] << c
+    end
+    res
+  end
+
+  def to_table
     w = max {|l,k| l.size <=> k.size}
     map {|l| l.to_row( w.size ).tag( 'tr' )}.join.tag( 'table' ) #, :style => 'font-size:2em' )
   end
 
-  def to_row( w )
+  def to_row w
     span = w/size 
     opt = span > 1 ? {'colspan' => span} : {}
     map {|c| c.to_s.tag( 'td' , opt )}.join
   end
 end
 
-def protect( name )
+def protect name 
   begin
     return yield
   rescue Exception => e
