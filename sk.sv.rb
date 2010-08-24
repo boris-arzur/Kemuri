@@ -29,12 +29,12 @@ class Sk
 
     table_of_matches = ""
     curr_line = ""
-    all_rids = []
+    all_rids = Hash.new {|h,k| h[k]=[]} 
 
     $db.execute( r1 ).map {|i,e|
       rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{i}" ).map{|r| r[0]}
-      all_rids |= rids
-      e.a( "/kan/#{i}" ).tag( "div", (['kanji']+rids.map{|r| 'r'+r})*" " )
+      rids.each{|r| all_rids[r] |= (rids - [r])}
+      e.a( "/kan/#{i}" ).tag( "div", "class" => (['hideable']+rids.map{|r| 'r'+r})*" " )
     }.each_with_index do |l,i|
       if i>0 && i % RowSize == 0
         table_of_matches << curr_line.tag( 'tr' )
@@ -48,28 +48,27 @@ class Sk
     style = "TD{font-size:3.5em;}".tag( 'style', 'type' => 'text/css' )
     table_of_matches = table_of_matches.tag( 'table' )
 
-    radi_cond = all_rids.map{|r| "radicals.oid == #{r}"}*' OR '
-    radicals = $db.execute( "SELECT radicals.oid,radicals.radical FROM radicals WHERE #{radi_cond};" )
-    radicals.map! {|i,r| r.a( "javascript:show_only(\"r#{i}\")" )}
+    radi_cond = all_rids.keys.map{|r| "oid == #{r}"}*' OR '
+    radicals = $db.execute( "SELECT oid,radical FROM radicals WHERE #{radi_cond} ORDER BY radical;" )
+    radicals.map! {|r,k|
+      k.a( "javascript:show_only(\"r#{r}\")" ).tag( "span", "class" => (['hideable']+all_rids[r].map{|e| 'r'+e})*" " )
+    }
 
-    show_only = <<-EOS
-function show_only(id) {
-  var elements = document.getElementsByClassName('kanji');
+=begin
   var debug = "";
   var content = "c";
   var o = elements[0];
   for (var key in o){ content += key +":"+o[key]+"\\n"; };
   alert( content );
+=end
+
+    show_only = <<-EOS
+function show_only(id) {
+  var elements = document.getElementsByClassName('hideable');
   for(var i = 0;i < elements.length;i++){
     var ele = elements[i];
-    if( ele.className.indexOf( id ) == -1 ) {
-      debug += ele.className;
-      debug += " | ";
-      ele.style.display = "none";
-    };
+    if( ele.className.indexOf( id ) == -1 ) ele.style.display = "none";
   };
-
-  alert( debug );
 };
 EOS
 
