@@ -28,7 +28,7 @@ class Pos
      function success(position) {
        var lat = position.coords.latitude;
        var long = position.coords.longitude;
-       var pos = "https://www.arzur.fr/wtf_pos_MDc3NDQ0NjMyNzgwOTU4NA/null?lat=" +lat+ "&long=" +long+ "&ip=#{ip}";
+       var pos = "https://your_url/path/null?lat=" +lat+ "&long=" +long+ "&ip=#{ip}";
        var req = new XMLHttpRequest();
        req.open("GET", pos, false);
        req.send(null);
