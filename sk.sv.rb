@@ -24,6 +24,16 @@
   alert( content );
 =end
 
+$db.create_function( 'STROKNT', 1 ) do |func,skip| 
+  begin
+    t,a,b = skip.to_s.split( '-' ).map{|e| e.to_i}
+    func.result = (t == 4) ? (a) : (a+b)
+  rescue
+    func.result = 0
+  end
+end
+
+
 class Sk
   RowSize = 5
   Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
@@ -68,7 +78,13 @@ EOS
 
   def guess request
     log "guess : #{request[1]} with #{request['first'].url_utf8}"
-    r = "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
+    
+    r = if request[1].split( '-' ).size == 1
+          "SELECT kanji FROM kanjis WHERE STROKNT( skip ) = '#{request[1]}' ORDER BY forder DESC"
+        else
+          "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
+        end
+
     cond = "japanese LIKE '%#{request['first'].url_utf8}%' AND (" + $db.execute( r ).map{|k| "japanese LIKE '%#{k}%'"}.join( ' OR ' ) + ')'
     
     r = "SELECT * FROM examples WHERE #{cond}"
@@ -81,11 +97,14 @@ EOS
     return guess( request ) if request['guess']
     
     code = code.split( '-' )
-
-    double_skip = code.size == 6
+    
+    stroke_count_mode = code.size == 1 || code.size == 2
+    double_skip = code.size == 6 || code.size == 2
  
-    req_path = if double_skip
+    req_path = if double_skip && !stroke_count_mode
                  "/sk/#{code[3..5]*'-'}?first="
+               elsif double_skip && stroke_count_mode
+                 "/sk/#{code[1]}?first="
                elsif request['first']
                  "/yad/"+request['first'].url_utf8
                else
@@ -94,7 +113,14 @@ EOS
 
     guess_switch = double_skip ? GuessSwitch : ''
 
-    r1 = "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
+    r1 = if stroke_count_mode
+           "SELECT OID,kanji FROM kanjis WHERE STROKNT( skip ) = '#{code[0]}' ORDER BY forder DESC"
+         else
+           "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
+         end
+
+    log r1
+    #log $db.execute( "SELECT OID,kanji,skip,STROKNT( skip ) FROM kanjis WHERE STROKNT( skip ) == '7' LIMIT 10;" ).inspect
 
     all_rids = Hash.new {|h,k| h[k]=[]} 
     
@@ -110,7 +136,11 @@ EOS
     }.join( " " )
 
     t,a,b = code[0..2].map {|e| e.to_i}
-    glisse = Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
+    glisse = if stroke_count_mode
+               Iphone::glisse( '/sk/', t-1, t+1, t-1, t+1 )
+             else
+               Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
+             end
 
     guess_switch + ShowOnly + radicals + glisse + table_of_matches + TableStyle + Iphone::voyage
   end
