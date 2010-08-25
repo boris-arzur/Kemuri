@@ -38,8 +38,12 @@ class Sk
   RowSize = 5
   Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
   GuessSwitch = <<-EOS
-<input type='checkbox' id='guess' checked='true'/>guess next<br/>
+<input type='checkbox' id='guess' checked='true'/><a href='javascript:toggle_guess()'>guess next</a> &nbsp;
 <script type="text/javascript">
+function toggle_guess() {
+  document.getElementById( 'guess' ).checked = !document.getElementById( 'guess' ).checked;
+};
+
 function catchLinks(event) {
   if( event.target.href && // user is clicking a link
       event.target.href.indexOf( 'javascript' ) == '-1' && // not clicking a radical
@@ -55,11 +59,11 @@ document.onclick=catchLinks;
 </script>
 EOS
 
-  ShowOnly = <<-EOS
+  SkScripts = <<-EOS
 <script type="text/javascript">
 function show_only(id) {
   var elements = document.getElementsByClassName('hideable');
-  for(var i = 0;i < elements.length;i++){
+  for(var i = 0;i < elements.length;i++) {
     var ele = elements[i];
     if( ele.className.indexOf( id ) == -1 ) ele.style.display = "none";
   };
@@ -67,8 +71,45 @@ function show_only(id) {
 </script>
 EOS
 
+  RadicalControl = <<-EOS
+<span id='radi_up'><a href='javascript:rad_hide()'>&#9650;</a></span>&nbsp;
+<span id='radi_down'><a href='javascript:rad_show()'>&#9660;</a></span>&nbsp;
+<span><a href='javascript:rad_raz()'>&empty;</a></span><br/><br/>
+<script type="text/javascript">
+function rad_hide() {
+  var elements = document.getElementsByClassName('radz');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'none';
+
+  document.getElementById('radi_up').style.display = 'none';
+  document.getElementById('radi_down').style.display = 'inline';
+};
+
+function rad_show() {
+  var elements = document.getElementsByClassName('radz');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'inline';
+
+  document.getElementById('radi_up').style.display = 'inline';
+  document.getElementById('radi_down').style.display = 'none';
+};
+
+function rad_raz() {
+  var elements = document.getElementsByClassName('hideable');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'inline';
+};
+
+document.getElementById('radi_down').style.display = 'none';
+</script>
+EOS
+
   TableStyle = <<-EOS
-<style type="text/css" >TD{font-size:3.5em;}</style>
+<style type="text/css" >
+TD{font-size:3.5em;}
+A{text-decoration:none;}
+.radz{font-size:2em;}
+</style>
 EOS
 
   def hideable_actionable_content type, text, link_to, tags
@@ -122,7 +163,7 @@ EOS
     log r1
     #log $db.execute( "SELECT OID,kanji,skip,STROKNT( skip ) FROM kanjis WHERE STROKNT( skip ) == '7' LIMIT 10;" ).inspect
 
-    all_rids = Hash.new {|h,k| h[k]=[]} 
+    all_rids = Hash.new {|h,k| h[k]=['adz']} #kind of a hack : set all radical to have class radz in the final render, size => 2em
     
     table_of_matches = $db.execute( r1 ).map {|kid,kanji|
       rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{kid}" ).map{|rid| rid[0]}
@@ -135,6 +176,8 @@ EOS
       hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\")", all_rids[rid] )
     }.join( " " )
 
+    radicals = RadicalControl + radicals.tag( 'div', 'id' => 'radicals' )
+
     t,a,b = code[0..2].map {|e| e.to_i}
     glisse = if stroke_count_mode
                Iphone::glisse( '/sk/', t-1, t+1, t-1, t+1 )
@@ -142,6 +185,6 @@ EOS
                Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
              end
 
-    guess_switch + ShowOnly + radicals + glisse + table_of_matches + TableStyle + Iphone::voyage
+    guess_switch + SkScripts + radicals + table_of_matches + TableStyle + Iphone::voyage + glisse 
   end
 end
