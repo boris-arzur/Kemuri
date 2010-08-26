@@ -111,7 +111,7 @@ EOS
     log "guess : #{request[1]} with #{request['first'].url_utf8}"
     
     r = if request[1].split( '-' ).size == 1
-          "SELECT kanji FROM kanjis WHERE strokes = '#{request[1]}' ORDER BY forder DESC"
+          "SELECT kanji FROM kanjis WHERE strokes = #{request[1]} ORDER BY forder DESC"
         else
           "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
         end
@@ -145,7 +145,7 @@ EOS
     guess_switch = double_skip ? GuessSwitch : ''
 
     r1 = if stroke_count_mode
-           "SELECT OID,kanji FROM kanjis WHERE STROKNT( skip ) = '#{code[0]}' ORDER BY forder DESC"
+           "SELECT OID,kanji FROM kanjis WHERE strokes = #{code[0]} ORDER BY forder DESC"
          else
            "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
          end
