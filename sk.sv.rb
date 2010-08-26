@@ -24,16 +24,6 @@
   alert( content );
 =end
 
-$db.create_function( 'STROKNT', 1 ) do |func,skip| 
-  begin
-    t,a,b = skip.to_s.split( '-' ).map{|e| e.to_i}
-    func.result = (t == 4) ? (a) : (a+b)
-  rescue
-    func.result = 0
-  end
-end
-
-
 class Sk
   RowSize = 5
   Help = "校 &rarr; 1-4-6 ; 思 &rarr ; 2-5-4; 聞 &rarr; 3-8-6 ; 下 &rarr; 4-3-1 ; 土 &rarr; 4-3-2 ; 中 &rarr; 4-4-3 ; 女 &rarr; 4-3-4"
@@ -121,7 +111,7 @@ EOS
     log "guess : #{request[1]} with #{request['first'].url_utf8}"
     
     r = if request[1].split( '-' ).size == 1
-          "SELECT kanji FROM kanjis WHERE STROKNT( skip ) = '#{request[1]}' ORDER BY forder DESC"
+          "SELECT kanji FROM kanjis WHERE strokes = '#{request[1]}' ORDER BY forder DESC"
         else
           "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
         end
