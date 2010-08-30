@@ -34,6 +34,7 @@ end
 require 'engine.rb'
 require 'dbs.rb'
 require 'iphone.rb'
+require 'kanji_table.rb'
 
 class Server
   def initialize( options = {} )

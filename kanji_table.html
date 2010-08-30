@@ -1,0 +1,62 @@
+<!--
+     * Copyright 2008, 2009, 2010 Boris ARZUR
+     * 
+     * This file is part of Kemuri.
+     * 
+     * Kemuri is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU Affero General Public License as
+     * published by the Free Software Foundation, either version 3 of
+     * the License, or (at your option) any later version.
+     * 
+     * Kemuri is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+     * GNU Affero General Public License for more details.
+     * 
+     * You should have received a copy of the GNU Affero General Public
+     * License along with Kemuri. If not, see http://www.gnu.org/licenses.
+-->
+
+<span id='radi_up'><a href='javascript:rad_hide()'>&#9650;</a></span>&nbsp;
+<span id='radi_down'><a href='javascript:rad_show()'>&#9660;</a></span>&nbsp;
+<span><a href='javascript:rad_raz()'>&empty;</a></span><br/><br/>
+<script type="text/javascript">
+function show_only(id) {
+  var elements = document.getElementsByClassName('hideable');
+  for(var i = 0;i < elements.length;i++) {
+    var ele = elements[i];
+    if( ele.className.indexOf( id ) == -1 ) ele.style.display = "none";
+  };
+};
+
+function rad_hide() {
+  var elements = document.getElementsByClassName('radz');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'none';
+
+  document.getElementById('radi_up').style.display = 'none';
+  document.getElementById('radi_down').style.display = 'inline';
+};
+
+function rad_show() {
+  var elements = document.getElementsByClassName('radz');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'inline';
+
+  document.getElementById('radi_up').style.display = 'inline';
+  document.getElementById('radi_down').style.display = 'none';
+};
+
+function rad_raz() {
+  var elements = document.getElementsByClassName('hideable');
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = 'inline';
+};
+
+document.getElementById('radi_down').style.display = 'none';
+</script>
+<style type="text/css">
+TD{font-size:3.5em;}
+A{text-decoration:none;}
+.radz{font-size:2em;}
+</style>
