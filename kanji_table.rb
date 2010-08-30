@@ -24,7 +24,7 @@ def hideable_actionable_content type, text, link_to, tags
 end
 
 def kanji_table sql, req_path
-  raise 'Malformed SQL, need to match /^select [^,\.]*\.oid,[^,\.]*\.kanji"' unless sql =~ /^select [^,\.]*\.oid,[^,\.]*\.kanji/i
+  raise 'Malformed SQL, need to match /^select [^,\.]*\.{0,1}oid,[^,\.]*\.{0,1}kanji/i' unless sql =~ /^select [^,\.]*\.{0,1}oid,[^,\.]*\.{0,1}kanji/i
 
   all_rids = Hash.new {|h,k| h[k]=['adz']} #kind of a hack : set all radical to have class 'radz' in the final render, size => 2em
     
