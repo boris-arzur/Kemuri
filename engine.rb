@@ -120,7 +120,8 @@ class String
       k,v = p.split( '=' )
       v ||= true
       if options_hash[k]
-        options_hash[k] = [options_hash[k],v]
+        options_hash[k] = [options_hash[k]] unless options_hash[k].is_a?( Array )
+        options_hash[k] << v
       else
         options_hash[k] = v
       end
