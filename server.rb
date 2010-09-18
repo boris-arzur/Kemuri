@@ -21,8 +21,6 @@ require 'yaml'
 
 $KCODE = 'u' # pour le split //
 
-
-`rm server.log`
 def log( t )
   File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
 end
@@ -37,10 +35,10 @@ require 'iphone.rb'
 require 'kanji_table.rb'
 
 class Server
-  def initialize( options = {} )
-    @port = options[:port] || 8185
-    @name = options[:name] || 'iTouch and JLPT3'
-    @listen = options[:listen] || '127.0.0.1'
+  def initialize()
+    @port = $kemuri_port || 8185
+    @name = 'Kemuri'
+    @listen = '127.0.0.1'
 
     @listener = ::TCPServer.new( @listen, @port )
   end
@@ -94,6 +92,9 @@ class Servlet
   end
 end
 
-Servlet::register_all
-$me = Server.new
-
+def server_start
+  Servlet::register_all
+  `rm server.log`
+  $me = Server.new
+  $me.start
+end
