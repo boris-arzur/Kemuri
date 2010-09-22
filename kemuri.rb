@@ -1,3 +1,4 @@
+#!/usr/local/bin/ruby
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -15,7 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
-#!/usr/local/bin/ruby
-
+require 'optparse'
 require './server.rb'
-$me.start
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: kemuri.rb [options]"
+
+  opts.on("-p", "--port [PORT]", "Change default port (8185).") do |p|
+    $kemuri_port = p.to_i
+  end
+end.parse!
+
+server_start

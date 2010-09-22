@@ -43,10 +43,10 @@ require './iphone.rb'
 require './kanji_table.rb'
 
 class Server
-  def initialize( options = {} )
-    @port = options[:port] || 8185
-    @name = options[:name] || 'iTouch and JLPT3'
-    @listen = options[:listen] || '127.0.0.1'
+  def initialize()
+    @port = $kemuri_port || 8185
+    @name = 'Kemuri'
+    @listen = '127.0.0.1'
 
     @listener = ::TCPServer.new( @listen, @port )
     log( 'Running on Ruby ' + RUBY_VERSION )
@@ -101,6 +101,9 @@ class Servlet
   end
 end
 
-Servlet::register_all
-$me = Server.new
-
+def server_start
+  Servlet::register_all
+  `rm server.log`
+  $me = Server.new
+  $me.start
+end
