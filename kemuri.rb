@@ -17,5 +17,5 @@
 
 #!/usr/local/bin/ruby
 
-require 'server'
+require './server.rb'
 $me.start

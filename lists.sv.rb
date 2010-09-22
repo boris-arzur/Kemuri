@@ -67,9 +67,9 @@ EOP
 
   def execute request
     case request[1]
-    when "create" : create( request )
-    when "add" : add( request )
-    when "hib" : hib( request )
+    when "create" then create( request )
+    when "add" then add( request )
+    when "hib" then hib( request )
     end
   end
 end

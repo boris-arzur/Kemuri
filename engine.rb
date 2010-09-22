@@ -1,3 +1,4 @@
+#coding:utf-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -74,14 +75,10 @@ class String
   end
 
   def url_utf8
-    bytes = self.split( '%' )[1..-1]
-
-    utf8 = " " * bytes.size
-    bytes.each_with_index {|b,i|
-      utf8[i] = b[0].hex_to_i * 16 + b[1].hex_to_i
-    }
-
-    utf8
+    raise 'we will not eval this' unless self.downcase =~ /^(%[0-9a-e]{2})+$/
+    byte_form = self.gsub( '%', '\x' )
+    #we need to be extra careful here
+    eval( '"'+byte_form+'"' )
   end
 
   def is_num
@@ -208,11 +205,5 @@ def protect name
   rescue Exception => e
     log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}"
     "503. internal error.".a( '/log' )
-  end
-end
-
-class Fixnum
-  def hex_to_i
-    self >= 65 ? (self-65) + 10 : (self-48)
   end
 end

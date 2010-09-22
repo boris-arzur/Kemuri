@@ -30,7 +30,8 @@ class Yad
       kanji = entry.url_utf8
 
       #kana ? kanji ?
-      kanji_as_num = kanji[1] * 256 + kanji[2]
+      kanji_as_bytes = kanji.bytes.to_a
+      kanji_as_num = kanji_as_bytes[1] * 256 + kanji_as_bytes[2]
 
       if kanji[0] == 227 && kanji_as_num >= 33152 && kanji_as_num <= 33718
         #hira

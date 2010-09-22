@@ -19,9 +19,15 @@ require 'thread'
 require 'socket'
 require 'yaml'
 
-$KCODE = 'u' # pour le split //
-
-
+if RUBY_VERSION == '1.9.0'
+  #print Encoding.default_external
+elsif RUBY_VERSION > '1.9.0'
+  Encoding.default_external="UTF-8"
+  Encoding.default_internal="UTF-8"
+else
+  $KCODE = 'u' # pour le split //
+end
+ 
 `rm server.log`
 def log( t )
   File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
@@ -31,10 +37,10 @@ def to_history( t )
   File::open( 'history.log' , 'a' ) {|f| f.puts( t )}
 end
 
-require 'engine.rb'
-require 'dbs.rb'
-require 'iphone.rb'
-require 'kanji_table.rb'
+require './engine.rb'
+require './dbs.rb'
+require './iphone.rb'
+require './kanji_table.rb'
 
 class Server
   def initialize( options = {} )
@@ -43,6 +49,7 @@ class Server
     @listen = options[:listen] || '127.0.0.1'
 
     @listener = ::TCPServer.new( @listen, @port )
+    log( 'Running on Ruby ' + RUBY_VERSION )
   end
 
   def start

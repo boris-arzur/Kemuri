@@ -32,9 +32,9 @@ class Yav
     @list = KList.new( request['lid'] ) if request['lid']
 
     case request[1]
-    when 'y' : @kanjis.delete( @kanji ); @step = 0
-    when 'n' : @step = 0
-    when 'h' : @list.toggle_sleepy( @kanji ); @kanjis.delete( @kanji ); @step = 0
+    when 'y' then @kanjis.delete( @kanji ); @step = 0
+    when 'n' then @step = 0
+    when 'h' then @list.toggle_sleepy( @kanji ); @kanjis.delete( @kanji ); @step = 0
     end
 
     Pool_size.times do @kanjis << @list.next_kanji end if @kanjis.size == 0

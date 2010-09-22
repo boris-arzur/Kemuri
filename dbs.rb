@@ -16,7 +16,7 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 require 'sqlite3'
-require 'backstore_handling.rb'
+require './backstore_handling.rb'
 
 $db = SQLite3::Database.new( "iphone.db" )
 $db.execute( "CREATE TABLE IF NOT EXISTS annexes (kid INT, yaml TEXT, UNIQUE(kid) );" )
