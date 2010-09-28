@@ -27,7 +27,7 @@ class Yav
   end
 
   def execute request
-    return KList.lists.map {|list| list.name.a( '/yav/?lid='+list.lid ) }*'<br/>' unless @list || request['lid']
+    return KList.lists.map {|list| list.name.a( "/yav/?lid=#{list.lid}" ) }*'<br/>' unless @list || request['lid']
 
     @list = KList.new( request['lid'] ) if request['lid']
 

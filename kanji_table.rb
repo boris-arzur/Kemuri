@@ -34,6 +34,9 @@ def kanji_table sql, req_path
     hideable_actionable_content( 'td', kanji, req_path+kanji, rids )
   }.cut( RowSize ).map{|row| row.join.tag( 'tr' )}.join.tag( 'table' )
 
+  # in case we have no result :
+  return Iphone::voyage if all_rids.size == 0
+
   radi_cond = all_rids.keys.map{|r| "oid == #{r}"}*' OR '
   radicals = $db.execute( "SELECT oid,radical FROM radicals WHERE #{radi_cond} ORDER BY radical" ).map {|rid,radi|
     hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\")", all_rids[rid] )
