@@ -54,7 +54,7 @@ class Kanji
 
   def radicals
     r2 = "SELECT radicals.oid,radicals.radical FROM (SELECT rid FROM kan2rad WHERE kid = #{@kid}) AS rids LEFT JOIN radicals ON rids.rid = radicals.oid;"
-    inner_content = $db.execute( r2 ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>" + e.a( '/rad/'+i )}*"<br/>"
+    inner_content = $db.execute( r2 ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>" + e.a( "/rad/#{i}" )}*"<br/>"
     (inner_content + "<br/><input type='submit' value='検索'/>" ).tag( "form", :action => "/rad/", :method => "get" )
   end
 
@@ -113,7 +113,7 @@ class KList
 
   def initialize( lid_or_name, name = nil )
     if !name
-      if lid_or_name.is_num
+      if lid_or_name.is_a?( Fixnum ) or lid_or_name.is_num
         @lid = lid_or_name
         r = "SELECT name FROM lists WHERE oid = #{@lid}"
         @name = $db.get_first_value( r )

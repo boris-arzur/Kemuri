@@ -75,7 +75,7 @@ class String
   end
 
   def url_utf8
-    raise 'we will not eval this' unless self.downcase =~ /^(%[0-9a-e]{2})+$/
+    raise 'we will not eval this' unless self.downcase =~ /^(%[0-9a-f]{2})+$/
     byte_form = self.gsub( '%', '\x' )
     #we need to be extra careful here
     eval( '"'+byte_form+'"' )

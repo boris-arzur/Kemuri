@@ -26,7 +26,7 @@ class Rad
     table_of_matches = ""
     curr_line = ""
 
-    $db.execute( r ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>#{e.a( '/rad/'+i )}"}.each_with_index do |l,i|
+    $db.execute( r ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>#{e.a( "/rad/#{i}" )}"}.each_with_index do |l,i|
       if i>0 && i % RowSize == 0
         table_of_matches << curr_line.tag( 'tr' )
         curr_line = ""

@@ -19,7 +19,7 @@ KanjiTableHTML = File::read( 'kanji_table.html' )
 RowSize = 5
 
 def hideable_actionable_content type, text, link_to, tags
-  classnames = 'hideable ' + tags.map{|r| 'r'+r}.join( " " )
+  classnames = 'hideable ' + tags.map{|r| "r#{r}"}.join( " " )
   text.a( link_to ).tag( type, 'class' => classnames )
 end
 
