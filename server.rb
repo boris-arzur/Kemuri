@@ -28,7 +28,6 @@ else
   $KCODE = 'u' # pour le split //
 end
  
-`rm server.log`
 def log( t )
   File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
 end
@@ -64,6 +63,7 @@ class Server
         end
 
         request = protect('parsing') {request.parse()}
+        log( request.inspect )
         answer = protect('executing') {Servlet::execute( request )}
         protect('replying') {connection.print( request.xml ? answer : answer.in_skel.to_http )}  
         connection.close()
@@ -82,12 +82,12 @@ class Servlet
   Ext = /\.sv\.rb$/
 
   def self.register_all
-    ITPP.files.each do |file|
+    Kemuri.files.each do |file|
       Servlet::register( file ) if file =~ Ext
     end
 
     @@servlets.default = ::Quatrecentquatre.new
-    log( @@servlets.inspect )
+    log( "Registered modules : " + @@servlets.keys.inspect )
   end
 
   def self.register( file )
@@ -102,8 +102,8 @@ class Servlet
 end
 
 def server_start
-  Servlet::register_all
   `rm server.log`
+  Servlet::register_all
   $me = Server.new
   $me.start
 end

@@ -18,7 +18,7 @@
 
 require 'find'
 
-class ITPP
+class Kemuri 
   @@files = nil
   
   def self.files 
@@ -35,14 +35,13 @@ class Request
   attr_accessor :type, :xml
   def initialize type, path, options, post
     @path = path
-    @xml = path[0] =~ /\.xml$/
-    path[0].gsub!( /\.xml$/, '' )
+    if path[0] =~ /\.xml$/
+      @xml = true
+      path[0].gsub!( /\.xml$/, '' )
+    end
     @options = options
     @type = type
     @post = post
-
-    log self.inspect
-    to_history( to_url )# keep this for the record
   end
 
   def to_url
