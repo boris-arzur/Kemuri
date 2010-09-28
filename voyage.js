@@ -17,8 +17,10 @@
     License along with Kemuri. If not, see http://www.gnu.org/licenses.
 */
 
+var do_move = true;
 function voyage_focus_input( event ) {
     document.getElementById( 'voyage' ).style.opacity = "1.0";
+    do_move = false;
 };
 
 function voyage_create_option( nani ) {
@@ -74,10 +76,12 @@ function voyage_shuppatsu() {
 };
 
 function voyage_scroll_hdl(event) {
-  document.getElementById( 'voyage' ).style.top = window.innerHeight - voyage_scroll_offset + window.scrollY;
+  if( do_move ) {
+    document.getElementById( 'voyage' ).style.top = window.innerHeight - voyage_scroll_offset + window.scrollY;
+  }
 };
 
 var voyage_scroll_offset = 40;
 var voyage_placeholder = document.getElementById( 'voyage' );
-document.addEventListener("scroll", voyage_scroll_hdl, false );
+document.addEventListener( "scroll", voyage_scroll_hdl, false );
 voyage_placeholder.style.left = 220;
