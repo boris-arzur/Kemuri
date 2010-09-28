@@ -18,33 +18,31 @@
 
 class Rad
   RowSize = 5
-  InterSpace = RowSize * 4
+  InterSpace = 4
+  SrchBtn = "<td><input type='submit' value='検\n索'/></td>"
+  Style = "<style type='text/css'>TD{font-size:3em;}</style>"
+  HDelim = ("<hr size='1'/>".tag('td')*(RowSize+1)).tag('tr')
+
+  GetAllRads = <<EOR
+SELECT radicals.oid,radicals.radical,kanjis.strokes
+ FROM radicals
+ JOIN kanjis ON kanjis.kanji == radicals.radical
+ ORDER BY kanjis.strokes;
+EOR
+
+  def to_checkbox( radical, rid )
+    "<input type='checkbox' name='rad' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
+  end
 
   def select_rads
-    r = "SELECT radicals.oid,radicals.radical FROM radicals ORDER BY radicals.radical;"
+    stroke2rad = Hash.new {|h,k| h[k]=[]}
+    $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << to_checkbox(e,i)}
 
-    table_of_matches = ""
-    curr_line = ""
+    table_of_matches = stroke2rad.sort_by{|s,chkbxz| s}.map {|s,chkbxz|
+      chkbxz.cut( RowSize ).map{|row| (SrchBtn+row.join).tag( 'tr' )}.join
+    }.join( HDelim ).tag( "table" ).tag( "form", :action => "/rad/", :method => "get" )
 
-    $db.execute( r ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>#{e.a( "/rad/#{i}" )}"}.each_with_index do |l,i|
-      if i>0 && i % RowSize == 0
-        table_of_matches << curr_line.tag( 'tr' )
-        curr_line = ""
-      end
-
-      if i>0 && i % InterSpace == 0
-        table_of_matches << "<tr><td><input type='submit' value='検索'/></td></tr>"
-      end
-
-      curr_line << l.tag( 'td' )
-    end
-
-
-    table_of_matches += "<tr><td><input type='submit' value='検索'/></td></tr>"
-
-    style = "TD{font-size:3em;}".tag( 'style', 'type' => 'text/css' )
-
-    style + table_of_matches.tag( "table" ).tag( "form", :action => "/rad/", :method => "get" ) + Iphone::voyage
+    Style + table_of_matches + Iphone::voyage
   end
 
   def execute request
