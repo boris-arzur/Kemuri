@@ -17,6 +17,7 @@
 
 class Yad
   def execute request
+    to_history( '/yad/' + request[1] ) if request[1]
     entry = request[1] || 'start'
     entry.gsub!( '%20' ,' ' )
     cond_r1 = nil

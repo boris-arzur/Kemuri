@@ -23,6 +23,7 @@ class Kan
 
     kanji = Kanji.new( kan )
     kid = kanji.kid.to_i
+    to_history( '/kan/' + kanji.kanji )
     res = Iphone::glisse( '/kan/', kid+10, kid-10, kid-1, kid+1 ) + kanji.to_html
     
     kan_lists = kanji.lists

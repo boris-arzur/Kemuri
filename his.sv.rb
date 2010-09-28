@@ -17,8 +17,10 @@
 
 class His
   def execute request
-    File::read( 'history.log' ).split( "\n" ).sort.uniq.map {|l| 
-      name = l.gsub( /http:\/\/[^\/]*\// , '/' ).gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
-      "<a href='#{l}'>#{name}</a>"}.join( '<br/>' ) + Iphone::voyage
+    content = File::read( 'history.log' ).split( "\n" )
+    content.sort.uniq.map {|l| 
+      name = l.gsub( /^\/(.)(an|ad)\// ) {"#{$1} "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
+      name.a( l ).tag( 'td' ).tag( 'tr' )
+    }.join.tag( 'table' ) + Iphone::voyage
   end
 end
