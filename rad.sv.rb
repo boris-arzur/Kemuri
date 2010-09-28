@@ -48,20 +48,19 @@ class Rad
   end
 
   def execute request
-    rads = request["rad"]
-
-    unless rads
-      rads = request[1]
-
-      if rads =~ /^\d+$/
-        rads = [rads.to_i]
-      elsif rads
-        rads = rads.split( '+' ).map {|blk| blk.url_utf8 }.map {|kan|
-          $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" ).to_i
-        }
-      else
-        return select_rads
-      end
+    if request["rad"].is_a?( Array )
+      rads = request["rad"]
+    elsif request["rad"] and request["rad"].is_num
+      rads = [request["rad"]]
+    elsif request[1] and request[1].is_num
+      rads = [request[1]]
+    elsif request[1]
+      rads = request[1].split( '+' ).map {|blk| 
+        kan = blk.url_utf8
+        $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" )
+      }
+    else
+      return select_rads
     end
 
     rad_cond = rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"} * " INTERSECT "
