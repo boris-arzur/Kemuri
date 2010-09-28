@@ -19,7 +19,7 @@
 class Rad
   RowSize = 5
   InterSpace = 4
-  SrchBtn = "<td><input type='submit' value='検\n索'/></td>"
+  SrchBtn = "<td><button type='submit' style='width:2em;display:block;'><div style='width:100%'>検索</div></button></td>"
   Style = "<style type='text/css'>TD{font-size:3em;}</style>"
   HDelim = ("<hr size='1'/>".tag('td')*(RowSize+1)).tag('tr')
 
