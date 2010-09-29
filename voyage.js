@@ -21,6 +21,8 @@ var do_move = true;
 function voyage_focus_input( event ) {
     voyage_placeholder.style.opacity = "1.0";
     do_move = false;
+    if( rad_bar_placeholder )
+        rad_bar_placeholder.style.opacity = "0.0";
 };
 
 function voyage_create_option( nani ) {
