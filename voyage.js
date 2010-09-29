@@ -19,7 +19,7 @@
 
 var do_move = true;
 function voyage_focus_input( event ) {
-    document.getElementById( 'voyage' ).style.opacity = "1.0";
+    voyage_placeholder.style.opacity = "1.0";
     do_move = false;
 };
 
@@ -37,10 +37,14 @@ function voyage_update_options() {
     	select.setAttribute( 'id', 'douyatte' );
     	var direct_commit = true;
 
-    	if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) ) select.appendChild( voyage_create_option( '/sk/' ) );
-      if( dokomade.match(/^\d-\d+-\d+\+\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/biskip/' ) );
-      if( dokomade.match(/^\d+-\d+$/) || dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) ) select.appendChild( voyage_create_option( '/sk/' ) );
-      else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )   select.appendChild( voyage_create_option( '/' ) );
+    	if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) )
+        select.appendChild( voyage_create_option( '/sk/' ) );
+      if( dokomade.match(/^\d-\d+-\d+\+\d-\d+-\d+$/) )
+        select.appendChild( voyage_create_option( '/biskip/' ) );
+      if( dokomade.match(/^\d+-\d+$/) || dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) )
+        select.appendChild( voyage_create_option( '/sk/' ) );
+      else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )
+        select.appendChild( voyage_create_option( '/' ) );
     	else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
     	    select.appendChild( voyage_create_option( '/yad/' ) );
     	    select.appendChild( voyage_create_option( '/kan/' ) );
@@ -77,7 +81,7 @@ function voyage_shuppatsu() {
 
 function voyage_scroll_hdl(event) {
   if( do_move ) {
-    document.getElementById( 'voyage' ).style.top = window.innerHeight - voyage_scroll_offset + window.scrollY;
+    voyage_placeholder.style.top = window.innerHeight - voyage_scroll_offset + window.scrollY;
   }
 };
 
