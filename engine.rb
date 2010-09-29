@@ -87,13 +87,8 @@ class String
   def tag u , p = nil
      if p
        s = p.map {|k,v|
-          #if v.is_a? Array
-          #  v.map{|e| k.to_s + "=\"" + e.to_s + "\" "}.join
-          #else
-            k.to_s + "=\"" + v.to_s + "\" "
-          #end
-      }.join
-       #log "tag:#{u} & #{s}"  
+             k.to_s + "=\"" + v.to_s + "\" "
+           }.join
        "<#{u} #{s}>#{self}</#{u}>"
      else
        "<#{u}>#{self}</#{u}>"
@@ -147,9 +142,6 @@ class String
 EOP
   end
 
-  def to_row
-    "<td>#{self}</td>"
-  end
 
   def a url
     "<a href='#{url}'>#{self}</a>"
@@ -165,12 +157,16 @@ EOP
   end
 
   def td
+    "<td>#{self}</td>"
   end
+  alias :to_row :td  
 
   def tr
+    "<tr>#{self}</tr>"
   end
 
   def table
+    "<table>#{self}</table>"
   end
 end
 
@@ -197,12 +193,12 @@ class Array
 
   def to_table
     w = max {|l,k| l.size <=> k.size}
-    map {|l| l.to_row( w.size ).tag( 'tr' )}.join.tag( 'table' ) #, :style => 'font-size:2em' )
+    map {|l| l.to_row( w.size ).tr}.join.table
   end
 
   def to_row w
     span = w/size 
-    opt = span > 1 ? {'colspan' => span} : {}
+    opt = span > 1 ? {'colspan' => span} : nil
     map {|c| c.to_s.tag( 'td' , opt )}.join
   end
 end
