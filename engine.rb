@@ -161,7 +161,16 @@ EOP
   end
 
   def script
-    "<script type='text/javascript' charset='utf-8'>#{self}</script>"
+    "<script type='text/javascript'>#{self}</script>"
+  end
+
+  def td
+  end
+
+  def tr
+  end
+
+  def table
   end
 end
 
