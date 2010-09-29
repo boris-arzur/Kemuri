@@ -1,3 +1,4 @@
+#coding:utf-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -21,8 +22,11 @@ class Iphone
 
   Voyage_style = File::read( 'voyage.css' ).style
   Voyage_script = File::read( 'voyage.js' ).script
-
+  
   Next_page_script =  File::read( 'next_page.js' ).script
+
+  Rad_bar_style = File::read( 'rad_bar.css' ).style
+  Rad_bar_script = File::read( 'rad_bar.js' ).script
 
   def self.glisse( url_base, haut, bas, gauche, droite )
     res = <<-EOS
@@ -48,7 +52,7 @@ EOS
   end
 
   def self.next_page base
-res = <<-EOS
+    res = <<-EOS
 <script type="text/javascript" charset="utf-8">
   var next_page_url_base = "#{base}";
 </script>
@@ -56,5 +60,16 @@ res = <<-EOS
 <div id='bottom'></div>
 EOS
     res + Next_page_script
+  end
+
+
+  def self.rad_bar
+    res = <<-EOS
+<div id="rad_bar">
+  <button onclick='javascript:document.forms["rads"].submit();'>検索</button>
+  <button id='rad_bar_hareru' onclick='javascript:rad_bar_clear();'>晴れる</button>
+</div>
+EOS
+    res + Rad_bar_style + Rad_bar_script
   end
 end

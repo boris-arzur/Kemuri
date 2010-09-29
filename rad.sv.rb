@@ -18,10 +18,8 @@
 
 class Rad
   RowSize = 5
-  InterSpace = 4
-  SrchBtn = "<td><button type='submit' style='width:2em;display:block;'><div style='width:100%'>検索</div></button></td>"
-  Style = "<style type='text/css'>TD{font-size:3em;}</style>"
-  HDelim = ("<hr size='1'/>".tag('td')*(RowSize+1)).tag('tr')
+  Style = "TD{font-size:3em;}".style
+  HDelim = ("<hr size='1'/>".td*RowSize).tr
 
   GetAllRads = <<EOR
 SELECT radicals.oid,radicals.radical,kanjis.strokes
@@ -39,10 +37,11 @@ EOR
     $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << to_checkbox(e,i)}
 
     table_of_matches = stroke2rad.sort_by{|s,chkbxz| s}.map {|s,chkbxz|
-      chkbxz.cut( RowSize ).map{|row| (SrchBtn+row.join).tag( 'tr' )}.join
-    }.join( HDelim ).tag( "table" ).tag( "form", :action => "/rad/", :method => "get" )
+      chkbxz.cut( RowSize ).map{|row| row.join.tr}.join
+    }.join( HDelim ).table
 
-    Style + table_of_matches + Iphone::voyage
+    table_of_matches.tag( "form", :action => "/rad/", :method => "get",
+                          :id => "rads", :name => "rads" ) + Style + Iphone::voyage + Iphone::rad_bar
   end
 
   def execute request
