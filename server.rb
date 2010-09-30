@@ -106,6 +106,5 @@ def server_start
   Servlet::register_all
   $me = Server.new
   File.open( "kemuri.pid", "w" ) {|f| f.print( Process.pid )}
-
   $me.start_serving
 end

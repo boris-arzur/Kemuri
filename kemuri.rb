@@ -16,11 +16,21 @@
 #    You should have received a copy of the GNU Affero General Public
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
-#change to Kemuri directory
+#Change to Kemuri directory.
+#We need that for the load './ --- '
 Dir.chdir( File.dirname( $PROGRAM_NAME ) )
 
 require 'optparse'
 require './server.rb'
+
+def do_fork
+  raise 'Fork failed !' if (pid = fork) == -1
+  if not pid.nil?
+    #We are the parent : detach and return
+#    Process.detach( pid )
+    Kernel.exit( 0 )
+  end
+end
 
 def stop_kemuri
   pid = File.read( "kemuri.pid" )
@@ -45,11 +55,34 @@ OptionParser.new do |opts|
     stop_kemuri
     Kernel.exit( 0 )
   end
- 
 end.parse!
 
+#And now we start the real work.
 puts( "Starting Kemuri." )
-pid = fork do server_start end
-puts( "Kemuri now running, pid = #{pid}." )
 
-Process.detach( pid )
+#Double-forking Unix daemon initializer.
+#raise 'Must run as root' if Process.euid != 0
+
+do_fork
+
+Process.setsid
+do_fork
+
+puts "Supposed daemon pid: #{Process.pid}"
+#Well we could be running somewhere
+#else, so we don't save the pid here.
+#We want to make sure the port is available
+#first.
+
+File.umask( 0000 )
+
+STDIN.reopen( '/dev/null' )
+STDOUT.reopen( '/dev/null', 'a' )
+STDERR.reopen( STDOUT )
+
+#Forgo all root power
+
+
+#start the server per se
+server_start
+

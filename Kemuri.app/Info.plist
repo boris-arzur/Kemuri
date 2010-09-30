@@ -4,7 +4,7 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>English</string>
   <key>CFBundleExecutable</key>
-  <string>screen+kemuri.sh</string>
+  <string>kemuri.sh</string>
   <key>CFBundleIdentifier</key>
   <string>com.barzur.kemuri</string>
   <key>CFBundleInfoDictionaryVersion</key>
