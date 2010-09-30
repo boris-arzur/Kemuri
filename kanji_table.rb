@@ -37,8 +37,18 @@ def kanji_table sql, req_path
   # in case we have no result :
   return Iphone::voyage if all_rids.size == 0
 
-  radi_cond = all_rids.keys.map{|r| "oid == #{r}"}*' OR '
-  radicals = $db.execute( "SELECT oid,radical FROM radicals WHERE #{radi_cond} ORDER BY radical" ).map {|rid,radi|
+  radi_cond = all_rids.keys.map{|r| "radicals.oid == #{r}"}*' OR '
+
+  sql = <<EOS
+SELECT radicals.oid,radicals.radical
+  FROM radicals 
+  JOIN kanjis
+    ON kanjis.kanji == radicals.radical
+  WHERE #{radi_cond}
+  ORDER BY kanjis.strokes;
+EOS
+
+  radicals = $db.execute( sql ).map {|rid,radi|
     hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\")", all_rids[rid] )
   }.join( " " ).tag( 'div', 'id' => 'radicals' )
 
