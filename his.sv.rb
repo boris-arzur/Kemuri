@@ -20,7 +20,7 @@ class His
     content = File::read( 'history.log' ).split( "\n" )
     content.sort.uniq.map {|l| 
       name = l.gsub( /^\/(.)(an|ad)\// ) {"#{$1} "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
-      name.a( l ).tag( 'td' ).tag( 'tr' )
-    }.join.tag( 'table' ) + Iphone::voyage
+      name.a( l ).td.tr
+    }.join.table + Iphone::voyage
   end
 end
