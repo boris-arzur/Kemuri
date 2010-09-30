@@ -51,7 +51,7 @@ class Server
     log( 'Running on Ruby ' + RUBY_VERSION )
   end
 
-  def start
+  def start_serving
     loop do
       connection = @listener.accept
       
@@ -105,5 +105,7 @@ def server_start
   `rm server.log`
   Servlet::register_all
   $me = Server.new
-  $me.start
+  File.open( "kemuri.pid", "w" ) {|f| f.print( Process.pid )}
+
+  $me.start_serving
 end

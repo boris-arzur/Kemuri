@@ -16,6 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
+#change to Kemuri directory
+Dir.chdir( File.dirname( $PROGRAM_NAME ) )
+
 require 'optparse'
 require './server.rb'
 
@@ -46,11 +49,7 @@ OptionParser.new do |opts|
 end.parse!
 
 puts( "Starting Kemuri." )
-$pid = fork do
-         server_start
-       end
+pid = fork do server_start end
+puts( "Kemuri now running, pid = #{pid}." )
 
-puts( "Kemuri now running, pid = #{$pid}." )
-
-File.open( "kemuri.pid", "w" ) {|f| f.print( $pid )}
-Process.detach( $pid )
+Process.detach( pid )
