@@ -42,7 +42,7 @@ EOS
   end
 
   def self.add_hidden_button name, path = name
-    button = "<input type='submit' onclick='javascript:window.location=\"/#{path}\"' value='#{name}'/>"
+    button = "<button onclick='javascript:window.location=\"/#{path}\"'>#{name}</button> "
     @@voyage_hidden_buttons << button
   end
 
