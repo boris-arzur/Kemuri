@@ -76,7 +76,7 @@ class Kanji
                          'red'
                        end
 
-    res = [[@kanji.style( color )]]
+    res = [[@kanji.style( color ).a( "/yad/#{@kanji}" )]]
     res << [@meanings] if i > 0
     res << [@readings] if i > 1
     res << [@skip.a( '/sk/'+@skip )] << [@forder.to_s] if i > 990 and @skip
