@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -19,12 +19,38 @@
 require 'optparse'
 require './server.rb'
 
+def stop_kemuri
+  pid = File.read( "kemuri.pid" )
+  puts( "Terminating #{pid}." )
+  Process.kill( "TERM", pid.to_i )
+end
+
 OptionParser.new do |opts|
   opts.banner = "Usage: kemuri.rb [options]"
 
-  opts.on("-p", "--port [PORT]", "Change default port (8185).") do |p|
+  opts.on( "-p", "--port [PORT]", "Change default port (8185)." ) do |p|
     $kemuri_port = p.to_i
   end
+
+  #restart
+  opts.on( "-r", "--restart", "Restart kemuri." ) do |r|
+    stop_kemuri rescue puts( "No instance running ? Anyway, starting Kemuri." )
+  end
+
+  #stop
+  opts.on( "-s", "--stop", "Stop kemuri." ) do |s|
+    stop_kemuri
+    Kernel.exit( 0 )
+  end
+ 
 end.parse!
 
-server_start
+puts( "Starting Kemuri." )
+$pid = fork do
+         server_start
+       end
+
+puts( "Kemuri now running, pid = #{$pid}." )
+
+File.open( "kemuri.pid", "w" ) {|f| f.print( $pid )}
+Process.detach( $pid )
