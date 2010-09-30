@@ -16,6 +16,10 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class His
+  def initialize
+    Iphone.add_hidden_button( 'h','his' )
+  end
+
   def execute request
     content = File::read( 'history.log' ).split( "\n" )
     content.sort.uniq.map {|l| 

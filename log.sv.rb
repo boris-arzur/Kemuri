@@ -16,6 +16,10 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Log
+  def initialize
+    Iphone.add_hidden_button( 'l','log' )
+  end
+
   def execute request
     File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' ) + Iphone::voyage
   end

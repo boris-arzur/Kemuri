@@ -17,6 +17,10 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Rad
+  def initialize
+    Iphone.add_hidden_button( 'r','rad' )
+  end
+
   RowSize = 5
   Style = "TD{font-size:3em;}".style
   HDelim = ("<hr size='1'/>".td*RowSize).tr

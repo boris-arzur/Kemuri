@@ -21,8 +21,17 @@ var do_move = true;
 function voyage_focus_input( event ) {
     voyage_placeholder.style.opacity = "1.0";
     do_move = false;
-    if( rad_bar_placeholder )
+    if( typeof( rad_bar_placeholder ) != "undefined" )
         rad_bar_placeholder.style.opacity = "0.0";
+    document.getElementById( 'voyage_btns' ).style.display = "inline";
+};
+
+function voyage_blur_input( event ) {
+    voyage_placeholder.style.opacity = "0.3";
+    do_move = true;
+    if( typeof( rad_bar_placeholder ) != "undefined" )
+        rad_bar_placeholder.style.opacity = "1.0";
+    document.getElementById( 'voyage_btns' ).style.display = "hidden";
 };
 
 function voyage_create_option( nani ) {
@@ -90,4 +99,8 @@ function voyage_scroll_hdl(event) {
 var voyage_scroll_offset = 40;
 var voyage_placeholder = document.getElementById( 'voyage' );
 document.addEventListener( "scroll", voyage_scroll_hdl, false );
+voyage_placeholder.addEventListener( "change", voyage_update_options, false );
+voyage_placeholder.addEventListener( "focus", voyage_focus_input, true );
+voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
+
 voyage_placeholder.style.left = 220;

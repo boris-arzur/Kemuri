@@ -17,6 +17,8 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Iphone
+  @@voyage_hidden_buttons = ""
+
   Glisse_style = File::read( 'glisse.css' ).style
   Glisse_script = File::read( 'glisse.js' ).script
 
@@ -39,13 +41,16 @@ EOS
     res + Glisse_style + Glisse_script
   end
 
+  def self.add_hidden_button name, path = name
+    button = "<input type='submit' onclick='javascript:window.location=\"/#{path}\"' value='#{name}'/>"
+    @@voyage_hidden_buttons << button
+  end
+
   def self.voyage
     res = <<-EOS
 <div id="voyage">
-<input type="text" id="dokomade" 
-       onchange="javascript:voyage_update_options()"
-       onfocus="javascript:voyage_focus_input()"
-       value="" autocapitalize="off" size=10/>
+<input type="text" id="dokomade" value="" autocapitalize="off" size=10/>
+<div id="voyage_btns">#{@@voyage_hidden_buttons}</div>
 </div>
 EOS
     res + Voyage_style + Voyage_script
