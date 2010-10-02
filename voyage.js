@@ -44,6 +44,8 @@ function voyage_create_option( nani ) {
 function voyage_update_options() {
     var dokomade = document.getElementById( 'dokomade' ).value;
     if( dokomade.size != 0) {
+        voyage_placeholder.appendChild( document.createElement( 'br' ) );
+        
         var select = document.createElement( 'select' );
         select.setAttribute( 'id', 'douyatte' );
         var direct_commit = true;
