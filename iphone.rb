@@ -42,6 +42,7 @@ EOS
   end
 
   def self.add_hidden_button name, path = name
+    @@voyage_hidden_buttons = "<br/>" if @@voyage_hidden_buttons.size == 0
     button = "<button onclick='javascript:window.location=\"/#{path}\"'>#{name}</button> "
     @@voyage_hidden_buttons << button
   end
