@@ -28,7 +28,8 @@ class Rad
   GetAllRads = <<EOR
 SELECT radicals.oid,radicals.radical,kanjis.strokes
  FROM radicals
- JOIN kanjis ON kanjis.kanji == radicals.radical
+ LEFT JOIN kanjis
+   ON kanjis.kanji == radicals.radical
  ORDER BY kanjis.strokes;
 EOR
 
@@ -40,7 +41,7 @@ EOR
     stroke2rad = Hash.new {|h,k| h[k]=[]}
     $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << to_checkbox(e,i)}
 
-    table_of_matches = stroke2rad.sort_by{|s,chkbxz| s}.map {|s,chkbxz|
+    table_of_matches = stroke2rad.sort_by{|s,chkbxz| s.to_i}.map {|s,chkbxz|
       chkbxz.cut( RowSize ).map{|row| row.join.tr}.join
     }.join( HDelim ).table
 

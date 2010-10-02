@@ -42,7 +42,7 @@ def kanji_table sql, req_path
   sql = <<EOS
 SELECT radicals.oid,radicals.radical
   FROM radicals 
-  JOIN kanjis
+  LEFT JOIN kanjis
     ON kanjis.kanji == radicals.radical
   WHERE #{radi_cond}
   ORDER BY kanjis.strokes;
