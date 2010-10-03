@@ -50,7 +50,7 @@ EOS
   def self.voyage
     res = <<-EOS
 <div id="voyage">
-<input type="text" id="dokomade" value="" autocapitalize="off" size=10/>
+<input type="text" id="dokomade" autocapitalize="off" size=10/>
 <div id="voyage_btns">#{@@voyage_hidden_buttons}</div>
 </div>
 EOS
