@@ -73,7 +73,7 @@ EOS
     res = <<-EOS
 <div id="rad_bar">
   <button onclick='javascript:document.forms["rads"].submit();'>検索</button>
-  <button id='rad_bar_hareru' onclick='javascript:rad_bar_clear();'>晴れる</button>
+  <button onclick='javascript:rad_bar_clear();'>消</button>
 </div>
 EOS
     res + Rad_bar_style + Rad_bar_script
