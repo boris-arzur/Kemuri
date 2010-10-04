@@ -50,7 +50,9 @@ class Request
 
   def to_urlxml
     @path[0] += '.xml' unless @xml
-    $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
+    urlxml = $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
+    @path[0].gsub!( /\.xml$/, '' )
+    urlxml
   end
 
   def [] i

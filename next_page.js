@@ -27,7 +27,8 @@ var next_page = 1;
 function next_page_scroll_hdl( event ) {
   if( (window.scrollY + window.innerHeight >= document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
     var req = new XMLHttpRequest();
-    var url = next_page_url_base +'p='+ next_page;
+    //glue is defined in iphone.rb
+    var url = next_page_url_base + glue + 'p=' + next_page;
     req.open( "GET", url , false );
     req.overrideMimeType( "text/javascript" );
     req.send( null );

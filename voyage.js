@@ -23,7 +23,9 @@ function voyage_focus_input( event ) {
     do_move = false;
     if( typeof( rad_bar_placeholder ) != "undefined" )
         rad_bar_placeholder.style.opacity = "0.0";
-    document.getElementById( 'voyage_btns' ).style.display = "inline";
+    if( typeof( yad_bar_placeholder ) != "undefined" )
+        yad_bar_placeholder.style.opacity = "0.0";
+    document.getElementById( 'voyage_btns' ).style.display = "block";
 };
 
 function voyage_blur_input( event ) {
@@ -31,6 +33,8 @@ function voyage_blur_input( event ) {
     do_move = true;
     if( typeof( rad_bar_placeholder ) != "undefined" )
         rad_bar_placeholder.style.opacity = "1.0";
+    if( typeof( yad_bar_placeholder ) != "undefined" )
+        yad_bar_placeholder.style.opacity = "0.0";
     document.getElementById( 'voyage_btns' ).style.display = "hidden";
 };
 

@@ -26,6 +26,13 @@ class Yad
       "#{options[:field]} LIKE '%#{what}%'"
     end
   end
+ 
+  def linkify_kanjis! text
+    # 一 is the first kanji, in lexicographic order
+    # it verifies "一" > kana & ascii
+    modded_text = text.split( // ).map {|c| c >= "一" ? c.a( '/kan/'+c ) : c}.join
+    text.replace( modded_text )
+  end
 
   def execute request
     to_history( '/yad/' + request[1] ) if request[1]
@@ -42,10 +49,9 @@ class Yad
       kanji = entry.url_utf8
       
       #kana ? kanji ?
-      kanji_as_bytes = kanji.bytes.to_a
-      kanji_as_num = kanji_as_bytes[1] * 256 + kanji_as_bytes[2]
-
-      if kanji[0] == 227 && kanji_as_num >= 33152 && kanji_as_num <= 33718
+      # 一 is the first kanji, in lexicographic order
+      # ぁ is the mother of all kana
+      if kanji >= "ぁ" && kanji < "一" 
         #hira
         cond_r1 = find( kanji, :field => "readings" )
         cond_r2 = find( kanji )
@@ -71,21 +77,32 @@ class Yad
 
     limit = request['limit'] || 10
     r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
-    
 
-    plog cond_r1,r2
     if request['p']
       #si p est def c'est un appel de xmlhttpreq...
       r2 += " OFFSET #{request['p'].to_i*limit.to_i}"
-      #p r2
       rez = $db.execute( r2 )
-      javascript = "append_html( \"#{rez.to_table}\" );"
+      content_table = rez.to_table
+      plog content_table      
+      linkify_kanjis!( content_table ) if request['links']
+      
+      javascript = "append_html( \"#{content_table.gsub( /"/, '\\"' )}\" );"
       javascript += 'finished();' if rez.size < limit
       return javascript
     else
       r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
       kanjis_table = $db.execute( r1 ).map {|i,k,r,m| ( k.a( '/kan/'+i.to_s ).td + r.td + m.td ).tr}.table
-      Iphone::voyage + kanjis_table + $db.execute( r2 ).to_table + Iphone::next_page( request.to_urlxml )
+      xml_url = request.to_urlxml
+      plog "heeeeeeyyyyyy", xml_url, request
+      dynamic_content = kanjis_table + $db.execute( r2 ).to_table
+      linkify_kanjis!( dynamic_content ) if request['links']
+
+      request[:links] = true
+      full_linked = request.to_url
+       
+      Iphone::voyage + dynamic_content +
+        Iphone::next_page( xml_url ) +
+        Iphone::yad_bar( full_linked )
     end
   end
 end

@@ -27,9 +27,11 @@ class Iphone
   
   Next_page_script =  File::read( 'next_page.js' ).script
 
-  Rad_bar_style = File::read( 'rad_bar.css' ).style
-  Rad_bar_script = File::read( 'rad_bar.js' ).script
+  Bar_style = File::read( 'bar.css' ).style
 
+  Rad_bar_script = File::read( 'rad_bar.js' ).style
+  Yad_bar_script = File::read( 'yad_bar.js' ).script
+  
   def self.glisse( url_base, haut, bas, gauche, droite )
     res = <<-EOS
 <script type="text/javascript" charset="utf-8">
@@ -59,8 +61,9 @@ EOS
 
   def self.next_page base
     res = <<-EOS
-<script type="text/javascript" charset="utf-8">
+<script type="text/javascript">
   var next_page_url_base = "#{base}";
+  var glue = "#{base.include?("?")?"&":""}";
 </script>
 <div id='add'></div>
 <div id='bottom'></div>
@@ -68,14 +71,22 @@ EOS
     res + Next_page_script
   end
 
-
   def self.rad_bar
     res = <<-EOS
-<div id="rad_bar">
+<div id="rad_bar" class="bar">
   <button onclick='javascript:document.forms["rads"].submit();'>検索</button>
   <button onclick='javascript:rad_bar_clear();'>消</button>
 </div>
 EOS
-    res + Rad_bar_style + Rad_bar_script
+    res + Bar_style + Rad_bar_script
+  end
+
+  def self.yad_bar path
+    res = <<-EOS
+<div id="yad_bar" class="bar">
+  <button onclick='javascript:window.location=\"#{path}\"'>環</button>
+</div>
+EOS
+    res + Bar_style + Yad_bar_script
   end
 end

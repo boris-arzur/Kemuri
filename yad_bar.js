@@ -17,12 +17,19 @@
     License along with Kemuri. If not, see http://www.gnu.org/licenses.
 */
 
-#rad_bar {
-  background-color: #ccccff;
-  display: table; margin-left: 0px; margin-right: 0px;
-/*  -webkit-border-radius: 7px;
-  -webkit-transition: top 0.3s ease-in-out;
-  -webkit-box-shadow: rgba(0,0,0,.5) 0px 1px 1px;*/
-  position: absolute;
-  text-align: center;
+function yad_bar_scroll_hdl(event) {
+    yad_bar_placeholder.style.top = window.innerHeight - yad_bar_scroll_offset + window.scrollY;
 }
+
+function yad_bar_clear() {
+    var chkbxz = document.forms["rads"].elements;
+    for (i = 0; i < chkbxz.length; i++)
+        chkbxz[i].checked = false;
+    return false;
+}
+
+var yad_bar_scroll_offset = 65;
+var yad_bar_placeholder = document.getElementById( "yad_bar" );
+document.addEventListener( "scroll", yad_bar_scroll_hdl, false );
+yad_bar_placeholder.style.left = 220;
+yad_bar_scroll_hdl(null);
