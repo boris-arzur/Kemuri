@@ -60,8 +60,11 @@ function voyage_update_options() {
             select.appendChild( voyage_create_option( '/' ) );
     	else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
             select.appendChild( voyage_create_option( '/yad/' ) );
-            select.appendChild( voyage_create_option( '/kan/' ) );
-            direct_commit = false;
+            /*
+              since we link to kan at the first line, I think we can remove that :
+              select.appendChild( voyage_create_option( '/kan/' ) );
+              direct_commit = false;
+            */
     	} 
         else if( dokomade.match(/^[\u4E00-\u9FAF]+$/) || dokomade.match(/^[\u3040-\u3096]+$/) ) 
             select.appendChild( voyage_create_option( '/yad/' ) );
