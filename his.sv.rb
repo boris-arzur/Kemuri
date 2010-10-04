@@ -25,6 +25,6 @@ class His
     content.sort.uniq.map {|l| 
       name = l.gsub( /^\/(.)(an|ad)\// ) {"#{$1} "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
       name.a( l ).td.tr
-    }.join.table + Iphone::voyage
+    }.table + Iphone::voyage
   end
 end
