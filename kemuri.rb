@@ -38,6 +38,7 @@ def stop_kemuri
   Process.kill( "TERM", pid.to_i )
 end
 
+daemon = true
 OptionParser.new do |opts|
   opts.banner = "Usage: kemuri.rb [options]"
 
@@ -45,43 +46,44 @@ OptionParser.new do |opts|
     $kemuri_port = p.to_i
   end
 
-  #restart
   opts.on( "-r", "--restart", "Restart kemuri." ) do |r|
     stop_kemuri rescue puts( "No instance running ? Anyway, starting Kemuri." )
   end
 
-  #stop
   opts.on( "-s", "--stop", "Stop kemuri." ) do |s|
     stop_kemuri
     Kernel.exit( 0 )
   end
+
+  opts.on( "-f", "--foreground", "Do not daemonize." ) do
+    daemon = false
+  end  
 end.parse!
 
 #And now we start the real work.
 puts( "Starting Kemuri." )
 
-#Double-forking Unix daemon initializer.
-#raise 'Must run as root' if Process.euid != 0
+if daemon
+  #Double-forking Unix daemon initializer.
+  #raise 'Must run as root' if Process.euid != 0
 
-do_fork
+  do_fork
 
-Process.setsid
-do_fork
+  Process.setsid
+  do_fork
 
-puts "Supposed daemon pid: #{Process.pid}"
+  puts "Supposed daemon pid: #{Process.pid}"
 #Well we could be running somewhere
 #else, so we don't save the pid here.
 #We want to make sure the port is available
 #first.
 
-File.umask( 0000 )
+  File.umask( 0000 )
 
-STDIN.reopen( '/dev/null' )
-STDOUT.reopen( '/dev/null', 'a' )
-STDERR.reopen( STDOUT )
-
-#Forgo all root power
-
+  STDIN.reopen( '/dev/null' )
+  STDOUT.reopen( '/dev/null', 'a' )
+  STDERR.reopen( STDOUT )
+end
 
 #start the server per se
 server_start
