@@ -60,6 +60,14 @@ class Request
       @options[i]
     end
   end
+
+  def []= i, v
+    if i.is_a?( Fixnum )
+      @path[i]= v
+    else
+      @options[i]= v
+    end
+  end
 end
 
 class String
@@ -131,8 +139,8 @@ class String
 <head>
  <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
  <meta name="viewport" content="width=device-width"/>
- <meta name="apple-mobile-web-app-capable" content="yes">
- <meta name="apple-mobile-web-app-status-bar-style" content="black">
+ <meta name="apple-mobile-web-app-capable" content="yes"/>
+ <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
  <title>煙</title>
 </head>
 <body onload="javascript:window.scrollTo(0, 1)">
