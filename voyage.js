@@ -111,3 +111,4 @@ voyage_placeholder.addEventListener( "focus", voyage_focus_input, true );
 voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
 
 voyage_placeholder.style.left = 220;
+voyage_scroll_hdl( null );
