@@ -27,6 +27,10 @@ elsif RUBY_VERSION > '1.9.0'
 else
   $KCODE = 'u' # pour le split //
 end
+
+def plog *t
+  log t.map{|i| i.inspect}.join( "\n" )
+end
  
 def log( t )
   File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
