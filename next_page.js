@@ -17,23 +17,31 @@
     License along with Kemuri. If not, see http://www.gnu.org/licenses.
 */
 
-var req;
-function next_page_scroll_hdl(event) {
-    if( window.scrollY + window.innerHeight >= next_page_limit ) {
-	req = new XMLHttpRequest();
-	var url = next_page_url_base +'p='+ next_page;
-	req.open( "GET", url , false );
-	req.onreadystatechange = function() {
-	    window.setTimeout(function () {
-		    var add = document.getElementById( 'add' );
-		    add.innerHTML= add.innerHTML + req.responseText;
-		}, 100);
-	};
-	req.send(null);
-	next_page = next_page + 1;
-    };
-};
+var end_of_content = false;
+function append_html( text ) {
+  var add = document.getElementById( 'add' );
+  add.innerHTML= add.innerHTML + text;
+}
 
-var next_page_limit = document.getElementById( 'bottom' ).offsetTop;
 var next_page = 1;
+function next_page_scroll_hdl( event ) {
+  if( (window.scrollY + window.innerHeight >= document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
+    var req = new XMLHttpRequest();
+    var url = next_page_url_base +'p='+ next_page;
+    req.open( "GET", url , false );
+    req.overrideMimeType( "text/javascript" );
+    req.send( null );
+    next_page = next_page + 1;
+    eval( req.responseText );
+    /* content is appended by the eval */
+    next_page_scroll_hdl( null );
+  };
+}
+
+function finished() {
+  end_of_content = true;
+  append_html( " --- end of content --- " );
+}
+
 document.addEventListener( "scroll", next_page_scroll_hdl, false );
+next_page_scroll_hdl( null );
