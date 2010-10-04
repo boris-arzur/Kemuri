@@ -181,19 +181,30 @@ class Array
     }
   end
  
-  def cut n
+  def cut n, start = 0
     return [] if size == 0
+
+    #real stuff begins here
     res = []
+    start %= n
+
+    #we need this to initialize
+    res << [] if start != 0
+
     each_with_index do |c,i|
-      res << [] if i % n == 0
+      res << [] if i % n == start
       res[-1] << c
     end
     res
   end
 
+  def table
+    join.table
+  end
+
   def to_table
     w = max {|l,k| l.size <=> k.size}
-    map {|l| l.to_row( w.size ).tr}.join.table
+    map {|l| l.to_row( w.size ).tr}.table
   end
 
   def to_row w

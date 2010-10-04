@@ -32,7 +32,7 @@ def kanji_table sql, req_path
     rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{kid}" ).map{|rid| rid[0]}
     rids.each{|rid| all_rids[rid] |= (rids - [rid])}
     hideable_actionable_content( 'td', kanji, req_path+kanji, rids )
-  }.cut( RowSize ).map{|row| row.join.tr}.join.table
+  }.cut( RowSize ).map{|row| row.join.tr}.table
 
   # in case we have no result :
   return Iphone::voyage if all_rids.size == 0
