@@ -63,7 +63,7 @@ class Server
         loop do
           request = ''
           protect( 'reading' ) do
-            what = IO.select( [connection], [], [], 5000 )
+            what = IO.select( [connection], [], [], 5 )
             if what.nil?
               protect('closing') do
                 log 'auto-close keep-alive'
