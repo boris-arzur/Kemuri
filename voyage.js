@@ -29,13 +29,16 @@ function voyage_focus_input( event ) {
 };
 
 function voyage_blur_input( event ) {
-    voyage_placeholder.style.opacity = "0.3";
-    do_move = true;
-    if( typeof( rad_bar_placeholder ) != "undefined" )
-        rad_bar_placeholder.style.opacity = "1.0";
-    if( typeof( yad_bar_placeholder ) != "undefined" )
-        yad_bar_placeholder.style.opacity = "0.0";
-    document.getElementById( 'voyage_btns' ).style.display = "none";
+    /* we need the timeout to be able to click on the buttons, tricky ... */
+    window.setTimeout(function() {
+      voyage_placeholder.style.opacity = "0.3";
+      do_move = true;
+      if( typeof( rad_bar_placeholder ) != "undefined" )
+          rad_bar_placeholder.style.opacity = "1.0";
+      if( typeof( yad_bar_placeholder ) != "undefined" )
+          yad_bar_placeholder.style.opacity = "1.0";
+      document.getElementById( 'voyage_btns' ).style.display = "none";
+    }, 10);
 };
 
 function voyage_create_option( nani ) {
