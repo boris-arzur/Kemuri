@@ -58,9 +58,9 @@ class Server
   def start_serving
     loop do
       connection = @listener.accept
-      plog 'new conn'
+      log 'new connection'
       Thread.new do
-        loop do
+          until connection.closed? do
           request = ''
           protect( 'reading' ) do
             what = IO.select( [connection], [], [], 5 )
@@ -70,8 +70,9 @@ class Server
                 connection.close()
                 break
               end
+            else
+              request = connection.recv_nonblock( 100000 )
             end
-            request = connection.recv_nonblock( 100000 )
           end
           
           if request == ''
