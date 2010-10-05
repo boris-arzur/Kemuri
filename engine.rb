@@ -158,7 +158,6 @@ class String
 EOP
   end
 
-
   def a url
     "<a href='#{url}'>#{self}</a>"
   end
@@ -220,13 +219,13 @@ class Array
 
   def to_table
     w = max {|l,k| l.size <=> k.size}
-    map {|l| l.to_row( w.size ).tr}.table
+    map {|l| l.to_row( w.size )}.table
   end
 
   def to_row w
     span = w/size 
     opt = span > 1 ? {'colspan' => span} : nil
-    map {|c| c.to_s.tag( 'td' , opt )}.join
+    map {|c| c.to_s.tag( 'td' , opt )}.join.tr
   end
 end
 
