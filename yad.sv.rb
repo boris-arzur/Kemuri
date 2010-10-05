@@ -84,7 +84,6 @@ class Yad
       r2 += " OFFSET #{request['p'].to_i*limit.to_i}"
       rez = $db.execute( r2 )
       content_table = rez.to_table
-      plog content_table      
       linkify_kanjis!( content_table ) if request['links']
       
       javascript = "append_html( \"#{content_table.gsub( /"/, '\\"' )}\" );"
@@ -94,7 +93,6 @@ class Yad
       r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
       kanjis_table = $db.execute( r1 ).map {|i,k,r,m| ( k.a( '/kan/'+i.to_s ).td + r.td + m.td ).tr}.table
       xml_url = request.to_urlxml
-      plog "heeeeeeyyyyyy", xml_url, request
       dynamic_content = kanjis_table + $db.execute( r2 ).to_table
       linkify_kanjis!( dynamic_content ) if request['links']
 
