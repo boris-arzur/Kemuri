@@ -19,18 +19,34 @@
 class Iphone
   @@voyage_hidden_buttons = ""
 
-  Glisse_style = File::read( 'glisse.css' ).style
-  Glisse_script = File::read( 'glisse.js' ).script
+  def self.load_content file
+    raw_content = File::read( file )
+    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
 
-  Voyage_style = File::read( 'voyage.css' ).style
-  Voyage_script = File::read( 'voyage.js' ).script
+    while clean_content.gsub!( "  ", " " ) do
+    end
+    
+    if file =~ /\.js$/
+      clean_content.script
+    elsif file =~ /\.css$/
+      clean_content.style
+    else
+      clean_content
+    end
+  end
+
+  Glisse_style = Iphone::load_content( 'glisse.css' )
+  Glisse_script = Iphone::load_content( 'glisse.js' )
+
+  Voyage_style = Iphone::load_content( 'voyage.css' )
+  Voyage_script = Iphone::load_content( 'voyage.js' )
   
-  Next_page_script =  File::read( 'next_page.js' ).script
+  Next_page_script = Iphone::load_content( 'next_page.js' )
 
-  Bar_style = File::read( 'bar.css' ).style
+  Bar_style = Iphone::load_content( 'bar.css' )
 
-  Rad_bar_script = File::read( 'rad_bar.js' ).script
-  Yad_bar_script = File::read( 'yad_bar.js' ).script
+  Rad_bar_script = Iphone::load_content( 'rad_bar.js' )
+  Yad_bar_script = Iphone::load_content( 'yad_bar.js' )
   
   def self.glisse( url_base, haut, bas, gauche, droite )
     res = <<-EOS
