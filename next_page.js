@@ -23,12 +23,14 @@ function append_html( text ) {
   add.innerHTML= add.innerHTML + text;
 }
 
+var ask_for = 'p=';
+
 var next_page = 1;
 function next_page_scroll_hdl( event ) {
   if( (window.scrollY + window.innerHeight >= document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
     var req = new XMLHttpRequest();
     //glue is defined in iphone.rb
-    var url = next_page_url_base + glue + 'p=' + next_page;
+    var url = next_page_url_base + glue + ask_for + next_page;
     req.open( "GET", url , false );
     req.overrideMimeType( "text/javascript" );
     req.send( null );
@@ -44,5 +46,12 @@ function finished() {
   append_html( " --- end of content --- " );
 }
 
+function do_pairs() {
+  ask_for = 'pairs=';
+  next_page = 0;
+  append_html( " --- pairs --- <br/>" );
+}
+
 document.addEventListener( "scroll", next_page_scroll_hdl, false );
 next_page_scroll_hdl( null );
+
