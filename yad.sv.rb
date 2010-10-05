@@ -36,16 +36,28 @@ class Yad
   end
 
   def execute request
+=begin
+  ** Code flow : **
+
+First call, from the user on his browser : /yad/#{p} where p is ascii or url-encoded utf8.
+  different fields are queried with different logical connectors, wether p is pure ascii, kana or kanjis.
+
+Second call and subsequent calls, from js' xmlhttprequest :
+  with the p= or pairs= option, queries for different pages of the sql request.
+  when all results are exhausted, we switch to pairs= if we were querying for p=
+    and we stop the ajax autoscroll if we were already querying for pairs=.
+=end
+
     to_history( '/yad/' + request[1] ) if request[1]
     entry = request[1] || 'start'
-    entry.gsub!( '%20' ,' ' )
+    entry.gsub!( '%20', ' ' )
     cond_r1 = nil
     cond_r2 = nil
 
     unless entry.include?( '%' )
-      ascii = entry
-      cond_r1 = find( ascii, :field => "meanings" )
-      cond_r2 = find( ascii, :field => "english" )
+      #entry is pure ascii
+      cond_r1 = find( entry, :field => "meanings" )
+      cond_r2 = find( entry, :field => "english" )
     else
       kanji = entry.url_utf8
       
@@ -59,19 +71,23 @@ class Yad
       else
         mode = request[2] || 'verbatim'
         kanjis = kanji.split( // )
+        
         cond_r1 = find( kanjis, :field => "kanji" )
-        cond_r2 = if mode == 'or'
-                    find( kanjis )
-                  elsif mode == 'and'
-                    find( kanjis, :logic => ' AND ' )
-                  else
-                    find( kanji )
-                  end
+        if mode == 'or'
+          cond_r2 = find( kanjis )
+        elsif mode == 'and'
+          cond_r2 = find( kanjis, :logic => ' AND ' )
+        else
+          cond_r2 = find( kanji )
+        end
 
-        if kanjis and kanjis.size > 2
-           pairs = find( kanjis.cut( 2 ).map{|pair| pair.join} )
-           alt_pairs = find( kanjis.cut( 2, 1 ).map{|pair| pair.join} )
-           cond_r2 = [cond_r2,pairs,alt_pairs].join( ' OR ' )
+        if request['pairs']
+           #dont bother if not enough kanjis
+           return 'finished();' if kanjis.size < 3
+           process_pair = lambda {|pair| pair.size == 2 ? pair.join : nil}
+           pairs = find( kanjis.cut( 2 ).map(&process_pair).compact )
+           alt_pairs = find( kanjis.cut( 2, 1 ).map(&process_pair).compact )
+           cond_r2 = [pairs,alt_pairs].join( ' OR ' )
         end
       end
     end
@@ -79,19 +95,28 @@ class Yad
     limit = request['limit'] || 10
     r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
 
-    if request['p']
-      #si p est def c'est un appel de xmlhttpreq...
-      r2 += " OFFSET #{request['p'].to_i*limit.to_i}"
+    if request.xml
+      #c'est un appel de xmlhttpreq...
+      page = request['p'] || request['pairs']
+      r2 += " OFFSET #{page.to_i*limit.to_i}"
       rez = $db.execute( r2 )
       content_table = rez.to_table
       linkify_kanjis!( content_table ) if request['links']
       
       javascript = "append_html( \"#{content_table.gsub( /"/, '\\"' )}\" );"
-      javascript += 'finished();' if rez.size < limit
+
+      if rez.size < limit
+        if request['pairs']
+          javascript += 'finished();'
+        else
+          javascript += 'do_pairs();'
+        end
+      end
+
       return javascript
     else
       r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
-      kanjis_table = $db.execute( r1 ).map {|i,k,r,m| ( k.a( '/kan/'+i.to_s ).td + r.td + m.td ).tr}.table
+      kanjis_table = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m].to_row( 3 )}.table
       xml_url = request.to_urlxml
       dynamic_content = kanjis_table + $db.execute( r2 ).to_table
       linkify_kanjis!( dynamic_content ) if request['links']
