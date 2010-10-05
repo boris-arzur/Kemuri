@@ -31,7 +31,7 @@ class Kanji
   attr_accessor :kid, :kanji, :readings, :meanings, :skip, :forder
 
   def initialize( kid_or_kanji )
-    if kid_or_kanji.is_a?( Fixnum ) or kid_or_kanji.is_num
+    if kid_or_kanji.is_num
       @kid = kid_or_kanji
       r = "SELECT kanji,readings,meanings,skip,forder FROM kanjis WHERE oid = #{@kid}"
       @kanji, @readings, @meanings, @skip, @forder = $db.get_first_row( r )
@@ -113,7 +113,7 @@ class KList
 
   def initialize( lid_or_name, name = nil )
     if !name
-      if lid_or_name.is_a?( Fixnum ) or lid_or_name.is_num
+      if lid_or_name.is_num
         @lid = lid_or_name
         r = "SELECT name FROM lists WHERE oid = #{@lid}"
         @name = $db.get_first_value( r )

@@ -72,6 +72,12 @@ class Request
   end
 end
 
+class Fixnum
+  def is_num
+    true
+  end
+end
+
 class String
   def cut n
     return [] if size == 0
