@@ -29,7 +29,7 @@ class Iphone
 
   Bar_style = File::read( 'bar.css' ).style
 
-  Rad_bar_script = File::read( 'rad_bar.js' ).style
+  Rad_bar_script = File::read( 'rad_bar.js' ).script
   Yad_bar_script = File::read( 'yad_bar.js' ).script
   
   def self.glisse( url_base, haut, bas, gauche, droite )
@@ -44,7 +44,7 @@ EOS
   end
 
   def self.add_hidden_button name, path = name
-    @@voyage_hidden_buttons = "<br/>" if @@voyage_hidden_buttons.size == 0
+    #@@voyage_hidden_buttons = "<br/>" if @@voyage_hidden_buttons.size == 0
     button = "<button onclick='javascript:window.location=\"/#{path}\"'>#{name}</button> "
     @@voyage_hidden_buttons << button
   end
@@ -63,7 +63,7 @@ EOS
     res = <<-EOS
 <script type="text/javascript">
   var next_page_url_base = "#{base}";
-  var glue = "#{base.include?("?")?"&":""}";
+  var glue = "#{(base[-1] != "?")?"&":""}";
 </script>
 <div id='add'></div>
 <div id='bottom'></div>
