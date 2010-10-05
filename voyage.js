@@ -35,7 +35,7 @@ function voyage_blur_input( event ) {
         rad_bar_placeholder.style.opacity = "1.0";
     if( typeof( yad_bar_placeholder ) != "undefined" )
         yad_bar_placeholder.style.opacity = "0.0";
-    document.getElementById( 'voyage_btns' ).style.display = "hidden";
+    document.getElementById( 'voyage_btns' ).style.display = "none";
 };
 
 function voyage_create_option( nani ) {
