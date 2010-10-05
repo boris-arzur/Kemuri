@@ -71,7 +71,9 @@ class Server
             sleep 0.1
             connection.puts
             log 'mmm'
+            next
           end
+
           log request
           request = protect('parsing') {request.parse()}
           log( request.inspect )
