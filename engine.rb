@@ -17,6 +17,7 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 require 'find'
+require 'time'
 
 class Kemuri 
   @@files = nil
@@ -32,8 +33,8 @@ class Kemuri
 end
 
 class Request
-  attr_accessor :type, :xml
-  def initialize type, path, options, post
+  attr_accessor :type, :xml, :keep_alive
+  def initialize type, path, options, post, keep_alive = false
     @path = path
     if path[0] =~ /\.xml$/
       @xml = true
@@ -42,15 +43,16 @@ class Request
     @options = options
     @type = type
     @post = post
+    @keep_alive = keep_alive
   end
 
   def to_url
-    $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
+    $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"="}.join( '&' )
   end
 
   def to_urlxml
     @path[0] += '.xml' unless @xml
-    urlxml = $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"=" }.join( '&' )
+    urlxml = $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"="}.join( '&' )
     @path[0].gsub!( /\.xml$/, '' )
     urlxml
   end
@@ -134,25 +136,25 @@ class String
       end
     }
     post_data = self.match( /^\r\n\r\n(.*)$/m )[1] rescue ''
-    Request.new( type, real_path, options_hash, post_data )
+    keep_alive = !!self.split( "\n" ).find {|l| l.strip == "Connection: keep-alive"}
+    Request.new( type, real_path, options_hash, post_data, keep_alive )
   end
 
   def to_http
-    "HTTP/1.0 200 OK\n\r\n\r" + self
+    "HTTP/1.1 200 OK\n\rDate: #{Time.new.httpdate}\n\rCache-Control: no-cache\n\rAge: 0\n\rContent-Type: text/html; charset=UTF-8\n\rContent-Length: #{self.size}\n\rKeep-Alive: timeout=15, max=100\n\rConnection: Keep-Alive\n\r\n\r#{self}\n\r\n\r"
   end
 
   def in_skel
 <<EOP
 <html>
 <head>
- <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
  <meta name="viewport" content="width=device-width"/>
  <meta name="apple-mobile-web-app-capable" content="yes"/>
  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
  <title>煙</title>
 </head>
 <body onload="javascript:window.scrollTo(0, 1)">
- #{self}
+#{self}
 </body>
 </html>
 EOP

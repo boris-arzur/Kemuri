@@ -63,7 +63,7 @@ EOS
     res = <<-EOS
 <script type="text/javascript">
   var next_page_url_base = "#{base}";
-  var glue = "#{(base[-1] != "?")?"&":""}";
+  var glue = "#{(base =~ /\?$/ )?"":"&"}";
 </script>
 <div id='add'></div>
 <div id='bottom'></div>

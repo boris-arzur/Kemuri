@@ -58,19 +58,29 @@ class Server
   def start_serving
     loop do
       connection = @listener.accept
-      
+      plog 'new conn'
       Thread.new do
-        request = ''
-        protect( 'reading' ) do
-          IO.select([connection]) 
-          request = connection.recv_nonblock(100000)
+        loop do
+          request = ''
+          protect( 'reading' ) do
+            IO.select([connection]) 
+            request = connection.recv_nonblock(100000)
+          end
+          
+          log request
+          next if request = ''
+          log 'psng'
+          request = protect('parsing') {request.parse()}
+          log( request.inspect )
+          answer = protect('executing') {Servlet::execute( request )}
+          protect('capture_part') {answer += Iphone::capture_links if request['capture']}
+          log 'btw'
+          protect('replying') {connection.print( request.xml ? answer : answer.in_skel.to_http )}
+          log 'rpy'
+          connection.flush()
+          log 'flushed'
+          connection.close() unless request.keep_alive
         end
-
-        request = protect('parsing') {request.parse()}
-        log( request.inspect )
-        answer = protect('executing') {Servlet::execute( request )}
-        protect('replying') {connection.print( request.xml ? answer : answer.in_skel.to_http )}  
-        connection.close()
       end
     end
   end
