@@ -42,12 +42,12 @@ EOP
   def redir_add( request )
     return '' unless request['add']
     lid = $db.get_first_value( 'SELECT last_insert_rowid()' )
-    add( Request.new( [nil,nil,lid,request['add']], {} ) )
+    add( Request.new( 'GET', [nil,nil,lid,request['add']], {}, nil ) )
   end
   
   def add( request )
     if request[2] == "new"
-      create( Request.new( [], :add => request[3] ) )
+      create( Request.new( 'GET', [], {:add => request[3]}, nil ) )
     elsif request[2].is_num
       if request[3].is_num
         r = "INSERT OR IGNORE INTO kan2list (kid,lid) VALUES(#{request[3]},#{request[2]});"
