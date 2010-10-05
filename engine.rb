@@ -135,13 +135,13 @@ class String
         options_hash[k] = v
       end
     }
-    post_data = self.match( /^\r\n\r\n(.*)$/m )[1] rescue ''
+    post_data = self.match( /^\r\r\n\n(.*)$/m )[1] rescue ''
     keep_alive = !!self.split( "\n" ).find {|l| l.strip == "Connection: keep-alive"}
     Request.new( type, real_path, options_hash, post_data, keep_alive )
   end
 
   def to_http
-    "HTTP/1.1 200 OK\n\rDate: #{Time.new.httpdate}\n\rCache-Control: no-cache\n\rAge: 0\n\rContent-Type: text/html; charset=UTF-8\n\rContent-Length: #{self.size}\n\rKeep-Alive: timeout=15, max=100\n\rConnection: Keep-Alive\n\r\n\r#{self}\n\r\n\r"
+    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: text/html; charset=UTF-8\r\nKeep-Alive: timeout=15, max=100\r\nConnection: Keep-Alive\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
   end
 
   def in_skel
