@@ -63,8 +63,15 @@ class Server
         loop do
           request = ''
           protect( 'reading' ) do
-            IO.select([connection]) 
-            request = connection.recv_nonblock(100000)
+            what = IO.select( [connection], [], [], 5000 )
+            if what.nil?
+              protect('closing') do
+                log 'auto-close keep-alive'
+                connection.close()
+                break
+              end
+            end
+            request = connection.recv_nonblock( 100000 )
           end
           
           if request == ''

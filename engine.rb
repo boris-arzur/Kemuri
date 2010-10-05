@@ -141,7 +141,7 @@ class String
   end
 
   def to_http
-    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: text/html; charset=UTF-8\r\nKeep-Alive: timeout=15, max=100\r\nConnection: Keep-Alive\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
+    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: text/html; charset=UTF-8\r\nKeep-Alive: timeout=5, max=100\r\nConnection: Keep-Alive\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
   end
 
   def in_skel
