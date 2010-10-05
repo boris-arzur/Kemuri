@@ -85,6 +85,15 @@ if daemon
   STDERR.reopen( STDOUT )
 end
 
-#start the server per se
-server_start
+#Start the server per se.
+#We put it in a big rescue to dump
+#some log, should something happen
+#to it.
 
+begin
+  server_start
+rescue Exception => e
+  File.open( 'error.log', 'a' ) {|f|
+    f.puts "#{Time.now} : #{e.inspect} @ #{e.backtrace.join( "\n" )}"
+  }
+end
