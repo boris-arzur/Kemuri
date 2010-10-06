@@ -47,13 +47,14 @@ class Request
   end
 
   def to_url
-    $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"="}.join( '&' )
+    $me.to_url + @path.join( '/' ) + '?' + @options.map{|k,v| v.is_a?(TrueClass) ? k : "#{k}=#{v}"}.join( '&' )
   end
 
   def to_urlxml
+    old_module = @path[0]
     @path[0] += '.xml' unless @xml
-    urlxml = $me.to_url + @path.join( '/' ) + '?' + @options.map{|e| e*"="}.join( '&' )
-    @path[0].gsub!( /\.xml$/, '' )
+    urlxml = to_url
+    @path[0] = old_module
     urlxml
   end
 
@@ -153,7 +154,7 @@ class String
  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
  <title>煙</title>
 </head>
-<body onload="javascript:window.scrollTo(0, 1)">
+<body onload="window.scrollTo(0, 1);">
 #{self}
 </body>
 </html>
