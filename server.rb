@@ -31,13 +31,15 @@ end
 def plog *t
   log t.map{|i| i.inspect}.join( "\n" )
 end
- 
+
+$log_mx = Mutex.new 
 def log( t )
-  File::open( 'server.log' , 'a' ) {|f| f.puts( t )}
+  $log_mx.synchronize{File::open( 'server.log' , 'a' ) {|f| f.puts( t )}}
 end
 
+$history_mx = Mutex.new
 def to_history( t )
-  File::open( 'history.log' , 'a' ) {|f| f.puts( t )}
+  $history_mx.synchronize{File::open( 'history.log' , 'a' ) {|f| f.puts( t )}}
 end
 
 require './engine.rb'
@@ -55,43 +57,42 @@ class Server
     log( 'Running on Ruby ' + RUBY_VERSION )
   end
 
+  def handle_connection connection
+    until connection.closed? do
+      request = protect( 'reading' ) { 
+        triggered = IO.select( [connection], [], [], 5 )
+        connection.recv_nonblock( 100000 ) if triggered and not connection.closed?
+      }
+     
+      if request.nil?
+        protect('closing') do
+          log 'Server dedicated thread : auto-close keep-alive'
+          connection.close()
+          next    
+        end
+      end
+
+      if request == ''
+        sleep 0.1
+        log 'Server dedicated thread : got empty request'
+        next
+      end
+
+      request = protect('parsing') {request.parse()}
+      log( request.inspect )
+      answer = protect('executing') {Servlet::execute( request )}
+      protect('add_capture') {answer += Iphone::capture_links if request['capture']}
+      protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
+      connection.flush()
+      connection.close() unless request.keep_alive
+    end
+  end
+
   def start_serving
     loop do
       connection = @listener.accept
-      log 'new connection'
-      Thread.new do
-          until connection.closed? do
-          request = ''
-          protect( 'reading' ) do
-            what = IO.select( [connection], [], [], 5 )
-            if what.nil?
-              protect('closing') do
-                log 'auto-close keep-alive'
-                connection.close()
-                break
-              end
-            else
-              request = connection.recv_nonblock( 100000 )
-            end
-          end
-          
-          if request == ''
-            sleep 0.1
-            connection.puts
-            log 'mmm'
-            next
-          end
-
-          log request
-          request = protect('parsing') {request.parse()}
-          log( request.inspect )
-          answer = protect('executing') {Servlet::execute( request )}
-          protect('capture_part') {answer += Iphone::capture_links if request['capture']}
-          protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
-          connection.flush()
-          connection.close() unless request.keep_alive
-        end
-      end
+      log 'Server main loop : new connection'
+      Thread.new {handle_connection( connection )}
     end
   end
   
