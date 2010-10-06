@@ -46,7 +46,8 @@ EOR
     }.join( HDelim ).table
 
     table_of_matches.tag( "form", :action => "/rad/", :method => "get",
-                          :id => "rads", :name => "rads" ) + Style + Static::voyage + Static::rad_bar
+                          :id => "rads", :name => "rads", 
+                          :onsubmit => "return validate_form();" ) + Style + Static::voyage + Static::rad_bar
   end
 
   def execute request

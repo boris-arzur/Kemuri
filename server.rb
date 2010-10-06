@@ -80,7 +80,9 @@ class Server
         request = protect('parsing') {request.parse()}
         log( request.inspect )
         answer = protect('executing') {Servlet::execute( request )}
-        protect('add_capture') {answer += Static::Capture if request['capture'] and not request.xml}
+        if not request.xml
+          answer += protect('add_capture') {request['capture'] ? Static::Capture : Static::Normal}
+        end
         protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
         connection.flush()
         connection.close() unless request.keep_alive

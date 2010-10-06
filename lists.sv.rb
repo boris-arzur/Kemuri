@@ -25,7 +25,7 @@ class Lists
       @confirm_create = ''
       add_option = request[:add] ? "+'?add=#{request[:add]}'" : ''
 <<EOP
-<input type="text" onchange="javascript:window.location='/lists/create/'+document.getElementById( 'list_name' ).value#{add_option}" id="list_name"/>
+<input type="text" onchange="go_to( '/lists/create/'+document.getElementById( 'list_name' ).value#{add_option} )" id="list_name"/>
 EOP
     elsif request[2].size > 0 && @confirm_create != request[2]
       @confirm_create = request[2]

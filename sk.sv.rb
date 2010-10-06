@@ -39,7 +39,7 @@ function catchLinks(event) {
   if( event.target.href && // user is clicking a link
       event.target.href.indexOf( 'javascript' ) == '-1' && // not clicking a radical
       document.getElementById( 'guess' ).checked ) { // we actually want to guess :)
-    window.location = event.target + '&guess';
+    go_to( event.target + '&guess' );
     return false;
   };
 

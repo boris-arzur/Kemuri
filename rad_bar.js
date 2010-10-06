@@ -28,6 +28,17 @@ function rad_bar_clear() {
     return false;
 }
 
+function validate_form() {
+  var rez = "";
+  var chkbxz = document.forms["rads"].elements;
+  for (i = 0; i < chkbxz.length; i++)
+       if( chkbxz[i].checked )
+           rez += chkbxz[i]+",";
+
+  alert( rez );
+  return false;
+}
+
 var rad_bar_scroll_offset = 65;
 var rad_bar_placeholder = document.getElementById( "rad_bar" );
 document.addEventListener( "scroll", rad_bar_scroll_hdl, false );

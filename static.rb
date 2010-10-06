@@ -21,7 +21,7 @@ class Static
 
   def self.load_content file
     raw_content = File::read( file )
-    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
+    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' )#.gsub( "\n", "" )
 
     while clean_content.gsub!( "  ", " " )
     end
@@ -49,6 +49,7 @@ class Static
   Yad_bar_script = load_content( 'yad_bar.js' )
 
   Capture = load_content( 'capture.js' )  
+  Normal = "function go_to( normal_url ){window.location = normal_url;}".script
 
   def self.glisse( url_base, haut, bas, gauche, droite )
     res = <<-EOS
@@ -62,7 +63,7 @@ EOS
   end
 
   def self.add_hidden_button name, path = name
-    button = "<button onclick='javascript:window.location=\"/#{path}\"'>#{name}</button> "
+    button = "<button onclick='go_to( \"/#{path}\" )'>#{name}</button> "
     @@voyage_hidden_buttons << button
   end
 
@@ -91,8 +92,8 @@ EOS
   def self.rad_bar
     res = <<-EOS
 <div id="rad_bar" class="bar">
-  <button onclick='javascript:document.forms["rads"].submit();'>検索</button>
-  <button onclick='javascript:rad_bar_clear();'>消</button>
+  <button onclick='document.forms["rads"].submit()'>検索</button>
+  <button onclick='rad_bar_clear()'>消</button>
 </div>
 EOS
     res + Bar_style + Rad_bar_script
@@ -101,7 +102,7 @@ EOS
   def self.yad_bar path
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='javascript:window.location=\"#{path}\"'>環</button>
+  <button onclick='go_to( \"#{path}\" )'>環</button>
 </div>
 EOS
     res + Bar_style + Yad_bar_script

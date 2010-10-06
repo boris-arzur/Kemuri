@@ -101,7 +101,7 @@ function voyage_shuppatsu() {
     var dokomade = document.getElementById( 'dokomade' ).value;
     var douyatte = document.getElementById( 'douyatte' );
     var path = douyatte.options[douyatte.selectedIndex].value; 
-    window.location = path + dokomade;
+    go_to( path + dokomade );
 };
 
 function voyage_scroll_hdl(event) {

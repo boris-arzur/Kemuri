@@ -54,7 +54,7 @@ function glisse_handle_end(event) {
   
   var end_p = document.getElementById( 'glisse' ).firstChild.data;
   if(end_p == '[X]') return false;
-  window.location = glisse_base + end_p;
+  go_to( glisse_base + end_p );
 }
 
 function glisse_scroll_hdl(event) {
