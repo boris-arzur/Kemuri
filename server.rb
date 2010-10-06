@@ -34,12 +34,16 @@ end
 
 $log_mx = Mutex.new 
 def log( t )
-  $log_mx.synchronize{File::open( 'server.log' , 'a' ) {|f| f.puts( t )}}
+  $log_mx.synchronize do 
+    File::open( 'server.log' , 'a' ) {|f| f.puts( "#{Time.new.httpdate} : #{t}" )}
+  end
 end
 
 $history_mx = Mutex.new
 def to_history( t )
-  $history_mx.synchronize{File::open( 'history.log' , 'a' ) {|f| f.puts( t )}}
+  $history_mx.synchronize do 
+    File::open( 'history.log' , 'a' ) {|f| f.puts( t )}
+  end
 end
 
 require './engine.rb'
@@ -68,23 +72,19 @@ class Server
         protect('closing') do
           log 'Server dedicated thread : auto-close keep-alive'
           connection.close()
-          next    
         end
-      end
-
-      if request == ''
-        sleep 0.1
+      elsif request == ''
         log 'Server dedicated thread : got empty request'
-        next
+        sleep 0.1
+      else
+        request = protect('parsing') {request.parse()}
+        log( request.inspect )
+        answer = protect('executing') {Servlet::execute( request )}
+        protect('add_capture') {answer += Iphone::capture_links if request['capture']}
+        protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
+        connection.flush()
+        connection.close() unless request.keep_alive
       end
-
-      request = protect('parsing') {request.parse()}
-      log( request.inspect )
-      answer = protect('executing') {Servlet::execute( request )}
-      protect('add_capture') {answer += Iphone::capture_links if request['capture']}
-      protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
-      connection.flush()
-      connection.close() unless request.keep_alive
     end
   end
 
