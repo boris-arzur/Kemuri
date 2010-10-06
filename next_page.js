@@ -18,9 +18,12 @@
 */
 
 var end_of_content = false;
-function append_html( text ) {
+function append( xml ) {
+  var newDiv = document.createElement( "div" );
+  newDiv.innerHTML= xml;
   var add = document.getElementById( 'add' );
-  add.innerHTML= add.innerHTML + text;
+  /* add.innerHTML= add.innerHTML + xml; */
+  add.appendChild( newDiv );
 }
 
 var ask_for = 'p=';
@@ -43,13 +46,13 @@ function next_page_scroll_hdl( event ) {
 
 function finished() {
   end_of_content = true;
-  append_html( " --- end of content --- " );
+  append( " --- end of content --- " );
 }
 
 function do_pairs() {
   ask_for = 'pairs=';
   next_page = 0;
-  append_html( " --- pairs --- <br/>" );
+  append( " --- pairs --- <br/>" );
 }
 
 document.addEventListener( "scroll", next_page_scroll_hdl, false );
