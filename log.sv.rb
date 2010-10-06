@@ -17,10 +17,10 @@
 
 class Log
   def initialize
-    Iphone.add_hidden_button( 'l','log' )
+    Static::add_hidden_button( 'l','log' )
   end
 
   def execute request
-    File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' ) + Iphone::voyage
+    File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' ) + Static::voyage
   end
 end

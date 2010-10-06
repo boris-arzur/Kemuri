@@ -18,7 +18,7 @@
 
 class Rad
   def initialize
-    Iphone.add_hidden_button( 'r','rad' )
+    Static::add_hidden_button( 'r','rad' )
   end
 
   RowSize = 5
@@ -46,7 +46,7 @@ EOR
     }.join( HDelim ).table
 
     table_of_matches.tag( "form", :action => "/rad/", :method => "get",
-                          :id => "rads", :name => "rads" ) + Style + Iphone::voyage + Iphone::rad_bar
+                          :id => "rads", :name => "rads" ) + Style + Static::voyage + Static::rad_bar
   end
 
   def execute request
@@ -68,6 +68,6 @@ EOR
     rad_cond = rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"} * " INTERSECT "
     r1 = "SELECT kanjis.oid,kanjis.kanji FROM (#{rad_cond}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid ORDER BY kids.kid"
 
-    kanji_table( r1, '/kan/' ) + Iphone::voyage
+    kanji_table( r1, '/kan/' ) + Static::voyage
   end
 end

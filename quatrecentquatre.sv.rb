@@ -17,6 +17,6 @@
 
 class Quatrecentquatre
   def execute request
-    "404!" + Iphone::voyage
+    "404!" + Static::voyage
   end
 end

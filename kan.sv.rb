@@ -25,7 +25,7 @@ class Kan
     kid = kanji.kid.to_i
     to_history( '/kan/' + kanji.kanji )
 
-    res = Iphone::glisse( '/kan/', kid+10, kid-10, kid-1, kid+1 ) + kanji.to_html
+    res = Static::glisse( '/kan/', kid+10, kid-10, kid-1, kid+1 ) + kanji.to_html
     
     kan_lists = kanji.lists
 
@@ -38,6 +38,6 @@ class Kan
       end
     end
 
-    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals + Iphone::voyage()
+    res + "<br/><br/><a href='/lists/add/new/#{kanji.kid}'>add to new</a><br/><br/>" + kanji.radicals + Static::voyage
   end
 end

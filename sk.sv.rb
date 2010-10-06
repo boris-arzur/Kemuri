@@ -62,12 +62,12 @@ EOS
     cond = "japanese LIKE '%#{request['first'].url_utf8}%' AND (" + $db.execute( r ).map{|k| "japanese LIKE '%#{k}%'"}.join( ' OR ' ) + ')'
     
     r = "SELECT * FROM examples WHERE #{cond}"
-    $db.execute( r ).to_table + Iphone::voyage
+    $db.execute( r ).to_table + Static::voyage
   end
 
   def execute request
     code = request[1]
-    return Help + Iphone::voyage unless code
+    return Help + Static::voyage unless code
     return guess( request ) if request['guess']
     
     code = code.split( '-' )
@@ -95,11 +95,11 @@ EOS
 
     t,a,b = code[0..2].map {|e| e.to_i}
     glisse = if stroke_count_mode
-               Iphone::glisse( '/sk/', t-1, t+1, t-1, t+1 )
+               Static::glisse( '/sk/', t-1, t+1, t-1, t+1 )
              else
-               Iphone::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
+               Static::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
              end
 
-    guess_switch + kanji_table( r1, req_path )  + Iphone::voyage + glisse 
+    guess_switch + kanji_table( r1, req_path )  + Static::voyage + glisse 
   end
 end

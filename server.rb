@@ -35,7 +35,7 @@ end
 $log_mx = Mutex.new 
 def log( t )
   $log_mx.synchronize do 
-    File::open( 'server.log' , 'a' ) {|f| f.puts( "#{Time.new.httpdate} : #{t}" )}
+    File::open( 'server.log' , 'a' ) {|f| f.puts( "#{Time.new.to_i.to_s( 36 )} : #{t}" )}
   end
 end
 
@@ -48,7 +48,7 @@ end
 
 require './engine.rb'
 require './dbs.rb'
-require './iphone.rb'
+require './static.rb'
 require './kanji_table.rb'
 
 class Server
@@ -80,7 +80,7 @@ class Server
         request = protect('parsing') {request.parse()}
         log( request.inspect )
         answer = protect('executing') {Servlet::execute( request )}
-        protect('add_capture') {answer += Iphone::capture_links if request['capture']}
+        protect('add_capture') {answer += Static::Capture if request['capture'] and not request.xml}
         protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
         connection.flush()
         connection.close() unless request.keep_alive

@@ -66,7 +66,7 @@ class Biskip
 
   def execute request
     codes = request[1]
-    return "biskip 災難 &rarr; 2-3-4+1-10-8" + Iphone::voyage unless codes
+    return "biskip 災難 &rarr; 2-3-4+1-10-8" + Static::voyage unless codes
 
     r_sk,l_sk = codes.split( '+' )
 
@@ -76,6 +76,6 @@ class Biskip
     cond = '('+r_matches+') AND ('+l_matches+')'
     
     r = "SELECT * FROM examples WHERE #{cond}"
-    $db.execute( r ).to_table + Iphone::voyage
+    $db.execute( r ).to_table + Static::voyage
   end
 end

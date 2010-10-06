@@ -35,7 +35,7 @@ def kanji_table sql, req_path
   }.cut( RowSize ).map{|row| row.join.tr}.table
 
   # in case we have no result :
-  return Iphone::voyage if all_rids.size == 0
+  return Static::voyage if all_rids.size == 0
 
   radi_cond = all_rids.keys.map{|r| "radicals.oid == #{r}"}*' OR '
 

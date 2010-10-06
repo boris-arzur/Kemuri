@@ -103,7 +103,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       content_table = rez.to_table
       linkify_kanjis!( content_table ) if request['links']
       
-      javascript = "append_html( \"#{content_table.gsub( /"/, '\\"' )}\" );"
+      javascript = "append( \"#{content_table.gsub( /"/, '\\"' )}\" );"
 
       if rez.size < limit
         if request['pairs']
@@ -124,9 +124,9 @@ Second call and subsequent calls, from js' xmlhttprequest :
       request[:links] = true
       full_linked = request.to_url
        
-      Iphone::voyage + dynamic_content +
-        Iphone::next_page( xml_url ) +
-        Iphone::yad_bar( full_linked )
+      Static::voyage + dynamic_content +
+        Static::next_page( xml_url ) +
+        Static::yad_bar( full_linked )
     end
   end
 end
