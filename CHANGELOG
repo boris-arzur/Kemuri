@@ -1,3 +1,15 @@
+1.2 :
+  Iphone web-app compatibily mode with '&capture' option.
+  Various cleanups, fixes and improvements. Support for Ruby1.9 and recent version of sqlite3-ruby.
+  Keep-alive support.
+  Proper daemon support with app launcher on Springboard, various options to change port # and behaviour.
+
+  Yad : Kanji pairs lookup for long expressions, all-linked-kanji version button.
+  Rad : radical sorting improved, a new rad_bar has emerged.
+  Voyage : r (-> /rad), l (-> /log) and h (-> /his) shortcuts added.
+  Kan : link to yad, improvement in the radicals section.
+  His : various improvements.
+
 1.1 :
   Multiskip.
   Some work on skip/stroke count + radical combinaison.

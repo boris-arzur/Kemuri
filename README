@@ -4,7 +4,8 @@
    == iphone/ipad/ipod touch.
 
 This software only works on _jailbroken_ igadgets, since it needs ruby
-& sqlite3 bindings for said language.
+& sqlite3 bindings for said language. It also works on standard hardware
+as long as the scripting langage is available.
 
 It's based on the KANJIDIC and KRADFILE projects, more
 specifically on their xml versions and includes a sql version of these
@@ -51,6 +52,17 @@ different Copyright regime :
 Upload all directory 'as-is' to your igadget & run 'ruby kemuri.rb' in
 it, it will need to stay running so it might be more convienent to
 execute 'ruby kemuri.rb & disown'.
+
+*edit 2010/10/07*
+You don't have to do that for versions >= 1.2, there is an app folder
+you can move in your /Applications, creating a SpringBoard icon, that
+does the work for you.
+
+In idevice's safari, go to
+http://127.0.0.1:8185/{amodule}/{whatever}?{options&}capture
+(e.g. /yad/start?capture ) and touch '+', 'add on home screen', to
+create a web-app.
+*edit*
 
 Direct your browser to one of the sub-module :
   - http://127.0.0.1:8185/yad for the dictionary;

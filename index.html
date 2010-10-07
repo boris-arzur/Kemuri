@@ -18,7 +18,8 @@
 <br/>&nbsp;&nbsp;&nbsp;== iphone/ipad/ipod touch.
 <br/>
 <br/>This software only works on <span class="ita">jailbroken</span> igadgets, since it needs ruby
-<br/>&amp; sqlite3 bindings for said language.
+<br/>&amp; sqlite3 bindings for said language. It also works on standard hardware
+<br/>as long as the scripting langage is available.
 <br/>
 <br/>It's based on the KANJIDIC and KRADFILE projects, more
 <br/>specifically on their xml versions and includes a sql version of these
@@ -38,7 +39,7 @@
 </div>
 
 <h2> ** Download **</h2>
-<div><a href="https://sourceforge.net/projects/kemuri/files/kemuri-1.0.tar.gz/download">Version 1.0 Here.</a></div>
+<div><a href="https://sourceforge.net/projects/kemuri/files/kemuri-1.2.tar.gz/download">Version 1.2 Here.</a></div>
 
 <h2> ** License **</h2>
 
@@ -91,6 +92,17 @@
 Upload all directory 'as-is' to your igadget &amp; run 'ruby kemuri.rb' in<br/>
 it, it will need to stay running so it might be more convenient to<br/>
 execute 'ruby kemuri.rb &amp; disown' or 'exec ruby kemuri.rb' in a 'screen' instance.<br/>
+<br/>
+&lt;edit date='2010/10/07'&gt;<br/>
+You don't have to do that for versions &gt;= 1.2, there is an .app folder<br/>
+you can push in your /Applications, creating a SpringBoard icon, that<br/>
+does the work for you.<br/>
+<br/>
+In your (or your friend's :)) idevice's safari, go to<br/> 
+http://127.0.0.1:8185/{amodule}/{whatever}?{options&amp;}capture<br/>
+(e.g. /yad/start?capture ) and touch '+', 'add on home screen', to<br/>
+create a web-app.<br/>
+&lt;/edit&gt;<br/>
 
 <br/>
 Direct your browser to one of the sub-module :
