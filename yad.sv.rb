@@ -95,8 +95,8 @@ Second call and subsequent calls, from js' xmlhttprequest :
     limit = request['limit'] || 10
     r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
 
-    if request.xml
-      #c'est un appel de xmlhttpreq...
+    if request.xml && (request['p'] || request['pairs'])
+      #c'est un appel de xmlhttpreq, pour l'ajaxage de la page.
       page = request['p'] || request['pairs']
       r2 += " OFFSET #{page.to_i*limit.to_i}"
       rez = $db.execute( r2 )

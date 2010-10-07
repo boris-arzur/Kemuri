@@ -30,7 +30,7 @@ var ask_for = 'p=';
 
 var next_page = 1;
 function next_page_scroll_hdl( event ) {
-  if( (window.scrollY + window.innerHeight >= document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
+  if( (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
     var req = new XMLHttpRequest();
     /* glue is defined in iphone.rb */
     var url = next_page_url_base + glue + ask_for + next_page;
