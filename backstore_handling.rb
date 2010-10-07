@@ -54,8 +54,10 @@ class Kanji
 
   def radicals
     r2 = "SELECT radicals.oid,radicals.radical FROM (SELECT rid FROM kan2rad WHERE kid = #{@kid}) AS rids LEFT JOIN radicals ON rids.rid = radicals.oid;"
-    inner_content = $db.execute( r2 ).map {|i,e| "<input type='checkbox' name='rad' value='#{i}'/>" + e.a( "/rad/#{i}" )}*"<br/>"
-    (inner_content + "<br/><input type='submit' value='検索'/>" ).tag( "form", :action => "/rad/", :method => "get" )
+    inner_content = $db.execute( r2 ).map {|i,e|
+      "<input type='checkbox' name='rad' value='#{i}'/>#{e.a("/rad/#{i}")}".td(" style='font-size:3em'").tr
+    }.table
+    inner_content.tag( "form", :name => "rads" ) + Static::rad_bar
   end
 
   def to_row

@@ -174,8 +174,8 @@ EOP
     "<script type='text/javascript'>#{self}</script>"
   end
 
-  def td
-    "<td>#{self}</td>"
+  def td opts=''
+    "<td#{opts}>#{self}</td>"
   end
   alias :to_row :td  
 

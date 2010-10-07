@@ -34,7 +34,7 @@ SELECT radicals.oid,radicals.radical,kanjis.strokes
 EOR
 
   def to_checkbox( radical, rid )
-    "<input type='checkbox' name='rad' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
+    "<input type='checkbox' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
   end
 
   def select_rads
@@ -45,9 +45,7 @@ EOR
       chkbxz.cut( RowSize ).map{|row| row.join.tr}.join
     }.join( HDelim ).table
 
-    table_of_matches.tag( "form", :action => "/rad/", :method => "get",
-                          :id => "rads", :name => "rads", 
-                          :onsubmit => "return validate_form();" ) + Style + Static::voyage + Static::rad_bar
+    table_of_matches.tag( "form", :name => "rads" ) + Style + Static::voyage + Static::rad_bar
   end
 
   def execute request

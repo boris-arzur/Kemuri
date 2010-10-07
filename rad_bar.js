@@ -28,15 +28,15 @@ function rad_bar_clear() {
     return false;
 }
 
-function validate_form() {
-  var rez = "";
+function send_form() {
+  var rads = new Array();
   var chkbxz = document.forms["rads"].elements;
+
   for (i = 0; i < chkbxz.length; i++)
        if( chkbxz[i].checked )
-           rez += chkbxz[i]+",";
+           rads.unshift( chkbxz[i].value );
 
-  alert( rez );
-  return false;
+  go_to( "/rad/?rad="+rads.join( "&rad=" ) );
 }
 
 var rad_bar_scroll_offset = 65;

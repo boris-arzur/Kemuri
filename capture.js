@@ -20,11 +20,10 @@
 function go_to( normal_url ) {
     var xml_url = normal_url.split( "/" );
 
-    if( normal_url.match( /^\// ) && !xml_url[0].match( /xml$/ ) )
-       xml_url[0] = xml_url[0] + '.xml';
+    if( normal_url.match( /^\// ) && !xml_url[1].match( /xml$/ ) )
+       xml_url[1] = xml_url[1] + '.xml';
     else if( !xml_url[3].match( /xml$/ ) )
         xml_url[3] = xml_url[3] + '.xml';
-
     var req = new XMLHttpRequest();
     req.open( "GET", xml_url.join( "/" ), false );
     req.overrideMimeType( "text/html" );

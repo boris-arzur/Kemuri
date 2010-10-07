@@ -21,7 +21,7 @@ class Static
 
   def self.load_content file
     raw_content = File::read( file )
-    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' )#.gsub( "\n", "" )
+    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
 
     while clean_content.gsub!( "  ", " " )
     end
@@ -92,7 +92,7 @@ EOS
   def self.rad_bar
     res = <<-EOS
 <div id="rad_bar" class="bar">
-  <button onclick='document.forms["rads"].submit()'>検索</button>
+  <button onclick='send_form()'>検索</button>
   <button onclick='rad_bar_clear()'>消</button>
 </div>
 EOS
