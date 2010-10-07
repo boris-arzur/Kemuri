@@ -81,7 +81,9 @@ class Server
         log( request.inspect )
         answer = protect('executing') {Servlet::execute( request )}
         if not request.xml
-          answer += protect('add_capture') {request['capture'] ? Static::Capture : Static::Normal}
+          protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
+        elsif request['capture']
+          answer += Static::Capture
         end
         protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
         connection.flush()

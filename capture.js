@@ -28,7 +28,11 @@ function go_to( normal_url ) {
     req.open( "GET", xml_url.join( "/" ), false );
     req.overrideMimeType( "text/html" );
     req.send( null );
-    document.getElementsByTagName('body')[0].innerHTML= req.responseText;
+    var body = document.getElementsByTagName('body')[0];
+    body.parentNode.removeChild( body );
+    document.write( "<html><body>" ); 
+    document.write( req.responseText );
+    document.write( "</body></html>" );
     register_click_handlers();
 }
 
