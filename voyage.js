@@ -17,7 +17,6 @@
     License along with Kemuri. If not, see http://www.gnu.org/licenses.
 */
 
-var do_move = true;
 function voyage_focus_input( event ) {
     voyage_placeholder.style.opacity = "1.0";
     do_move = false;
@@ -110,6 +109,7 @@ function voyage_scroll_hdl(event) {
   }
 };
 
+var do_move = true;
 var voyage_scroll_offset = 40;
 var voyage_placeholder = document.getElementById( 'voyage' );
 document.addEventListener( "scroll", voyage_scroll_hdl, false );
@@ -118,4 +118,4 @@ voyage_placeholder.addEventListener( "focus", voyage_focus_input, true );
 voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
 
 voyage_placeholder.style.left = 220;
-voyage_scroll_hdl( null );
+window.setTimeout(function(){voyage_scroll_hdl( null );}, 5);
