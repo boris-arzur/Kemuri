@@ -119,7 +119,8 @@ class String
   end
 
   def parse
-    raw_path = self.split( "\n" ).find {|l| l =~ /^([^ ]+) /}
+    splited_req = self.split( "\n" )
+    raw_path = splited_req.find {|l| l =~ /^([^ ]+) /}
     type = $1
     raw_path = raw_path.match( /^#{type} ([^\s]*)\s/ )[1]
     real_path,options = raw_path.split( '?' )
@@ -137,12 +138,13 @@ class String
       end
     }
     post_data = self.match( /^\r\r\n\n(.*)$/m )[1] rescue ''
-    keep_alive = !!self.split( "\n" ).find {|l| l.strip == "Connection: keep-alive"}
+    keep_alive = !!splited_req[0].strip =~ /HTTP\/1.1$/
+    keep_alive ||= !!splited_req.find {|l| l.strip == "Connection: keep-alive"}
     Request.new( type, real_path, options_hash, post_data, keep_alive )
   end
 
   def to_http
-    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: text/html; charset=UTF-8\r\nKeep-Alive: timeout=5, max=100\r\nConnection: Keep-Alive\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
+    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: text/html; charset=UTF-8\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
   end
 
   def in_skel

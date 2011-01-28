@@ -18,6 +18,7 @@
 require 'thread'
 require 'socket'
 require 'yaml'
+#require 'ruby-prof'
 
 if RUBY_VERSION == '1.9.0'
   #print Encoding.default_external
@@ -33,16 +34,34 @@ def plog *t
 end
 
 $log_mx = Mutex.new 
+$log_bf = []
 def log( t )
-  $log_mx.synchronize do 
-    File::open( 'server.log' , 'a' ) {|f| f.puts( "#{Time.new.to_i.to_s( 36 )} : #{t}" )}
+  $log_mx.synchronize do
+    $log_bf << "#{Time.new.to_i.to_s( 36 )} : #{t}"
+  end
+end
+
+def flush_logs
+  return if $log_bf.size < 5
+  $log_mx.synchronize do
+    File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
+    $log_bf = []
   end
 end
 
 $history_mx = Mutex.new
+$history_bf = []
 def to_history( t )
-  $history_mx.synchronize do 
-    File::open( 'history.log' , 'a' ) {|f| f.puts( t )}
+  $history_mx.synchronize do
+    $history_bf << t
+  end
+end
+
+def flush_history
+  return if $history_bf.size < 5
+  $history_mx.synchronize do
+    File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
+    $history_bf = []
   end
 end
 
@@ -74,8 +93,10 @@ class Server
           connection.close()
         end
       elsif request == ''
-        log 'Server dedicated thread : got empty request'
-        sleep 0.1
+        log 'Server dedicated thread : empty stuff, closing.'
+	protect('replying') { connection.puts( "Connection: close\r\n" ) }
+	connection.flush()
+	connection.close()
       else
         request = protect('parsing') {request.parse()}
         log( request.inspect )
@@ -90,6 +111,7 @@ class Server
         connection.close() unless request.keep_alive
       end
     end
+    log "out of thread."
   end
 
   def start_serving
@@ -135,5 +157,6 @@ def server_start
   Servlet::register_all
   $me = Server.new
   File.open( "kemuri.pid", "w" ) {|f| f.print( Process.pid )}
+  Thread.new{ loop{ sleep 10; flush_logs; flush_history } }
   $me.start_serving
 end
