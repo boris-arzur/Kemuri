@@ -81,6 +81,7 @@ class Server
   end
 
   def handle_connection connection
+    my_id = Thread.current.object_id.to_s( 36 )
     until connection.closed? do
       request = protect( 'reading' ) { 
         triggered = IO.select( [connection], [], [], 5 )
@@ -89,17 +90,17 @@ class Server
      
       if request.nil?
         protect('closing') do
-          log 'Server dedicated thread : auto-close keep-alive'
+          log "#{my_id} : auto-close keep-alive"
           connection.close()
         end
       elsif request == ''
-        log 'Server dedicated thread : empty stuff, closing.'
+        log "#{my_id} : empty stuff, closing."
 	protect('replying') { connection.puts( "Connection: close\r\n" ) }
 	connection.flush()
 	connection.close()
       else
         request = protect('parsing') {request.parse()}
-        log( request.inspect )
+        log( "#{my_id} : processing : #{request.inspect}" )
         answer = protect('executing') {Servlet::execute( request )}
         if not request.xml
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
@@ -111,7 +112,7 @@ class Server
         connection.close() unless request.keep_alive
       end
     end
-    log "out of thread."
+    log "#{my_id} out."
   end
 
   def start_serving
