@@ -18,12 +18,25 @@
 class His
   def initialize
     Static::add_hidden_button( 'h','his' )
+    @last_visit = Time.now
   end
 
   def execute request
-    history = File::read( 'history.log' ).split( "\n" )
     content = Hash.new do |h,k| h[k] = 0 end
-    history.each do |l| content[l] += 1 end
+    limit = 100
+    now = Time.now
+
+    if now - @last_visit < 5
+      limit = 1000000
+    else
+      message 'speedup : partial history processed'
+    end
+
+    @last_visit = now
+
+    history_file = `tail -n #{limit} history.log`.split( "\n" ).each do |l|
+      content[l] += 1
+    end
 
     content.map {|l,num|
       name = l.gsub( /^\/(kan|yad)\// ) {"#{$1}: "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}

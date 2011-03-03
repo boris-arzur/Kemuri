@@ -112,10 +112,10 @@ EOS
 
   def self.search
     res = <<-EOS
-<div class="bar">
+<div id="search_bar" class="bar">
   <button onclick='searchPrompt()'>検索</button>
 </div>
 EOS
-    res + Bar_style +  Search_script
+    res + Bar_style + Search_script
   end
 end

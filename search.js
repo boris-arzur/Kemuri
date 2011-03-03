@@ -88,3 +88,13 @@ function searchPrompt() {
   
   return true;
 };
+
+function search_bar_scroll_hdl(event) {
+  search_bar_placeholder.style.top = window.innerHeight - search_bar_scroll_offset + window.scrollY;
+}
+
+var search_bar_scroll_offset = 65;
+var search_bar_placeholder = document.getElementById( "search_bar" );
+document.addEventListener( "scroll", search_bar_scroll_hdl, false );
+search_bar_placeholder.style.left = 220;
+search_bar_scroll_hdl(null);

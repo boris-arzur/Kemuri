@@ -33,7 +33,7 @@ def plog *t
   log t.map{|i| i.inspect}.join( "\n" )
 end
 
-$log_mx = Mutex.new 
+$log_mx = Mutex.new
 $log_bf = []
 
 $history_mx = Mutex.new
@@ -45,6 +45,10 @@ end
 
 def to_history( t )
   $history_mx.synchronize do $history_bf << t end
+end
+
+def message( m )
+	$me.message( m )
 end
 
 require './engine.rb'
@@ -67,11 +71,11 @@ class Server
   def handle_connection connection
     my_id = Thread.current.object_id.to_s( 36 )
     until connection.closed? do
-      request = protect( 'reading' ) { 
+      request = protect( 'reading' ) {
         triggered = IO.select( [connection], [], [], 5 )
         connection.recv_nonblock( 100000 ) if triggered and not connection.closed?
       }
-     
+
       if request.nil?
         protect('closing') do
           log "#{my_id} : auto-close keep-alive"
@@ -90,7 +94,7 @@ class Server
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
           @message_mutex.synchronize do
             if @message
-              answer = "<div style='color:red'>#{message}</div>" + answer
+              answer = "<div style='color:red'>#{@message}</div>" + answer
               @message = false
             end
           end
@@ -113,34 +117,28 @@ class Server
       Thread.new {handle_connection( connection )}
     end
   end
-  
+
   def start_flusher
-    Thread.new do 
+    Thread.new do
       loop do
         begin
           sleep 10
-  if $log_bf.size > 5
-    $log_mx.synchronize do
-      File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
-      $log_bf = []
-    end
-  end
-
-  if $history_bf.size > 0
-    $history_mx.synchronize do
-      File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
-      $history_bf = []
-    end
-  end
-        rescue Exception => e
-          msg = "#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
-          @message_mutex.synchronize do
-            if @message
-              @message += "<br/>" + msg
-            else
-              @message = msg
+          if $log_bf.size > 5
+            $log_mx.synchronize do
+              File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
+              $log_bf = []
             end
           end
+
+          if $history_bf.size > 0
+            $history_mx.synchronize do
+              File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
+              $history_bf = []
+            end
+          end
+        rescue Exception => e
+          msg = "#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
+					message msg
         end
       end
     end
@@ -148,6 +146,17 @@ class Server
 
   def to_url
     "http://#{@listen}:#{@port}/"
+  end
+
+	def message( m )
+		m = "/!\\ #{m} /!\\"
+    @message_mutex.synchronize do
+      if @message
+        @message += "<br/>#{m}"
+      else
+        @message = m
+      end
+    end
   end
 end
 
