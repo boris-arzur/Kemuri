@@ -48,6 +48,8 @@ class Static
   Rad_bar_script = load_content( 'rad_bar.js' )
   Yad_bar_script = load_content( 'yad_bar.js' )
 
+  Search_script = load_content( 'search.js' )
+
   Capture = load_content( 'capture.js' )  
   Normal = "function go_to( normal_url ){window.location = normal_url;}".script
 
@@ -106,5 +108,14 @@ EOS
 </div>
 EOS
     res + Bar_style + Yad_bar_script
+  end
+
+  def self.search
+    res = <<-EOS
+<div class="bar">
+  <button onclick='searchPrompt()'>検索</button>
+</div>
+EOS
+    res + Bar_style +  Search_script
   end
 end

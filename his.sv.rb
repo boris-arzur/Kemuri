@@ -21,10 +21,14 @@ class His
   end
 
   def execute request
-    content = File::read( 'history.log' ).split( "\n" )
-    content.sort.uniq.map {|l| 
-      name = l.gsub( /^\/(.)(an|ad)\// ) {"#{$1} "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
+    history = File::read( 'history.log' ).split( "\n" )
+    content = Hash.new do |h,k| h[k] = 0 end
+    history.each do |l| content[l] += 1 end
+
+    content.map {|l,num|
+      name = l.gsub( /^\/(kan|yad)\// ) {"#{$1}: "}.gsub( /%E.%..%../ ) {|kanji| kanji.url_utf8}
+      name += " # = #{num}"
       name.a( l ).td.tr
-    }.table + Static::voyage
+    }.reverse.table + Static::voyage + Static::search
   end
 end
