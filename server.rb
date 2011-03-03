@@ -35,34 +35,16 @@ end
 
 $log_mx = Mutex.new 
 $log_bf = []
-def log( t )
-  $log_mx.synchronize do
-    $log_bf << "#{Time.new.to_i.to_s( 36 )} : #{t}"
-  end
-end
-
-def flush_logs
-  return if $log_bf.size < 5
-  $log_mx.synchronize do
-    File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
-    $log_bf = []
-  end
-end
 
 $history_mx = Mutex.new
 $history_bf = []
-def to_history( t )
-  $history_mx.synchronize do
-    $history_bf << t
-  end
+
+def log( t )
+  $log_mx.synchronize do $log_bf << "[@#{Time.new.to_i.to_s( 36 )}] #{t}" end
 end
 
-def flush_history
-  return if $history_bf.size < 5
-  $history_mx.synchronize do
-    File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
-    $history_bf = []
-  end
+def to_history( t )
+  $history_mx.synchronize do $history_bf << t end
 end
 
 require './engine.rb'
@@ -77,6 +59,8 @@ class Server
     @listen = '127.0.0.1'
 
     @listener = ::TCPServer.new( @listen, @port )
+    @message_mutex = Mutex.new
+    @message = false
     log( 'Running on Ruby ' + RUBY_VERSION )
   end
 
@@ -95,18 +79,25 @@ class Server
         end
       elsif request == ''
         log "#{my_id} : empty stuff, closing."
-	protect('replying') { connection.puts( "Connection: close\r\n" ) }
-	connection.flush()
-	connection.close()
+        protect('replying') { connection.puts( "Connection: close\r\n" ) }
+        connection.flush()
+        connection.close()
       else
         request = protect('parsing') {request.parse()}
         log( "#{my_id} : processing : #{request.inspect}" )
         answer = protect('executing') {Servlet::execute( request )}
         if not request.xml
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
+          @message_mutex.synchronize do
+            if @message
+              answer = "<div style='color:red'>#{message}</div>" + answer
+              @message = false
+            end
+          end
         elsif request['capture']
           answer += Static::Capture
         end
+
         protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
         connection.flush()
         connection.close() unless request.keep_alive
@@ -123,6 +114,38 @@ class Server
     end
   end
   
+  def start_flusher
+    Thread.new do 
+      loop do
+        begin
+          sleep 10
+  if $log_bf.size > 5
+    $log_mx.synchronize do
+      File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
+      $log_bf = []
+    end
+  end
+
+  if $history_bf.size > 0
+    $history_mx.synchronize do
+      File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
+      $history_bf = []
+    end
+  end
+        rescue Exception => e
+          msg = "#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
+          @message_mutex.synchronize do
+            if @message
+              @message += "<br/>" + msg
+            else
+              @message = msg
+            end
+          end
+        end
+      end
+    end
+  end
+
   def to_url
     "http://#{@listen}:#{@port}/"
   end
@@ -154,10 +177,10 @@ class Servlet
 end
 
 def server_start
-  `rm server.log`
+  `rm server.log;touch server.log`
   Servlet::register_all
   $me = Server.new
   File.open( "kemuri.pid", "w" ) {|f| f.print( Process.pid )}
-  Thread.new{ loop{ sleep 10; flush_logs; flush_history } }
+  $me.start_flusher
   $me.start_serving
 end

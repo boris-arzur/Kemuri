@@ -18,9 +18,19 @@
 class Log
   def initialize
     Static::add_hidden_button( 'l','log' )
+    @last_visit = Time.now
   end
 
   def execute request
-    File::read( 'server.log' ).escape.gsub( /\n/ , '<br/>' ) + Static::voyage
+    now = Time.now
+    content = $log_bf * "\n"
+
+    if now - @last_visit < 5
+      content += "\n--- filed logs ---\n\n"
+      content += File::read( 'server.log' )
+    end
+
+    @last_visit = now
+    content.escape.gsub( /\n/ , '<br/>' ) + Static::voyage
   end
 end
