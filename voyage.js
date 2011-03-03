@@ -64,25 +64,25 @@ function voyage_update_options() {
             select.appendChild( voyage_create_option( '/sk/' ) );
         else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )
             select.appendChild( voyage_create_option( '/' ) );
-    	else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
+      else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
             select.appendChild( voyage_create_option( '/yad/' ) );
             /*
               since we link to kan at the first line, I think we can remove that :
               select.appendChild( voyage_create_option( '/kan/' ) );
               direct_commit = false;
             */
-    	} 
+      } 
         else if( dokomade.match(/^[\u4E00-\u9FAF]+$/) || dokomade.match(/^[\u3040-\u3096]+$/) ) 
             select.appendChild( voyage_create_option( '/yad/' ) );
-    	else select.appendChild( voyage_create_option( '/yad/' ) );
-    		
+      else select.appendChild( voyage_create_option( '/yad/' ) );
+        
         select.firstChild.setAttribute( 'selected', 'selected' );
         select.setAttribute( 'onchange', 'javascript:voyage_shuppatsu()' );
         voyage_placeholder.appendChild( select );
-    	
+      
         if( direct_commit )
             voyage_shuppatsu();
-    	else {
+      else {
             var go_btn = document.createElement( 'input' );
             go_btn.setAttribute( 'type', 'button' );
             go_btn.setAttribute( 'value', '出発' );
@@ -90,7 +90,7 @@ function voyage_update_options() {
             voyage_placeholder.appendChild( go_btn );
             voyage_scroll_offset = 70;
             voyage_scroll_hdl( null );
-    	}
+      }
    } else {
         voyage_blur_input( null );
    }
