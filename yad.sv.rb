@@ -48,7 +48,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
     and we stop the ajax autoscroll if we were already querying for pairs=.
 =end
 
-    to_history( '/yad/' + request[1] ) if request[1]
+    to_history( '/yad/' + request[1] ) if request[1] and not request.xml
     entry = request[1] || 'start'
     entry.gsub!( '%20', ' ' )
     cond_r1 = nil
