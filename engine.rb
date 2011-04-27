@@ -46,14 +46,18 @@ class Request
     @keep_alive = keep_alive
   end
 
-  def to_url
-    $me.to_url + @path.join( '/' ) + '?' + @options.map{|k,v| v.is_a?(TrueClass) ? k : "#{k}=#{v}"}.join( '&' )
+  def to_url(mod_options = {})
+    saved_options = @options.clone
+		@options.merge!( mod_options )
+    url = $me.to_url + @path.join( '/' ) + '?' + @options.map{|k,v| v.is_a?(TrueClass) ? k : "#{k}=#{v}"}.join( '&' )
+		@options = saved_options
+		url
   end
 
-  def to_urlxml
+  def to_urlxml(mod_options = {})
     old_module = @path[0]
     @path[0] += '.xml' unless @xml
-    urlxml = to_url
+    urlxml = to_url(mod_options)
     @path[0] = old_module
     urlxml
   end

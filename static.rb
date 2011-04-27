@@ -104,7 +104,8 @@ EOS
   def self.yad_bar path
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='go_to( \"#{path}\" )'>環</button>
+  <button onclick='go_to( \"#{path.to_url( :links => true )}\" )'>環</button>
+	<button onclick='ajax_get( \"#{path.to_urlxml( :kb => true )}\" )'>kanji breakdown</button>
 </div>
 EOS
     res + Bar_style + Yad_bar_script

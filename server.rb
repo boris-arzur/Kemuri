@@ -84,7 +84,6 @@ class Server
         end
       elsif request == ''
         log "#{my_id} : empty stuff, closing."
-				log "trying to get more" + connection.recv_nonblock( 100000 )
         protect('replying') { connection.puts( "Connection: close\r\n" ) }
         connection.flush()
         connection.close()

@@ -1,4 +1,4 @@
-#coding:utf-8
+# encoding: UTF-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -18,9 +18,6 @@
 
 class Yad
   def find what, options = {}
-    options[:field] ||= 'japanese'
-    options[:logic] ||= ' OR '
-
     if what.is_a?( Array )
       what.map{|k| "#{options[:field]} LIKE '%#{k}%'"}.join( options[:logic] )
     else
@@ -47,8 +44,11 @@ Second call and subsequent calls, from js' xmlhttprequest :
   when all results are exhausted, we switch to pairs= if we were querying for p=
     and we stop the ajax autoscroll if we were already querying for pairs=.
 =end
-
-    to_history( '/yad/' + request[1] ) if request[1] and not request.xml
+    if request[1] and not request.xml
+      to_history( '/yad/' + request[1] )
+			log 'we logged (in history.log) : ' + request.inspect
+		end
+		
     entry = request[1] || 'start'
     entry.gsub!( '%20', ' ' )
     cond_r1 = nil
@@ -67,38 +67,35 @@ Second call and subsequent calls, from js' xmlhttprequest :
       if kanji >= "ぁ" && kanji < "一" 
         #hira
         cond_r1 = find( kanji, :field => "readings" )
-        cond_r2 = find( kanji )
+        cond_r2 = find( kanji, :field => "japanese" )
       else
-        mode = request[2] || 'verbatim'
         kanjis = kanji.split( // )
-        
-        cond_r1 = find( kanjis, :field => "kanji" )
-        if mode == 'or'
-          cond_r2 = find( kanjis )
-        elsif mode == 'and'
-          cond_r2 = find( kanjis, :logic => ' AND ' )
-        else
-          cond_r2 = find( kanji )
-        end
-
         if request['pairs']
            #dont bother if not enough kanjis
            return 'finished();' if kanjis.size < 3
-           process_pair = lambda {|pair| pair.size == 2 ? pair.join : nil}
-           pairs = find( kanjis.cut( 2 ).map(&process_pair).compact )
-           alt_pairs = find( kanjis.cut( 2, 1 ).map(&process_pair).compact )
-           cond_r2 = [pairs,alt_pairs].join( ' OR ' )
+					 start = request['alt'] ? 1 : 0
+           cond_r2 = find( kanjis.cut( 2, start ).find_all {|p| p.size == 2}, :field => "japanese" )
+			  else
+          cond_r1 = find( kanjis, :field => "kanji", :logic => "OR" )
+          cond_r2 = find( kanji, :field => "japanese" )
         end
       end
     end
 
     limit = request['limit'] || 10
+    r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
     r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
-
-    if request.xml && (request['p'] || request['pairs'])
-      #c'est un appel de xmlhttpreq, pour l'ajaxage de la page.
+		
+		if request.xml && request['kb']
+      #on demande le kanji breakdown
+			log "exe : #{r1}"
+      rez = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m].to_row( 3 )}.table
+			return "append( \"#{rez.gsub( /"/, '\\"' )}\" );"
+    elsif request.xml && (request['p'] || request['pairs']) 
+      #c'est un appel de xmlhttpreq, par ajax (requete d'une nouvelle page).
       page = request['p'] || request['pairs']
       r2 += " OFFSET #{page.to_i*limit.to_i}"
+			log "exe : #{r2}"
       rez = $db.execute( r2 )
       content_table = rez.to_table
       linkify_kanjis!( content_table ) if request['links']
@@ -115,18 +112,22 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       return javascript
     else
-      r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
-      kanjis_table = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m].to_row( 3 )}.table
+			log "exe : #{r2}"
+      dynamic_content = $db.execute( r2 )
+			if dynamic_content.size == 0
+			  log "exe : #{r1}"
+        dynamic_content = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m].to_row( 3 )}.table
+			else
+				dynamic_content = dynamic_content.to_table
+			end
+
       xml_url = request.to_urlxml
-      dynamic_content = kanjis_table + $db.execute( r2 ).to_table
       linkify_kanjis!( dynamic_content ) if request['links']
 
-      request[:links] = true
-      full_linked = request.to_url
-       
+      log "cck this : " + xml_url 
       Static::voyage + dynamic_content +
         Static::next_page( xml_url ) +
-        Static::yad_bar( full_linked )
+        Static::yad_bar( request )
     end
   end
 end
