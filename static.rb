@@ -53,10 +53,10 @@ class Static
   Capture = load_content( 'capture.js' )  
   Normal = "function go_to( normal_url ){window.location = normal_url;}".script
 
-  def self.glisse( url_base, haut, bas, gauche, droite )
+  def self.glisse( url_base, haut, bas, gauche, droite, postfix )
     res = <<-EOS
 <script type="text/javascript" charset="utf-8">
-  function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}'); };
+  function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}', '#{postfix}' ); };
   window.addEventListener("load", load, false);
 </script>
 <div id="glisse"></div>

@@ -52,9 +52,9 @@ function glisse_handle_move(event) {
 function glisse_handle_end(event) {
   event.preventDefault();
   
-  var end_p = document.getElementById( 'glisse' ).firstChild.data;
+  var end_p = document.getElementById('glisse').firstChild.data;
   if(end_p == '[X]') return false;
-  go_to( glisse_base + end_p );
+  go_to(glisse_base + end_p + glisse_post);
 }
 
 function glisse_scroll_hdl(event) {
@@ -71,9 +71,9 @@ function show(o)
   alert( res );
 }
 
-var glisse_base, glisse_left, glisse_right, glisse_up, glisse_down;
+var glisse_base, glisse_left, glisse_right, glisse_up, glisse_down, glisse_post;
 
-function glisse(base, up, down, left, right)
+function glisse(base, up, down, left, right, post)
 {
   var main = document.getElementById( 'glisse' );
   main.addEventListener("touchstart", glisse_handle_start, false);
@@ -88,6 +88,7 @@ function glisse(base, up, down, left, right)
   glisse_right = right;
   glisse_up = up;
   glisse_down = down;
+	glisse_post = post;
 };
 
 
