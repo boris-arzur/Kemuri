@@ -37,7 +37,7 @@ function voyage_blur_input( event ) {
       if( typeof( yad_bar_placeholder ) != "undefined" )
           yad_bar_placeholder.style.opacity = "1.0";
       document.getElementById( 'voyage_btns' ).style.display = "none";
-    }, 10);
+    }, 30);
 };
 
 function voyage_create_option( nani ) {
@@ -118,4 +118,4 @@ voyage_placeholder.addEventListener( "focus", voyage_focus_input, true );
 voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
 
 voyage_placeholder.style.left = 220;
-window.setTimeout(function(){voyage_scroll_hdl( null );}, 5);
+window.setTimeout(function(){voyage_scroll_hdl( null );}, 50);

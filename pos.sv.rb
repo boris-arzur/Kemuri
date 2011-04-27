@@ -19,7 +19,7 @@ class Pos
   def execute request
     update = (request[1] || 1800000).to_i
 
-    ip = `sudo ifconfig`.split( "\n" ).find {|e| e =~ /inet/ && e !~ /127.0.0.1/ }.split[1]
+    #ip = `sudo ifconfig`.split( "\n" ).find {|e| e =~ /inet/ && e !~ /127.0.0.1/ }.split[1]
     #ip = '127.0.0.1'
 <<EOS
 <script type="text/javascript">
@@ -28,10 +28,7 @@ class Pos
      function success(position) {
        var lat = position.coords.latitude;
        var long = position.coords.longitude;
-       var pos = "https://your_url/path/null?lat=" +lat+ "&long=" +long+ "&ip=#{ip}";
-       var req = new XMLHttpRequest();
-       req.open("GET", pos, false);
-       req.send(null);
+       document.getElementById( 'main' ).innerHtml+= "<br/>lg:"+long+"lt:"+lat;
      };
      
      function error(error) {
@@ -45,6 +42,7 @@ class Pos
   window.setInterval( update_coords, #{update} );
 })();
 </script>
+<div id='main'></div>
 EOS
   end
 end
