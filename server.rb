@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -83,6 +84,7 @@ class Server
         end
       elsif request == ''
         log "#{my_id} : empty stuff, closing."
+				log "trying to get more" + connection.recv_nonblock( 100000 )
         protect('replying') { connection.puts( "Connection: close\r\n" ) }
         connection.flush()
         connection.close()
@@ -125,7 +127,9 @@ class Server
           sleep 10
           if $log_bf.size > 5
             $log_mx.synchronize do
-              File::open( 'server.log' , 'a' ) {|f| f.puts( $log_bf * "\n" )}
+							#FIX
+							log_buf_content = ($log_bf * "\n").force_encoding('UTF-8')
+              File::open( 'server.log' , 'a' ) {|f| f.puts( log_buf_content )}
               $log_bf = []
             end
           end
@@ -137,7 +141,7 @@ class Server
             end
           end
         rescue Exception => e
-          msg = "#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
+					msg = "#{"\n".encoding+' --  '+$log_bf.inspect}#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
 					message msg
         end
       end

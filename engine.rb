@@ -1,4 +1,4 @@
-#coding:utf-8
+# encoding: UTF-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -238,7 +238,8 @@ def protect name
   begin
     return yield
   rescue Exception => e
-    log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}"
+		# fix some pb, with new version of ruby and ol' sqlite3
+    log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}".force_encoding('UTF-8')
     "503. internal error.".a( '/log' )
   end
 end

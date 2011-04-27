@@ -1,4 +1,4 @@
-#coding:utf-8
+# encoding: UTF-8
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
