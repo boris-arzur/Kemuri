@@ -51,16 +51,18 @@ document.onclick=catchLinks;
 EOS
 
   def guess request
-    log "guess : #{request[1]} with #{request['first'].url_utf8}"
+		first = request['first'].url_utf8
+    log "guess : #{request[1]} with #{first}"
     
-    r = if request[1].split( '-' ).size == 1
+    req1 = if request[1].split( '-' ).size == 1
           "SELECT kanji FROM kanjis WHERE strokes = #{request[1]} ORDER BY forder DESC"
         else
           "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
         end
 
-    cond = "japanese LIKE '%#{request['first'].url_utf8}%' AND (" + $db.execute( r ).map{|k| "japanese LIKE '%#{k}%'"}.join( ' OR ' ) + ')'
-    
+		res_set = $db.execute( req1 )
+
+		cond = res_set.map{|k| "japanese LIKE '%#{first}#{k[0]}%'"}.join( ' OR ' )
     r = "SELECT * FROM examples WHERE #{cond}"
     $db.execute( r ).to_table + Static::voyage
   end
@@ -74,16 +76,19 @@ EOS
     
     stroke_count_mode = code.size == 1 || code.size == 2
     double_skip = code.size == 6 || code.size == 2
- 
-    req_path = if double_skip && !stroke_count_mode
-                 "/sk/#{code[3..5]*'-'}?first="
-               elsif double_skip && stroke_count_mode
-                 "/sk/#{code[1]}?first="
-               elsif request['first']
-                 "/yad/"+request['first'].url_utf8
-               else
-                 '/kan/'
-               end
+
+		postfix = ''
+    if double_skip && !stroke_count_mode
+      req_path = "/sk/#{code[3..5]*'-'}?first="
+			postfix = "?first="
+    elsif double_skip && stroke_count_mode
+      req_path = "/sk/#{code[1]}?first="
+			postfix = "?first="
+    elsif request['first']
+      req_path = "/yad/"+request['first'].url_utf8
+    else
+      req_path = '/kan/'
+    end
 
     guess_switch = double_skip ? GuessSwitch : ''
 
