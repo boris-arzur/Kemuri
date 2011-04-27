@@ -77,7 +77,6 @@ EOS
     stroke_count_mode = code.size == 1 || code.size == 2
     double_skip = code.size == 6 || code.size == 2
 
-		postfix = ''
     if double_skip && !stroke_count_mode
       req_path = "/sk/#{code[3..5]*'-'}?first="
 			postfix = "?first="
@@ -86,8 +85,10 @@ EOS
 			postfix = "?first="
     elsif request['first']
       req_path = "/yad/"+request['first'].url_utf8
+		  postfix = ''
     else
       req_path = '/kan/'
+		  postfix = ''
     end
 
     guess_switch = double_skip ? GuessSwitch : ''
@@ -100,9 +101,9 @@ EOS
 
     t,a,b = code[0..2].map {|e| e.to_i}
     glisse = if stroke_count_mode
-               Static::glisse( '/sk/', t-1, t+1, t-1, t+1 )
+               Static::glisse( '/sk/', t-1, t+1, t-1, t+1, postfix )
              else
-               Static::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}" )
+               Static::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}", postfix )
              end
 
     guess_switch + kanji_table( r1, req_path )  + Static::voyage + glisse 
