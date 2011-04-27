@@ -42,9 +42,9 @@ class Yav
     @kanji = @kanjis.sort_by {rand}[0] if @step == 0
 
     le_bubun = if @step < 2
-                 Static::glisse( '/yav/', '', '', '', '' )
+                 Static::glisse( '/yav/', '', '', '', '', '' )
                else
-                 Static::glisse( '/yav/', 'n', 'h', 'n', 'y' )
+                 Static::glisse( '/yav/', 'n', 'h', 'n', 'y', '' )
                end
 
     reply = le_bubun + @kanji.to_html( @step )#.a( link ) #+ Style
