@@ -79,9 +79,10 @@ EOS
     res + Voyage_style + Voyage_script
   end
 
-  def self.next_page base
+  def self.next_page base, start
     res = <<-EOS
 <script type="text/javascript">
+  var update = #{start ? 'true' : 'false'};
   var next_page_url_base = "#{base}";
   var glue = "#{(base =~ /\?$/ )?"":"&"}";
 </script>
@@ -101,14 +102,24 @@ EOS
     res + Bar_style + Rad_bar_script
   end
 
-  def self.yad_bar path
+  def self.yad_bar request
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='go_to( \"#{path.to_url( :links => true )}\" )'>環</button>
-	<button onclick='ajax_get( \"#{path.to_urlxml( :kb => true )}\" )'>kanji breakdown</button>
+  <button onclick='go_to( \"#{request.to_url( :links => true )}\" )'>環</button>
 </div>
 EOS
     res + Bar_style + Yad_bar_script
+  end
+
+  def self.yad_head request
+    res = <<-EOS
+<div id="yad_head">
+	<button onclick='ajax_get( \"#{request.to_urlxml( :kb => true )}\" )'>k.b.</button>
+	<button onclick='do_fuzz();'>fuzz</button>
+	<button onclick='do_pairs();'>pairs</button>
+	<button onclick='do_alt();'>alt</button>
+</div>
+EOS
   end
 
   def self.search

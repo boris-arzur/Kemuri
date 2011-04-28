@@ -17,7 +17,6 @@
     License along with Kemuri. If not, see http://www.gnu.org/licenses.
 */
 
-var end_of_content = false;
 function append( xml ) {
   var newDiv = document.createElement( "div" );
   newDiv.innerHTML= xml;
@@ -30,33 +29,58 @@ var ask_for = 'p=';
 
 var next_page = 1;
 function next_page_scroll_hdl( event ) {
-  if( (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) && !end_of_content ) {
-    /* glue is defined in iphone.rb */
+  if( update && (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) ) {
+    /* glue is defined in static.rb */
     var url = next_page_url_base + glue + ask_for + next_page;
 		ajax_get( url );
     next_page = next_page + 1;
     /* content is appended by the eval */
-    next_page_scroll_hdl( null );
   };
 }
 
+var free_ajax = true;
+/* only ajax once */
 function ajax_get( url ) {
-	var req = new XMLHttpRequest();
-	req.open( "GET", url , false );
-  req.overrideMimeType( "text/javascript" );
-  req.send( null );
-  eval( req.responseText );
+  if( free_ajax ) {
+    free_ajax = false;
+    window.setTimeout(function(){free_ajax = true;}, 150);
+    var req = new XMLHttpRequest();
+    req.open( "GET", url , false );
+    req.overrideMimeType( "text/javascript" );
+    req.send( null );
+    eval( req.responseText );
+    next_page_scroll_hdl( null );
+    free_ajax = true;
+  };
 }
 
 function finished() {
-  end_of_content = true;
+  update = false;
   append( " --- end of content --- " );
 }
 
-function do_pairs() {
+function do_pairs() { 
+  update = true;
   ask_for = 'pairs=';
   next_page = 0;
   append( " --- pairs --- <br/>" );
+  next_page_scroll_hdl( null );
+}
+
+function do_alt() { 
+  update = true;
+  ask_for = 'alt&pairs=';
+  next_page = 0;
+  append( " --- alt pairs --- <br/>" );
+  next_page_scroll_hdl( null );
+}
+
+function do_fuzz() { 
+  update = true;
+  ask_for = 'p=';
+  next_page = 0;
+  append( " --- fuzz --- <br/>" );
+  next_page_scroll_hdl( null );
 }
 
 document.addEventListener( "scroll", next_page_scroll_hdl, false );
