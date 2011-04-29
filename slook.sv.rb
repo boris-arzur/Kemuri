@@ -18,10 +18,21 @@
 
 class Slook 
   def execute request
-    
+    Slook::process( request[1] ) 
   end
 
   def self.process expression
-    expression.split( "+" ).map {|s| s.split( "&" ).map {|t| t.split( ":" )}}
+    Look::start( expression.split( "&" ).map {|t| 
+      kanji_def = Hash.new {|h,k| h[k] = []}
+      t.split( ":" ).each {|e|
+        next if e.size == 0
+        if e =~ /^[\d]-[\d]+-[\d]+$|^[\d]+$/
+          kanji_def[:s] = e
+        else
+          kanji_def[:r] << e.url_utf8
+        end
+      }
+      kanji_def
+    })
   end
 end

@@ -19,6 +19,35 @@
 class Look 
   @@mutex = Mutex.new
   @@store = {}
+
   def execute request
+    Look::process request
+  end
+
+  def self.start( data )
+    log "starting with this : " +data.inspect
+    id = (rand * 1_000_000_000).to_i
+    @@mutex.synchronize {@@store[id] = data}
+    req_rewrite = Request.new( false, ['look',id], {}, nil )
+    Look::process req_rewrite
+  end
+
+  def self.process request
+    id = request[1].to_i
+    data = @@store[id]
+
+    unless request.type
+      radicals_pickup = data.map {|ele| 
+        ele[:r].map {|kan| 
+          [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{kan.hash}' value='#{i}'/>#{e}"}
+        }
+      }.flatten( 1 )
+      
+      radicals_pickup << ["<input type=submit value=ok />"]
+      radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
+      radicals_pickup.tag( "form", :action => request, :method => "post" )
+    else
+      "posted"
+    end
   end
 end

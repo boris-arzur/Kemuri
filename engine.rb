@@ -86,6 +86,21 @@ class Fixnum
 end
 
 class String
+  def extract_options
+    options_hash = {}
+    split( '&' ).each {|p| 
+      k,v = p.split( '=' )
+      v ||= true
+      if options_hash[k]
+        options_hash[k] = [options_hash[k]] unless options_hash[k].is_a?( Array )
+        options_hash[k] << v
+      else
+        options_hash[k] = v
+      end
+    }
+    options_hash
+  end
+
   def cut n
     return [] if size == 0
     res = []
@@ -123,28 +138,18 @@ class String
   end
 
   def parse
-    splited_req = self.split( "\n" )
-    raw_path = splited_req.find {|l| l =~ /^([^ ]+) /}
+    log self.inspect
+    split_req = self.split( "\n" )
+    raw_path = split_req.find {|l| l =~ /^([^ ]+) /}
     type = $1
     raw_path = raw_path.match( /^#{type} ([^\s]*)\s/ )[1]
     real_path,options = raw_path.split( '?' )
     options ||= ''
     real_path = real_path.split( '/' ).select {|e| e.size > 0}
-    options_hash = {}
-    options.split( '&' ).each {|p| 
-      k,v = p.split( '=' )
-      v ||= true
-      if options_hash[k]
-        options_hash[k] = [options_hash[k]] unless options_hash[k].is_a?( Array )
-        options_hash[k] << v
-      else
-        options_hash[k] = v
-      end
-    }
-    post_data = self.match( /^\r\r\n\n(.*)$/m )[1] rescue ''
-    keep_alive = !!splited_req[0].strip =~ /HTTP\/1.1$/
-    keep_alive ||= !!splited_req.find {|l| l.strip == "Connection: keep-alive"}
-    Request.new( type, real_path, options_hash, post_data, keep_alive )
+    raw_post_data = split_req[split_req.find_index( "\r" )+1] || ''
+    keep_alive = !!split_req[0].strip =~ /HTTP\/1.1$/
+    keep_alive ||= !!split_req.find {|l| l.strip == "Connection: keep-alive"}
+    Request.new( type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive )
   end
 
   def to_http
