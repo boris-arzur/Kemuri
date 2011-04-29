@@ -45,9 +45,12 @@ class Look
       
       radicals_pickup << ["<input type=submit value=ok />"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
-      radicals_pickup.tag( "form", :action => request, :method => "post" )
+      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" )
     else
-      "posted"
+      #no d'etape ?
+      data.each do |ele|
+        ele[:r].map! {|kan| request.post["r#{kan.hash}"]}
+      end
     end
   end
 end
