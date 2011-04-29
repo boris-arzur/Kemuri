@@ -52,12 +52,15 @@ class Kanji
     @annex = yaml ? YAML.load( yaml ) : {}
   end
 
-  def radicals
+  def get_radicals
     r2 = "SELECT radicals.oid,radicals.radical FROM (SELECT rid FROM kan2rad WHERE kid = #{@kid}) AS rids LEFT JOIN radicals ON rids.rid = radicals.oid;"
-    inner_content = $db.execute( r2 ).map {|i,e|
-      "<input type='checkbox' name='rad' value='#{i}'/>#{e.a("/rad/#{i}")}".td(" style='font-size:3em'").tr
-    }.table
-    inner_content.tag( "form", :name => "rads" ) + Static::rad_bar
+    $db.execute( r2 )
+  end
+
+  def radicals
+    get_radicals.map {|i,e|
+      ["<input type='checkbox' name='rad' value='#{i}'/>#{e.a("/rad/#{i}")}"]
+    }.to_table(:td_opts => {:style=>'font-size:3em'}).tag( "form", :name => "rads" ) + Static::rad_bar
   end
 
   def to_row
