@@ -73,7 +73,7 @@ if daemon
   Process.setsid
   do_fork
 
-  puts "Supposed daemon pid: #{Process.pid}"
+  puts "Daemon supposed pid: #{Process.pid}"
 #Well we could be running somewhere
 #else, so we don't save the pid here.
 #We want to make sure the port is available
