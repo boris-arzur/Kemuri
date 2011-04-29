@@ -226,14 +226,16 @@ class Array
     join.table
   end
 
-  def to_table
+  def to_table opts = {}
     w = max {|l,k| l.size <=> k.size}
-    map {|l| l.to_row( w.size )}.table
+    map {|l| l.to_row( w.size, opts[:td_opts] )}.table
   end
 
-  def to_row w
+  def to_row w, addendum = nil
+    addendum ||= {}
     span = w/size 
-    opt = span > 1 ? {'colspan' => span} : nil
+    opt = span > 1 ? {'colspan' => span} : {}
+    opt.merge! addendum
     map {|c| c.to_s.tag( 'td' , opt )}.join.tr
   end
 end
