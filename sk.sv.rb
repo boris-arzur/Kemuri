@@ -50,7 +50,7 @@ document.onclick=catchLinks;
 </script>
 EOS
 
-  def guess request
+  def self.guess request
 		first = request['first'].url_utf8
     log "guess : #{request[1]} with #{first}"
     
@@ -70,7 +70,7 @@ EOS
   def execute request
     code = request[1]
     return Help + Static::voyage unless code
-    return guess( request ) if request['guess']
+    return Sk::guess( request ) if request['guess']
     
     code = code.split( '-' )
     

@@ -18,7 +18,7 @@
 
 class Yad
 #gen condi pr les req sql
-  def find what, options = {}
+  def self.find what, options = {}
     whiskers = (options[:ope]||options[:half_whiskers]) ? '' : '%' #remove them % if we are using ==
     options[:ope] ||= 'LIKE'
     if what.is_a?( Array )
@@ -29,7 +29,7 @@ class Yad
   end
   
 #cree des liens sur ts les kan
-  def linkify_kanjis! text
+  def self.linkify_kanjis! text
     # 一 is the first kanji, in lexicographic order
     # it verifies "一" > kana & ascii
     modded_text = text.split( // ).map {|c| c >= "一" ? c.a( '/kan/'+c ) : c}.join
@@ -59,8 +59,8 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
     unless entry.include?( '%' )
       #entry is pure ascii
-      cond_r1 = find( entry, :field => "meanings" )
-      cond_r2 = find( entry, :field => "english" )
+      cond_r1 = Yad::find( entry, :field => "meanings" )
+      cond_r2 = Yad::find( entry, :field => "english" )
     else
       kanji = entry.url_utf8
 
@@ -69,19 +69,19 @@ Second call and subsequent calls, from js' xmlhttprequest :
       # ぁ is the mother of all kana
       if kanji[0] >= "ぁ" && kanji[0] < "一"
         #hira
-        cond_r1 = find( kanji, :field => "readings" )
-        cond_r2 = find( kanji, :field => "japanese" )
+        cond_r1 = Yad::find( kanji, :field => "readings" )
+        cond_r2 = Yad::find( kanji, :field => "japanese" )
       else
         kanjis = kanji.split( // )
         if request['pairs']
           #dont bother if not enough kanjis
           return 'append( "too small to use pairs lookup<br/>" );finished();' if kanjis.size < 3
           start = request['alt'] ? 1 : 0
-          cond_r2 = find( kanjis.cut( 2, start ).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR" )
+          cond_r2 = Yad::find( kanjis.cut( 2, start ).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR" )
           log cond_r2
 			  else
-          cond_r1 = find( kanjis, :field => "kanji", :logic => "OR", :ope => "==" )
-          cond_r2 = find( kanji, :field => "japanese", :half_whiskers => true )
+          cond_r1 = Yad::find( kanjis, :field => "kanji", :logic => "OR", :ope => "==" )
+          cond_r2 = Yad::find( kanji, :field => "japanese", :half_whiskers => true )
         end
       end
     end
@@ -97,13 +97,13 @@ Second call and subsequent calls, from js' xmlhttprequest :
       return "append( \"#{rez.gsub( /"/, '\\"' )}\" );"
     elsif request.xml && (request['p'] || request['pairs'])
       #c'est un appel de xmlhttpreq, par ajax (requete d'une nouvelle page) donc c'est un fuzz ou un pair
-      r2 = "SELECT * FROM examples WHERE #{find( kanji, :field => "japanese" )} LIMIT #{limit}" if request['p'] #on regenere la condi si on est en fuzz
+      r2 = "SELECT * FROM examples WHERE #{Yad::find( kanji, :field => "japanese" )} LIMIT #{limit}" if request['p'] #on regenere la condi si on est en fuzz
       page = request['p'] || request['pairs']
       r2 += " OFFSET #{page.to_i*limit.to_i}"
 			log "exe2 : #{r2}"
       rez = $db.execute( r2 )
       content_table = rez.to_table
-      linkify_kanjis!( content_table ) if request['links']
+      Yad::linkify_kanjis!( content_table ) if request['links']
 
       javascript = "append( \"#{content_table.gsub( /"/, '\\"' )}\" );"
 
@@ -122,7 +122,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       dynamic_content = $db.execute( r2 )
 
 			if dynamic_content.size == 0
-        cond_r2 = find( kanji, :field => "japanese" )
+        cond_r2 = Yad::find( kanji, :field => "japanese" )
         r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
 			  log "exe5 : #{r2}"
         dynamic_content = $db.execute( r2 )
@@ -137,7 +137,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
 			dynamic_content = dynamic_content.to_table
 
       xml_url = request.to_urlxml
-      linkify_kanjis!( dynamic_content ) if request['links']
+      Yad::linkify_kanjis!( dynamic_content ) if request['links']
 
       Static::voyage + Static::yad_head( request ) + dynamic_content +
         Static::next_page( xml_url, start_nextpage_js ) +

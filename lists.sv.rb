@@ -17,38 +17,33 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Lists
-  def initialize
-    @confirm_create = ''
-  end
-
-  def create( request )
+  def self.create( request )
     if !request[2]
-      @confirm_create = ''
       add_option = request[:add] ? "+'?add=#{request[:add]}'" : ''
-<<EOP
+      <<-EOP
 <input type="text" onchange="go_to( '/lists/create/'+document.getElementById( 'list_name' ).value#{add_option} )" id="list_name"/>
 EOP
-    elsif request[2].size > 0 && @confirm_create != request[2]
-      @confirm_create = request[2]
+    elsif request[2].size > 0 && request[3] != "y"
+      request[3] = "y"
       "create '#{@confirm_create}' ?".a request.to_url
-    elsif @confirm_create == request[2]
+    elsif request[2].size > 0 && request[3] == "y" 
       r = "INSERT INTO lists VALUES('#{@confirm_create}')"
       $db.execute( r )
-      'create ok ' + redir_add( request )
+      'create ok ' + Lists::redir_add( request )
     else
       'invalid'
     end
   end
 
-  def redir_add( request )
+  def self.redir_add( request )
     return '' unless request['add']
     lid = $db.get_first_value( 'SELECT last_insert_rowid()' )
-    add( Request.new( 'GET', [nil,nil,lid,request['add']], {}, nil ) )
+    Lists::add( Request.new( 'GET', [nil,nil,lid,request['add']], {}, nil ) )
   end
   
-  def add( request )
+  def self.add( request )
     if request[2] == "new"
-      create( Request.new( 'GET', [], {:add => request[3]}, nil ) )
+      Lists::create( Request.new( 'GET', [], {:add => request[3]}, nil ) )
     elsif request[2].is_num
       if request[3].is_num
         r = "INSERT OR IGNORE INTO kan2list (kid,lid) VALUES(#{request[3]},#{request[2]});"
@@ -62,15 +57,15 @@ EOP
     end
   end
 
-  def hib( request )
+  def self.hib( request )
     KList.new( request[2] ).toggle_sleepy( Kanji.new( request[3] ) )
   end
 
   def execute request
     case request[1]
-    when "create" then create( request )
-    when "add" then add( request )
-    when "hib" then hib( request )
+    when "create" then Lists::create( request )
+    when "add" then Lists::add( request )
+    when "hib" then Lists::hib( request )
     end
   end
 end

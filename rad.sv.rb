@@ -33,13 +33,13 @@ SELECT radicals.oid,radicals.radical,kanjis.strokes
  ORDER BY kanjis.strokes;
 EOR
 
-  def to_checkbox( radical, rid )
+  def self.to_checkbox( radical, rid )
     "<input type='checkbox' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
   end
 
-  def select_rads
+  def self.select_rads
     stroke2rad = Hash.new {|h,k| h[k]=[]}
-    $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << to_checkbox(e,i)}
+    $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << Rad::to_checkbox(e,i)}
 
     table_of_matches = stroke2rad.sort_by{|s,chkbxz| s.to_i}.map {|s,chkbxz|
       chkbxz.cut( RowSize ).map{|row| row.join.tr}.join
@@ -61,7 +61,7 @@ EOR
         $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" )
       }
     else
-      return select_rads
+      return Rad::select_rads
     end
 
     rad_cond = rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"} * " INTERSECT "
