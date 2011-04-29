@@ -28,6 +28,7 @@ class Look
     log "starting with this : " +data.inspect
     id = (rand * 1_000_000_000).to_i
     @@mutex.synchronize {@@store[id] = data}
+    log @@store
     req_rewrite = Request.new( false, ['look',id], {}, nil )
     Look::process req_rewrite
   end
@@ -36,7 +37,9 @@ class Look
     id = request[1].to_i
     data = @@store[id]
 
-    unless request.type
+    log [id, data, @@store]
+
+    if !request.type
       radicals_pickup = data.map {|ele| 
         ele[:r].map {|kan| 
           [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{kan.hash}' value='#{i}'/>#{e}"}
@@ -46,11 +49,15 @@ class Look
       radicals_pickup << ["<input type=submit value=ok />"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
       radicals_pickup.tag( "form", :action => request.to_url, :method => "post" )
-    else
-      #no d'etape ?
-      data.each do |ele|
-        ele[:r].map! {|kan| request.post["r#{kan.hash}"]}
+    elsif request.post.keys[0] =~ /^r/
+      @@mutex.synchronize do 
+        data.each do |ele|
+          ele[:r].map! {|kan| request.post["r#{kan.hash}"]}
+        end
       end
+      "..."
+    else
+      "..."
     end
   end
 end
