@@ -40,67 +40,25 @@ function voyage_blur_input( event ) {
     }, 30);
 };
 
-function voyage_create_option( nani ) {
-    var option = document.createElement( 'option' );
-    option.setAttribute( 'value', nani );
-    option.appendChild( document.createTextNode( nani ) );
-    return option;
-};
-
 function voyage_update_options() {
     var dokomade = document.getElementById( 'dokomade' ).value;
+    var destination = '/yad/';
     if( dokomade.size != 0) {
-        voyage_placeholder.appendChild( document.createElement( 'br' ) );
-        
-        var select = document.createElement( 'select' );
-        select.setAttribute( 'id', 'douyatte' );
-        var direct_commit = true;
-
         if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) )
-            select.appendChild( voyage_create_option( '/sk/' ) );
+            destination = '/sk/';
         else if( dokomade.match(/^\d-\d+-\d+\+\d-\d+-\d+$/) )
-            select.appendChild( voyage_create_option( '/biskip/' ) );
+            destination = '/biskip/';
         else if( dokomade.match(/^\d+-\d+$/) || dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) )
-            select.appendChild( voyage_create_option( '/sk/' ) );
-        else if( dokomade.match(/^rad$/) || dokomade.match(/^his$/) )
-            select.appendChild( voyage_create_option( '/' ) );
-      else if( dokomade.match(/^[\u4E00-\u9FAF]$/) ) {
-            select.appendChild( voyage_create_option( '/yad/' ) );
-            /*
-              since we link to kan at the first line, I think we can remove that :
-              select.appendChild( voyage_create_option( '/kan/' ) );
-              direct_commit = false;
-            */
-      } 
-        else if( dokomade.match(/^[\u4E00-\u9FAF]+$/) || dokomade.match(/^[\u3040-\u3096]+$/) ) 
-            select.appendChild( voyage_create_option( '/yad/' ) );
-      else select.appendChild( voyage_create_option( '/yad/' ) );
+            destination = '/sk/';
+        else if( dokomade.match(/:/) )
+            destination = '/slook/';
+        else
+            destination = '/yad/';
         
-        select.firstChild.setAttribute( 'selected', 'selected' );
-        select.setAttribute( 'onchange', 'javascript:voyage_shuppatsu()' );
-        voyage_placeholder.appendChild( select );
-      
-        if( direct_commit )
-            voyage_shuppatsu();
-      else {
-            var go_btn = document.createElement( 'input' );
-            go_btn.setAttribute( 'type', 'button' );
-            go_btn.setAttribute( 'value', '出発' );
-            go_btn.setAttribute( 'onclick', 'javascript:voyage_shuppatsu()' );
-            voyage_placeholder.appendChild( go_btn );
-            voyage_scroll_offset = 70;
-            voyage_scroll_hdl( null );
-      }
+        go_to( destination + dokomade );
    } else {
         voyage_blur_input( null );
    }
-};
-
-function voyage_shuppatsu() {
-    var dokomade = document.getElementById( 'dokomade' ).value;
-    var douyatte = document.getElementById( 'douyatte' );
-    var path = douyatte.options[douyatte.selectedIndex].value; 
-    go_to( path + dokomade );
 };
 
 function voyage_scroll_hdl(event) {
@@ -118,4 +76,4 @@ voyage_placeholder.addEventListener( "focus", voyage_focus_input, true );
 voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
 
 voyage_placeholder.style.left = 220;
-window.setTimeout(function(){voyage_scroll_hdl( null );}, 50);
+window.addEventListener( "load", function(){window.setTimeout(function(){voyage_scroll_hdl( null );}, 50);}, false);
