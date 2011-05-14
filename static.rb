@@ -20,7 +20,13 @@ class Static
   @@voyage_hidden_buttons = ""
 
   def self.load_content file
-    raw_content = File::read( file )
+    if file =~ /.gz$/
+      raw_content = Zlib::GzipReader.open( file ) {|gz| gz.read} 
+      file = file[0..-4]
+    else
+      raw_content = File::read( file )
+    end
+
     clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
 
     while clean_content.gsub!( "  ", " " )
@@ -35,23 +41,25 @@ class Static
     end
   end
 
-  Glisse_style = load_content( 'glisse.css' )
-  Glisse_script = load_content( 'glisse.js' )
+  GlisseStyle = load_content( 'glisse.css' )
+  GlisseScript = load_content( 'glisse.js' )
 
-  Voyage_style = load_content( 'voyage.css' )
-  Voyage_script = load_content( 'voyage.js' )
+  VoyageStyle = load_content( 'voyage.css' )
+  VoyageScript = load_content( 'voyage.js' )
   
-  Next_page_script = load_content( 'next_page.js' )
+  Next_pageScript = load_content( 'next_page.js' )
 
-  Bar_style = load_content( 'bar.css' )
+  BarStyle = load_content( 'bar.css' )
 
-  Rad_bar_script = load_content( 'rad_bar.js' )
-  Yad_bar_script = load_content( 'yad_bar.js' )
+  Rad_barScript = load_content( 'rad_bar.js' )
+  Yad_barScript = load_content( 'yad_bar.js' )
 
-  Search_script = load_content( 'search.js' )
+  SearchScript = load_content( 'search.js' )
 
   Capture = load_content( 'capture.js' )  
   Normal = "function go_to( normal_url ){window.location = normal_url;}".script
+
+  SelectRads = load_content( 'select_rads.static.html.gz' )
 
   def self.glisse( url_base, haut, bas, gauche, droite, postfix )
     res = <<-EOS
@@ -61,7 +69,7 @@ class Static
 </script>
 <div id="glisse"></div>
 EOS
-    res + Glisse_style + Glisse_script
+    res + GlisseStyle + GlisseScript
   end
 
   def self.add_hidden_button name, path = name
@@ -76,7 +84,7 @@ EOS
 <div id="voyage_btns">#{@@voyage_hidden_buttons}</div>
 </div>
 EOS
-    res + Voyage_style + Voyage_script
+    res + VoyageStyle + VoyageScript
   end
 
   def self.next_page base, start
@@ -89,7 +97,7 @@ EOS
 <div id='add'></div>
 <div id='bottom'></div>
 EOS
-    res + Next_page_script
+    res + Next_pageScript
   end
 
   def self.rad_bar
@@ -99,7 +107,7 @@ EOS
   <button onclick='rad_bar_clear()'>消</button>
 </div>
 EOS
-    res + Bar_style + Rad_bar_script
+    res + BarStyle + Rad_barScript
   end
 
   def self.yad_bar request
@@ -108,7 +116,7 @@ EOS
   <button onclick='go_to( \"#{request.to_url( :links => true )}\" )'>環</button>
 </div>
 EOS
-    res + Bar_style + Yad_bar_script
+    res + BarStyle + Yad_barScript
   end
 
   def self.yad_head request
@@ -128,6 +136,6 @@ EOS
   <button onclick='searchPrompt()'>検索</button>
 </div>
 EOS
-    res + Bar_style + Search_script
+    res + BarStyle + SearchScript
   end
 end
