@@ -33,7 +33,7 @@ class Kemuri
 end
 
 class Request
-  attr_accessor :type, :xml, :keep_alive
+  attr_accessor :type, :xml, :keep_alive, :post
   def initialize type, path, options, post, keep_alive = false
     @path = path
     if path[0] =~ /\.xml$/
@@ -82,6 +82,12 @@ end
 class Fixnum
   def is_num
     true
+  end
+end
+
+class Float
+  def to_id
+    (self * 1_000_000_000).to_i.to_s( 36 )
   end
 end
 

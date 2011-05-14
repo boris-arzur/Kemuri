@@ -61,6 +61,11 @@ class Static
 
   SelectRads = load_content( 'select_rads.static.html.gz' )
 
+  def self.kanji_table id_table 
+    kanji_table = File::read( 'kanji_table.html' )
+    kanji_table.gsub( /#id_table#/, id_table )
+  end
+
   def self.glisse( url_base, haut, bas, gauche, droite, postfix )
     res = <<-EOS
 <script type="text/javascript" charset="utf-8">
@@ -75,6 +80,48 @@ EOS
   def self.add_hidden_button name, path = name
     button = "<button onclick='go_to( \"/#{path}\" )'>#{name}</button> "
     @@voyage_hidden_buttons << button
+  end
+  
+  def self.look_select max, url
+    res = <<-EOS
+<script type="text/javascript" charset="utf-8">
+var selection = new Array();
+function set_visi_class(classname, visi) {
+  var elements = document.getElementsByClassName( classname );
+
+  for(var i = 0;i < elements.length;i++)
+    elements[i].style.display = visi;
+};
+
+function select(id,kan,id_table) {
+  selection[id] = kan;
+  set_visi_class('hideable-' + id_table, 'none');
+  set_visi_class('radz-' + id_table, 'none');
+
+  document.getElementById('radi_up-' + id_table).style.display = 'none';
+  document.getElementById('radi_down-' + id_table).style.display = 'none';
+
+  if(selection.length == #{max}) go_to( "#{url}kans=" + selection.toString() ); 
+
+  var link = document.createElement('a');
+  link.setAttribute('href', 'javascript:reshow("' + id_table + '")');
+  link.appendChild( document.createTextNode("Reshow kanji " + id ) );
+
+  var footer = document.getElementById( 'footer' );
+  footer.appendChild( link );
+  footer.appendChild( document.createElement('br') );
+};
+
+function reshow(id_table) {
+  set_visi_class('hideable-' + id_table, 'inline');
+  set_visi_class('radz-' + id_table, 'inline');
+
+  document.getElementById('radi_up-' + id_table).style.display = 'inline';
+  document.getElementById('radi_down-' + id_table).style.display = 'inline';
+};
+</script>
+<div id=footer></div>
+EOS
   end
 
   def self.voyage

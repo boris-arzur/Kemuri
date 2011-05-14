@@ -19,6 +19,7 @@
 require 'thread'
 require 'socket'
 require 'yaml'
+require 'zlib'
 #require 'ruby-prof'
 
 if RUBY_VERSION == '1.9.0'
@@ -90,7 +91,9 @@ class Server
       else
         request = protect('parsing') {request.parse()}
         log( "#{my_id} : processing : #{request.inspect}" )
+        t = Time.new
         answer = protect('executing') {Servlet::execute( request )}
+        log "That took #{Time.new - t}."
         if not request.xml
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
           @message_mutex.synchronize do

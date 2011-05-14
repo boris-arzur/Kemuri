@@ -19,26 +19,27 @@
 KanjiTableHTML = File::read( 'kanji_table.html' )
 RowSize = 5
 
-def hideable_actionable_content type, text, link_to, tags
-  classnames = 'hideable ' + tags.map{|r| "r#{r}"}.join( " " )
+def hideable_actionable_content type, text, link_to, tags, id_table
+  classnames = "hideable-#{id_table} " + tags.map{|r| "r#{r}"}.join( " " )
   text.a( link_to ).tag( type, 'class' => classnames )
 end
 
-def kanji_table sql, req_path
+def kanji_table sql, req_path, id_table = rand().to_id, url_replace = nil
   raise 'Malformed SQL, need to match /^select [^,\.]*\.{0,1}oid,[^,\.]*\.{0,1}kanji/i' unless sql =~ /^select [^,\.]*\.{0,1}oid,[^,\.]*\.{0,1}kanji/i
 
-  all_rids = Hash.new {|h,k| h[k]=['adz']} #kind of a hack : set all radical to have class 'radz' in the final render, size => 2em
+  all_rids = Hash.new {|h,k| h[k]=["adzz radz-#{id_table}"]} #kind of a hack : set all radical to have class 'radzz' in the final render, size => 2em
     
   table_of_matches = $db.execute( sql ).map {|kid,kanji|
     rids = $db.execute( "SELECT rid FROM kan2rad WHERE kid = #{kid}" ).map{|rid| rid[0]}
     rids.each{|rid| all_rids[rid] |= (rids - [rid])}
-    hideable_actionable_content( 'td', kanji, req_path+kanji, rids )
+    link_to = url_replace ? req_path.gsub( url_replace, kanji) : req_path+kanji
+    hideable_actionable_content( 'td', kanji, link_to, rids, id_table )
   }.cut( RowSize ).map{|row| row.join.tr}.table
 
   # in case we have no result :
   return Static::voyage if all_rids.size == 0
 
-  radi_cond = all_rids.keys.map{|r| "radicals.oid == #{r}"}*' OR '
+  radi_cond = all_rids.keys.map{|r| "radicals.oid == #{r}" }*' OR '
 
   sql = <<EOS
 SELECT radicals.oid,radicals.radical
@@ -50,8 +51,8 @@ SELECT radicals.oid,radicals.radical
 EOS
 
   radicals = $db.execute( sql ).map {|rid,radi|
-    hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\")", all_rids[rid] )
-  }.join( " " ).tag( 'div', 'id' => 'radicals' )
+    hideable_actionable_content( 'span', radi, "javascript:show_only(\"r#{rid}\",\"#{id_table}\")", all_rids[rid], id_table )
+  }.join( " " ).tag( 'div', 'id' => "radicals-#{id_table}" )
 
-  KanjiTableHTML + radicals + table_of_matches
+  Static::kanji_table( id_table ) + radicals + table_of_matches
 end

@@ -37,6 +37,9 @@ EOR
     "<input type='checkbox' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
   end
 
+=begin
+#was the code used to generate the static version,
+#which was then modified
   def self.select_rads
     stroke2rad = Hash.new {|h,k| h[k]=[]}
     $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << Rad::to_checkbox(e,i)}
@@ -47,6 +50,7 @@ EOR
 
     table_of_matches.tag( "form", :name => "rads" ) + Style + Static::voyage + Static::rad_bar
   end
+=end
 
   def execute request
     if request["rad"].is_a?( Array )
@@ -61,7 +65,8 @@ EOR
         $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" )
       }
     else
-      return Rad::select_rads
+      #return Rad::select_rads
+      return Static::SelectRads
     end
 
     rad_cond = rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"} * " INTERSECT "

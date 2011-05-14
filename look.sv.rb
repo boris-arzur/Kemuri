@@ -26,7 +26,7 @@ class Look
 
   def self.start( data )
     log "starting with this : " +data.inspect
-    id = (rand * 1_000_000_000).to_i
+    id = rand.to_id
     @@mutex.synchronize {@@store[id] = data}
     log @@store
     req_rewrite = Request.new( false, ['look',id], {}, nil )
@@ -34,9 +34,10 @@ class Look
   end
 
   def self.process request
-    id = request[1].to_i
+    id = request[1]
     data = @@store[id]
 
+    log "id, data, @@store"
     log [id, data, @@store]
 
     if !request.type
@@ -52,12 +53,37 @@ class Look
     elsif request.post.keys[0] =~ /^r/
       @@mutex.synchronize do 
         data.each do |ele|
-          ele[:r].map! {|kan| request.post["r#{kan.hash}"]}
+          ele[:r].map! {|kan| request.post["r#{kan.hash}"] or message( "missing a rad ?" )}
         end
       end
-      "..."
+      log data
+
+      data.map_i do |ele,i|
+        rads = ele[:r].flatten
+        skip = ele[:s]
+        
+        log ele[:s]
+
+        cond = []
+        if skip.is_a?( String ) && skip.split( '-' ).size == 1
+          cond << "SELECT oid AS kid FROM kanjis WHERE strokes = #{skip}"
+        elsif skip.is_a?( String )
+          cond << "SELECT oid AS kid FROM kanjis WHERE skip = '#{skip}'"
+        end
+
+        cond += rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"}
+        r1 = "SELECT kanjis.oid,kanjis.kanji FROM (#{cond * " INTERSECT "}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid ORDER BY kids.kid"
+
+        log r1
+        table_id = rand.to_id
+        kanji_table( r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#' )
+      end * "------<br/>" + Static::voyage + Static::look_select( data.size, request.to_url )
+    elsif request['kans']
+      request[0] = 'yad'
+      request[1] = request['kans'].gsub( ',', '' )
+      Servlet::execute( request )
     else
-      "..."
+      '...'
     end
   end
 end
