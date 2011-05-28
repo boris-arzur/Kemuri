@@ -20,6 +20,7 @@ require 'thread'
 require 'socket'
 require 'yaml'
 require 'zlib'
+require 'net/http' # for the proxy
 #require 'ruby-prof'
 
 if RUBY_VERSION == '1.9.0'
