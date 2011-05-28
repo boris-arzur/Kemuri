@@ -41,19 +41,29 @@ class Look
     log [id, data, @@store]
 
     if !request.type
+      rad_i = 0
+      rad_j = 0
       radicals_pickup = data.map {|ele| 
+        rad_i += 1
         ele[:r].map {|kan| 
-          [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{kan.hash}' value='#{i}'/>#{e}"}
+          rad_j += 1
+          [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{rad_i}-#{rad_j}' value='#{i}'/>#{e}"}
         }
       }.flatten( 1 )
       
       radicals_pickup << ["<input type=submit value=ok />"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
-      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" )
+      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
     elsif request.post.keys[0] =~ /^r/
-      @@mutex.synchronize do 
+      @@mutex.synchronize do
+        rad_i = 0
+        rad_j = 0
         data.each do |ele|
-          ele[:r].map! {|kan| request.post["r#{kan.hash}"] or message( "missing a rad ?" )}
+          rad_i += 1
+          ele[:r].map! {|kan|
+            rad_j += 1
+            request.post["r#{rad_i}-#{rad_j}"] or message( "missing a rad ?" )
+          }
         end
       end
       log data
@@ -79,6 +89,9 @@ class Look
         kanji_table( r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#' )
       end * "------<br/>" + Static::voyage + Static::look_select( data.size, request.to_url )
     elsif request['kans']
+      id = request[1]
+      @@mutex.synchronize do @@store.delete( id ) end
+
       request[0] = 'yad'
       request[1] = request['kans'].gsub( ',', '' )
       Servlet::execute( request )
