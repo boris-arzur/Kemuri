@@ -63,7 +63,7 @@ class Request
   end
 
   def [] i
-    if i.is_a?( Fixnum )
+    if i.is_a?( Fixnum ) or i.is_a?( Range )
       @path[i]
     else
       @options[i]
