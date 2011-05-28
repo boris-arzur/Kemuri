@@ -72,13 +72,14 @@ Second call and subsequent calls, from js' xmlhttprequest :
       # 一 is the first kanji, in lexicographic order
       # ぁ is the mother of all kana
       if kanji[0] >= "ぁ" && kanji[0] < "一"
-        #hira
+        #kana
         cond_r1 = Yad::find( kanji, :field => "readings" )
         cond_r2 = Yad::find( kanji, :field => "japanese" )
       else
         kanjis = kanji.split( // )
         valid_pairs = kanjis.size >= 3
         valid_kb = true
+
         if request['pairs']
           #dont bother if not enough kanjis
           return 'append( "too small to use pairs lookup<br/>" );finished();' if !valid_pairs
@@ -127,7 +128,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       dynamic_content = $db.execute( r2 )
       start_nextpage_js = dynamic_content.size >= limit 
 
-			if dynamic_content.size == 0
+      if dynamic_content.size == 0 && valid_kb # valid_kb means entry is kanji
         cond_r2 = Yad::find( kanji, :field => "japanese" )
         r2 = "SELECT * FROM examples WHERE #{cond_r2} LIMIT #{limit}"
 			  log "exe5 : #{r2}"
