@@ -135,7 +135,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
         dynamic_content = $db.execute( r2 )
         if dynamic_content.size > 0
         else
-          log "exe4 : #{r2}"
+          log "exe4 : #{r1}"
           dynamic_content = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m]}
           start_nextpage_js = false 
         end
