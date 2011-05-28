@@ -56,6 +56,9 @@ Second call and subsequent calls, from js' xmlhttprequest :
    
     cond_r1 = nil
     cond_r2 = nil
+    valid_pairs = false #display 'pairs' & 'alt' buttons
+    valid_kb = false # same same with k.b.
+    valid_fuzz = false # guess :)
 
     unless entry.include?( '%' )
       #entry is pure ascii
@@ -63,6 +66,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       cond_r2 = Yad::find( entry, :field => "english" )
     else
       kanji = entry.url_utf8
+      valid_fuzz = true
 
       #kana ? kanji ?
       # 一 is the first kanji, in lexicographic order
@@ -73,9 +77,11 @@ Second call and subsequent calls, from js' xmlhttprequest :
         cond_r2 = Yad::find( kanji, :field => "japanese" )
       else
         kanjis = kanji.split( // )
+        valid_pairs = kanjis.size >= 3
+        valid_kb = true
         if request['pairs']
           #dont bother if not enough kanjis
-          return 'append( "too small to use pairs lookup<br/>" );finished();' if kanjis.size < 3
+          return 'append( "too small to use pairs lookup<br/>" );finished();' if !valid_pairs
           start = request['alt'] ? 1 : 0
           cond_r2 = Yad::find( kanjis.cut( 2, start ).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR" )
           log cond_r2
@@ -97,7 +103,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       return "append( \"#{rez.gsub( /"/, '\\"' )}\" );"
     elsif request.xml && (request['p'] || request['pairs'])
       #c'est un appel de xmlhttpreq, par ajax (requete d'une nouvelle page) donc c'est un fuzz ou un pair
-      r2 = "SELECT * FROM examples WHERE #{Yad::find( kanji, :field => "japanese" )} LIMIT #{limit}" if request['p'] #on regenere la condi si on est en fuzz
+      r2 = "SELECT * FROM examples WHERE #{Yad::find( kanji, :field => "japanese" )} LIMIT #{limit}" if request['fuzz'] #on regenere la condi si on est en fuzz
       page = request['p'] || request['pairs']
       r2 += " OFFSET #{page.to_i*limit.to_i}"
 			log "exe2 : #{r2}"
@@ -117,9 +123,9 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       return javascript
     else
-      start_nextpage_js = false 
       log "exe3 : #{r2}"
       dynamic_content = $db.execute( r2 )
+      start_nextpage_js = dynamic_content.size >= limit 
 
 			if dynamic_content.size == 0
         cond_r2 = Yad::find( kanji, :field => "japanese" )
@@ -127,10 +133,10 @@ Second call and subsequent calls, from js' xmlhttprequest :
 			  log "exe5 : #{r2}"
         dynamic_content = $db.execute( r2 )
         if dynamic_content.size > 0
-          start_nextpage_js = true 
         else
           log "exe4 : #{r2}"
           dynamic_content = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m]}
+          start_nextpage_js = false 
         end
 			end
 
@@ -139,7 +145,9 @@ Second call and subsequent calls, from js' xmlhttprequest :
       xml_url = request.to_urlxml
       Yad::linkify_kanjis!( dynamic_content ) if request['links']
 
-      Static::voyage + Static::yad_head( request ) + dynamic_content +
+      Static::voyage +
+        Static::yad_head( request, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz ) +
+        dynamic_content +
         Static::next_page( xml_url, start_nextpage_js ) +
         Static::yad_bar( request )
     end

@@ -166,15 +166,12 @@ EOS
     res + BarStyle + Yad_barScript
   end
 
-  def self.yad_head request
-    res = <<-EOS
-<div id="yad_head">
-	<button onclick='ajax_get( \"#{request.to_urlxml( :kb => true )}\" )'>k.b.</button>
-	<button onclick='do_fuzz();'>fuzz</button>
-	<button onclick='do_pairs();'>pairs</button>
-	<button onclick='do_alt();'>alt</button>
-</div>
-EOS
+  def self.yad_head request, options = {}
+    res = "<div id=\"yad_head\">"
+    res += "<button onclick='ajax_get( \"#{request.to_urlxml( :kb => true )}\" )'>k.b.</button>" if options[:kb]
+    res += "<button onclick='do_fuzz();'>fuzz</button>" if options[:fuzz]
+    res += "<button onclick='do_pairs();'>pairs</button><button onclick='do_alt();'>alt</button>" if options[:pairs]
+    res += "</div>"
   end
 
   def self.search

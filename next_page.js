@@ -43,7 +43,7 @@ var free_ajax = true;
 function ajax_get( url ) {
   if( free_ajax ) {
     free_ajax = false;
-    window.setTimeout(function(){free_ajax = true;}, 150);
+    window.setTimeout(function(){free_ajax = true;}, 1500);
     var req = new XMLHttpRequest();
     req.open( "GET", url , false );
     req.overrideMimeType( "text/javascript" );
@@ -77,7 +77,7 @@ function do_alt() {
 
 function do_fuzz() { 
   update = true;
-  ask_for = 'p=';
+  ask_for = 'fuzz&p=';
   next_page = 0;
   append( " --- fuzz --- <br/>" );
   next_page_scroll_hdl( null );
