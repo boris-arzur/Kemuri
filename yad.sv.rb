@@ -149,7 +149,8 @@ Second call and subsequent calls, from js' xmlhttprequest :
         Static::yad_head( request, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz ) +
         dynamic_content +
         Static::next_page( xml_url, start_nextpage_js ) +
-        Static::yad_bar( request )
+        Static::yad_bar( request ) + 
+        Static::search
     end
   end
 end
