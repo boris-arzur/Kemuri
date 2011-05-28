@@ -50,7 +50,9 @@ function voyage_update_options() {
             destination = '/biskip/';
         else if( dokomade.match(/^\d+-\d+$/) || dokomade.match(/^\d-\d+-\d+-\d-\d+-\d+$/) )
             destination = '/sk/';
-        else if( dokomade.match(/:/) )
+        else if( dokomade.match(/^http/) )
+            destination = '/proxy/';
+        else if( dokomade.match(/:|&/) )
             destination = '/slook/';
         else
             destination = '/yad/';
