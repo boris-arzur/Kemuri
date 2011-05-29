@@ -17,13 +17,22 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Proxy
+  def self.fetch url, limit = 10
+    raise ArgumentError, 'HTTP redirect too deep' if limit == 0
+    log url, limit
+    response = Net::HTTP.get_response(URI.parse url)
+    case response
+    when Net::HTTPSuccess     then response
+    when Net::HTTPRedirection then fetch(response['location'], limit - 1)
+    else
+      response.error!
+    end
+  end
+ 
   def execute request
-    url = URI.parse('http://' + request[2..-1]*'/')
-    log url
-    req = Net::HTTP::Get.new(url.path)
-    res = Net::HTTP.start(url.host, url.port) {|http|
-      http.request(req)
-    }
-    res.body.force_encoding('UTF-8') + Static::search
+    url = 'http://' + request[2..-1]*'/'
+    res = Proxy::fetch(url)
+    res = res.body.force_encoding('UTF-8')
+    res + Static::search
   end
 end
