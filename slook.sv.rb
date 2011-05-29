@@ -24,7 +24,7 @@ class Slook
   def self.process expression
     Look::start( expression.split( "+" ).map {|t| 
       kanji_def = Hash.new {|h,k| h[k] = []}
-      t.split( "+" ).each {|e|
+      t.split( "&" ).each {|e|
         next if e.size == 0
         if e =~ /^[\d]-[\d]+-[\d]+$|^[\d]+$/
           kanji_def[:s] = e
