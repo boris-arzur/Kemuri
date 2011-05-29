@@ -124,10 +124,11 @@ class Server
   end
 
   def start_flusher
+    sleep_time = $sleep_time || 10
     Thread.new do
       loop do
         begin
-          sleep 10
+          sleep sleep_time
           if $log_bf.size > 5
             $log_mx.synchronize do
 							#FIX

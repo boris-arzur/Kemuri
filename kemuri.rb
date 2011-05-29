@@ -47,6 +47,10 @@ OptionParser.new do |opts|
     $kemuri_port = p.to_i
   end
 
+  opts.on( "-t", "--time [S]", "Change sleep time for the flushing thread (10)." ) do |t|
+    $sleep_time = t.to_i
+  end
+
   opts.on( "-r", "--restart", "Restart kemuri." ) do |r|
     stop_kemuri rescue puts( "No instance running ? Anyway, starting Kemuri." )
   end
