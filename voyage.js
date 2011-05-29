@@ -52,7 +52,7 @@ function voyage_update_options() {
             destination = '/sk/';
         else if( dokomade.match(/^http/) )
             destination = '/proxy/';
-        else if( dokomade.match(/+|&/) )
+        else if( dokomade.match(/\+|&/) )
             destination = '/slook/';
         else
             destination = '/yad/';
