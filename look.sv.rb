@@ -47,6 +47,7 @@ class Look
         rad_i += 1
         ele[:r].map {|kan| 
           rad_j += 1
+          #TODO if just one rad -> change input type 
           [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{rad_i}-#{rad_j}' value='#{i}'/>#{e}"}
         }
       }.flatten( 1 )
@@ -62,7 +63,7 @@ class Look
           rad_i += 1
           ele[:r].map! {|kan|
             rad_j += 1
-            request.post["r#{rad_i}-#{rad_j}"] or message( "missing a rad ?" )
+            request.post["r#{rad_i}-#{rad_j}"] or (message( "missing a rad ?" ) and 0)
           }
         end
       end
