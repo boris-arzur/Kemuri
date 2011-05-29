@@ -33,7 +33,7 @@ class Kemuri
 end
 
 class Request
-  attr_accessor :type, :xml, :keep_alive, :post
+  attr_accessor :type, :xml, :keep_alive, :post, :path, :options
   def initialize type, path, options, post, keep_alive = false
     @path = path
     if path[0] =~ /\.xml$/
