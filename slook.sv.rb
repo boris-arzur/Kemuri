@@ -26,7 +26,7 @@ class Slook
       kanji_def = Hash.new {|h,k| h[k] = []}
       t.split( "&" ).each {|e|
         next if e.size == 0
-        if e =~ /^[\d]-[\d]+-[\d]+$|^[\d]+$/
+        if e =~ /^[\d]-[_\d]+-[_\d]+$|^[\d]+$/
           kanji_def[:s] = e
         else
           kanji_def[:r] << e.url_utf8

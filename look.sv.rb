@@ -67,7 +67,7 @@ class Look
      
       if add_single_rads
         rewrote_request = Request.new( "POST", request.path, request.options, add_single_rads, true ) 
-        return Look::process(rewrote_request)
+        return Look::process( rewrote_request )
       end
       radicals_pickup << ["<input type=submit value=ok />"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
@@ -96,7 +96,11 @@ class Look
         if skip.is_a?( String ) && skip.split( '-' ).size == 1
           cond << "SELECT oid AS kid FROM kanjis WHERE strokes = #{skip}"
         elsif skip.is_a?( String )
-          cond << "SELECT oid AS kid FROM kanjis WHERE skip = '#{skip}'"
+          if skip =~ /_/
+            cond << "SELECT oid AS kid FROM kanjis WHERE skip LIKE '#{skip.gsub('_','%')}'"
+          else
+            cond << "SELECT oid AS kid FROM kanjis WHERE skip = '#{skip}'"
+          end
         end
 
         cond += rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"}
