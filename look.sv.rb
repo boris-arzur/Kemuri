@@ -38,20 +38,37 @@ class Look
     data = @@store[id]
 
     log "id, data, @@store"
-    log [id, data, @@store]
+    log id, data, @@store
 
     if !request.type
       rad_i = 0
       rad_j = 0
+      add_single_rads = {}
       radicals_pickup = data.map {|ele| 
         rad_i += 1
         ele[:r].map {|kan| 
           rad_j += 1
           #TODO if just one rad -> change input type 
-          [kan.style( 'color:green' ),"&rarr;"]+Kanji.new( kan ).get_radicals.map {|i,e| "<input type='checkbox' name='r#{rad_i}-#{rad_j}' value='#{i}'/>#{e}"}
+          rads = Kanji.new(kan).get_radicals
+          rads =
+            if rads.size == 1
+              add_single_rads["r#{rad_i}-#{rad_j}"] = rads[0][0] if add_single_rads
+              ["<input type='hidden' name='r#{rad_i}-#{rad_j}' value='#{rads[0][0]}'/>#{rads[0][1]}"] 
+            else
+              add_single_rads = false
+              rads.map {|i,e| "<input type='checkbox' name='r#{rad_i}-#{rad_j}' value='#{i}'/>#{e}"}
+            end
+
+          rads.unshift("&rarr;")
+          rads.unshift(kan.style( 'color:green' ))
         }
-      }.flatten( 1 )
-      
+      }.flatten(1)
+      log radicals_pickup
+     
+      if add_single_rads
+        rewrote_request = Request.new( "POST", request.path, request.options, add_single_rads, true ) 
+        return Look::process(rewrote_request)
+      end
       radicals_pickup << ["<input type=submit value=ok />"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
       radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
