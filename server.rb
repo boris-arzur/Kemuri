@@ -42,7 +42,8 @@ $log_bf = []
 $history_mx = Mutex.new
 $history_bf = []
 
-def log( t )
+def log( *t )
+  t = t[0] if t.size == 1
   $log_mx.synchronize do $log_bf << "[@#{Time.new.to_i.to_s( 36 )}] #{t}" end
 end
 
