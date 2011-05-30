@@ -96,5 +96,5 @@ function search_bar_scroll_hdl(event) {
 var search_bar_scroll_offset = 65;
 var search_bar_placeholder = document.getElementById( "search_bar" );
 document.addEventListener( "scroll", search_bar_scroll_hdl, false );
-search_bar_placeholder.style.left = 220;
+search_bar_placeholder.style.left = 260;
 search_bar_scroll_hdl(null);
