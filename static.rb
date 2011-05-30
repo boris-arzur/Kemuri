@@ -59,8 +59,6 @@ class Static
   Capture = load_content( 'capture.js' )  
   Normal = "function go_to( normal_url ){window.location = normal_url;}".script
 
-  SelectRads = load_content( 'select_rads.static.html.gz' )
-
   def self.kanji_table id_table 
     kanji_table = File::read( 'kanji_table.html' )
     kanji_table.gsub( /#id_table#/, id_table )

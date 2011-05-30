@@ -42,12 +42,10 @@ def kanji_table sql, req_path, id_table = rand().to_id, url_replace = nil
   radi_cond = all_rids.keys.map{|r| "radicals.oid == #{r}" }*' OR '
 
   sql = <<EOS
-SELECT radicals.oid,radicals.radical
+SELECT oid,radical
   FROM radicals 
-  LEFT JOIN kanjis
-    ON kanjis.kanji == radicals.radical
   WHERE #{radi_cond}
-  ORDER BY kanjis.strokes;
+  ORDER BY strokes;
 EOS
 
   radicals = $db.execute( sql ).map {|rid,radi|
