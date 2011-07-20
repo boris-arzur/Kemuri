@@ -64,12 +64,13 @@ class Server
   def initialize()
     @port = $kemuri_port || 8185
     @name = 'Kemuri'
-    @listen = '127.0.0.1'
+    @listen = $kemuri_bind || '127.0.0.1'
 
     @listener = ::TCPServer.new( @listen, @port )
     @message_mutex = Mutex.new
     @message = false
     log( 'Running on Ruby ' + RUBY_VERSION )
+    log( "Bound to #{@listen}:#{@port}." )
   end
 
   def handle_connection connection
