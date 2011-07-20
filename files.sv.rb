@@ -32,7 +32,7 @@ class DataBlob
       length = nil
     end
 
-    filename = 'files/' + request[1].gsub( '%20', ' ' )
+    filename = 'files/' + request[1].gsub( '%20', ' ' ).gsub( '%27', "'" )
     @length = File::size filename
     @inner = File::read( filename, length, beginning )
     @mime = $mime_types[filename.split( '.' )[-1]]
@@ -54,7 +54,7 @@ class Files
   end
 
   def self.list
-    Dir::entries( 'files' ).sort.map {|f| [f.a( 'files.xml/'+f ), $mime_types[f.split( '.' )[-1]]]}.to_table
+    Dir::entries( 'files' ).sort.map {|f| [f.a( 'files.xml/'+f.gsub( '\'', "%27" ) ), $mime_types[f.split( '.' )[-1]]]}.to_table
   end
 
   def self.send request
