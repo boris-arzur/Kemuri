@@ -18,9 +18,20 @@
 require './mime_types.rb'
 
 class DataBlob
-  def initialize file
-    @inner = File::read 'files/'+file.gsub( '%20', ' ' )
-    @mime = $mime_types[file.split( '.' )[-1]]
+  def initialize request
+    range = request.range
+    if range
+      range = range.map {|e| e.to_i}
+      beginning = range[0]
+      length = range[1] - range[0]
+    else
+      beginning = 0
+      length = nil
+    end
+
+    filename = 'files/' + request[1].gsub( '%20', ' ' )
+    @inner = File::read( filename, length, beginning )
+    @mime = $mime_types[filename.split( '.' )[-1]]
   end
 
   def to_http
@@ -33,15 +44,15 @@ class Files
     if !request[1]
       Files::list 
     else
-      Files::send request[1]
+      Files::send request
     end
   end
 
   def self.list
-    Dir::entries( 'files' ).map {|f| [f.a( 'files.xml/'+f ), $mime_types[f.split( '.' )[-1]]]}.to_table
+    Dir::entries( 'files' ).sort.map {|f| [f.a( 'files.xml/'+f ), $mime_types[f.split( '.' )[-1]]]}.to_table
   end
 
-  def self.send file
-    DataBlob.new file    
+  def self.send request
+    DataBlob.new request
   end
 end

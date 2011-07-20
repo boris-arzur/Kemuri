@@ -33,8 +33,8 @@ class Kemuri
 end
 
 class Request
-  attr_accessor :type, :xml, :keep_alive, :post, :path, :options
-  def initialize type, path, options, post, keep_alive = false
+  attr_accessor :type, :xml, :keep_alive, :post, :path, :options, :range
+  def initialize type, path, options, post, keep_alive = false, range = nil
     @path = path
     if path[0] =~ /\.xml$/
       @xml = true
@@ -44,6 +44,7 @@ class Request
     @type = type
     @post = post
     @keep_alive = keep_alive
+    @range = range
   end
 
   def to_url(mod_options = {})
@@ -155,11 +156,14 @@ class String
     raw_post_data = split_req[split_req.find_index( "\r" )+1] || ''
     keep_alive = !!split_req[0].strip =~ /HTTP\/1.1$/
     keep_alive ||= !!split_req.find {|l| l.strip == "Connection: keep-alive"}
-    Request.new( type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive )
+    range = split_req.find {|l| l =~ /^Range: /}
+    range = range.strip.split( '=' )[1].split( '-' ) if range
+#Range: bytes=0-1
+    Request.new( type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive, range )
   end
 
   def to_http( mime_type = "text/html; charset=UTF-8" )
-    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
+    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
   end
 
   def in_skel
