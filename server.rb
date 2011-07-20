@@ -96,7 +96,7 @@ class Server
         log( "#{my_id} : processing : #{request.inspect}" )
         t = Time.new
         answer = protect('executing') {Servlet::execute( request )}
-        log "That took #{Time.new - t}."
+        log "That took #{Time.new - t} s."
         if not request.xml
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
           @message_mutex.synchronize do
