@@ -162,8 +162,8 @@ class String
     Request.new( type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive, range )
   end
 
-  def to_http( mime_type = "text/html; charset=UTF-8" )
-    "HTTP/1.1 200 OK\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n\r\n#{self}"
+  def to_http( reply_code = "200 OK", mime_type = "text/html; charset=UTF-8", additional_content = '' )
+    "HTTP/1.1 #{reply_code}\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n#{additional_content}\r\n#{self}"
   end
 
   def in_skel

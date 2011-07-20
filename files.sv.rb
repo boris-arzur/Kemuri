@@ -19,23 +19,28 @@ require './mime_types.rb'
 
 class DataBlob
   def initialize request
+    @request = request
     range = request.range
     if range
+      @reply_code = "206 Partial Content"
       range = range.map {|e| e.to_i}
       beginning = range[0]
-      length = range[1] - range[0]
+      length = range[1] - range[0] + 1
     else
+      @reply_code = "200 OK"
       beginning = 0
       length = nil
     end
 
     filename = 'files/' + request[1].gsub( '%20', ' ' )
+    @length = File::size filename
     @inner = File::read( filename, length, beginning )
     @mime = $mime_types[filename.split( '.' )[-1]]
   end
 
   def to_http
-    @inner.to_http @mime
+    add_cntnt = @request.range ? "Content-Range: bytes #{@request.range*'-'}/#{@length}\r\n" : ''
+    @inner.to_http @reply_code, @mime, add_cntnt 
   end
 end
 
