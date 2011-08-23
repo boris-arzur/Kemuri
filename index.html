@@ -28,8 +28,8 @@
 <br/>
 <br/>It creates a web server on 127.0.0.1:8185 that you can access with
 <br/>safari and query for skip codes, radicals, kanjis, prononciations
-<br/>or translations of english words, it also features jlpt's lists,
-<br/>and your own if you spend some time building them.
+<br/>or translations of english words --or a mix thereof-- it also 
+<br/>features jlpt's lists, and your own if you spend some time building them.
 <br/>
 <br/>I provide sqlite3 ruby bindings as a gzipped tarball (see
 <br/><a href="https://sourceforge.net/projects/kemuri/">https://sourceforge.net/projects/kemuri/</a>) of the build tree,
@@ -39,7 +39,7 @@
 </div>
 
 <h2> ** Download **</h2>
-<div><a href="https://sourceforge.net/projects/kemuri/files/kemuri-1.2.tar.gz/download">Version 1.2 Here.</a></div>
+<div><a href="https://sourceforge.net/projects/kemuri/files/kemuri-1.3.tar.gz/download">Version 1.3 Here.</a></div>
 
 <h2> ** License **</h2>
 
@@ -106,7 +106,7 @@ create a web-app.<br/>
 <br/>
 <span class="ita">This is still a BETA feature...</span><br/>
 &lt;/edit&gt;<br/>
-
+<br/>
 <br/>
 Direct your browser to one of the sub-module :
 <ul>
@@ -116,14 +116,14 @@ Direct your browser to one of the sub-module :
 <li>http://127.0.0.1:8185/sk for skip codes, stroke count based searches;</li>
 <li>http://127.0.0.1:8185/rad for radical based search.</li>
 </ul>
-
+<br/>
 These modules are as RESTful as possible :
 <ul>
 <li>/yad/start looks for start in the dictionary;</li>
 <li>/kan/漢 looks for 漢 in the database;</li>
 <li>/sk/1-2-3 tries to match the skip 1-2-3.</li>
 </ul>
-
+<br/>
 Basically each .sv.rb induced servlet is available through<br/>
 http://127.0.0.1:8185/`basename ${file} .sv.rb`.<br/>
 <br/>
@@ -137,23 +137,43 @@ text (we call it $1 in what follows) in it, it will try to redirect you :
 <li>/^\d-\d+-\d+-\d-\d+-\d+$/ to /sk/$1;</li>
 <li>numbers and hyphen separated pairs of numbers go to /sk/$1;</li>
 <li>single kanjis to /kan/$1 or /yad/$1 (you have to choose);</li>
-<li>multiple kanjis or kana to /yad/$1.</li>
+<li>multiple kanjis or kana to /yad/$1;</li>
+<li>expression containing &amp; or + to /slook/$1, then to <br/>
+/look/a_random_string, see the **Search** section.</li>
 </ul>
-
+<br/>
+This is the prefered way of interacting with Kemuri.<br/>
+<br/>
 In some modules, you will find a blue button, try to drag it, it can be used<br/>
 to navigate and will show in its center where it is going to send you.<br/>
 For example, in /yav, it is used to answer : 'y' is 'yes, I know the kanji',<br/>
 'n' is 'no', 'h' is 'hibernate' and 'yy' is 'double yes'. Different answers have<br/>
 different effects on the learning algorithm, please refer to the code.<br/>
-
+<br/>
 Please note this software uses ruby, sqlite3 and sqlite3-ruby, you<br/>
 might need to get that installed before you can use Kemuri.<br/>
+</div>
+
+<h2> ** Search ** </h2>
+
+<div>
+This program features a new way of searching for kanjis : combine radicals<br/>
+from whatever kanji you know, with vague skip codes (such as "it's a two part<br/>
+vertical kanji" or "there's 4 strokes on the top part") and stroke counts, glue<br/>
+these descriptions together with '&amp;', add the possibility to look for more than<br/>
+one kanji at a time with '+' and you have the ultimate kanji searching application.<br/>
+<br/>
+Examples :
+<ul>
+<li>typing 帯&amp;1-3-_+在 in voyage, when you are looking for 滞在;</li>
+<li>特+残&amp;1-_-_+医+病&amp;小+研+究 for 特殊医療研究...</li>
+</ul>
 </div>
 
 <h2>   ** Author ** </h2>
 
 <div>  
-Brought to you by [RemoveTheCaps] BBBborisSSS |δοτ| AAAarzurRRR |ατ| our_google_overlords_operated_mail_service [/RemoveTheCaps].
+Brought to you by boris |dοτ| arzur |ατ| our_google_overlords_operated_mail_service.
 <br/>
 <br/>
 <br/>
