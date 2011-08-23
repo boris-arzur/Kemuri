@@ -52,8 +52,8 @@ function ajax_get( url ) {
     if( json["fin"] ) finished();
     if( json["pairs"] ) do_pairs();
     next_page = json["last_row"];
-    next_page_scroll_hdl( null );
     free_ajax = true;
+    next_page_scroll_hdl( null );
   };
 }
 
