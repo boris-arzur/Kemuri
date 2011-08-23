@@ -1,3 +1,20 @@
+1.3 :
+  Speeds-up & clean ups, for real.
+  Hilight text in Yad or where-ever.
+  Can serve static files (support range & partial content, for iphones quicktime
+    players).
+  Proxy module, so that you can search any site in iphone's safari...
+  A lot of fixes. Srsly. More options too.
+
+  Look : a new way of searching for kanjis is here : combine radicals from
+    whatever kanji you know, with vague skip codes (such as "it's a two part
+    vertical kanji" or "there's 4 strokes on the top part") and stroke counts,
+    glue these descriptions together with '&', add the possibility to look for
+    more than one kanji at a time with '+' and you have the ultimate kanji
+    searching application. Examples : 
+     - typing 帯&1-3-_+在 in voyage, when you are looking for 滞在;
+     - 特+残&1-_-_+医+病&小+研+究 for 特殊医療研究...
+
 1.2 :
   Iphone web-app compatibily mode with '&capture' option.
   Various cleanups, fixes and improvements. Support for Ruby1.9 and recent version of sqlite3-ruby.
