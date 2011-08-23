@@ -26,14 +26,11 @@ function append( xml ) {
 }
 
 var ask_for = 'p=';
-
-var next_page = 1;
 function next_page_scroll_hdl( event ) {
-  if( update && (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) ) {
+  if( free_ajax && update && (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) ) {
     /* glue is defined in static.rb */
     var url = next_page_url_base + glue + ask_for + next_page;
-		ajax_get( url );
-    next_page = next_page + 1;
+    ajax_get( url );
     /* content is appended by the eval */
   };
 }
@@ -46,9 +43,15 @@ function ajax_get( url ) {
     window.setTimeout(function(){free_ajax = true;}, 1500);
     var req = new XMLHttpRequest();
     req.open( "GET", url , false );
-    req.overrideMimeType( "text/javascript" );
+    /* req.overrideMimeType( "application/json" ); no need to force anymore, implemented server side */
     req.send( null );
-    eval( req.responseText );
+    /* eval( req.responseText ); this -might be- -IS- WAS a security hole */
+    json = JSON.parse( req.responseText );
+    console.dir( json );
+    append( json["content_as_html"] );
+    if( json["fin"] ) finished();
+    if( json["pairs"] ) do_pairs();
+    next_page = json["last_row"];
     next_page_scroll_hdl( null );
     free_ajax = true;
   };

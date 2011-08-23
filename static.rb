@@ -132,12 +132,13 @@ EOS
     res + VoyageStyle + VoyageScript
   end
 
-  def self.next_page base, start
+  def self.next_page base, start, next_page
     res = <<-EOS
 <script type="text/javascript">
   var update = #{start ? 'true' : 'false'};
   var next_page_url_base = "#{base}";
   var glue = "#{(base =~ /\?$/ )?"":"&"}";
+  var next_page = #{next_page};
 </script>
 <div id='add'></div>
 <div id='bottom'></div>

@@ -18,6 +18,7 @@
 
 require 'find'
 require 'time'
+require './json.rb'
 
 class Kemuri 
   @@files = nil
