@@ -52,7 +52,7 @@ def to_history( t )
 end
 
 def message( m )
-	$me.message( m )
+  $me.message( m )
 end
 
 require './engine.rb'
@@ -133,8 +133,8 @@ class Server
           sleep sleep_time
           if $log_bf.size > 5
             $log_mx.synchronize do
-							#FIX
-							log_buf_content = ($log_bf * "\n").force_encoding('UTF-8')
+              #FIX
+              log_buf_content = ($log_bf * "\n").force_encoding('UTF-8')
               File::open( 'server.log' , 'a' ) {|f| f.puts( log_buf_content )}
               $log_bf = []
             end
@@ -147,19 +147,20 @@ class Server
             end
           end
         rescue Exception => e
-					msg = "#{"\n".encoding+' --  '+$log_bf.inspect}#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
-					message msg
+          msg = "#{"\n".encoding+' --  '+$log_bf.inspect}#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
+          message msg
         end
       end
     end
   end
 
   def to_url
-    "http://#{@listen}:#{@port}/"
+    return "http://#{@listen}:#{@port}/" if @listen != "0.0.0.0"
+    "/"
   end
 
-	def message( m )
-		m = "/!\\ #{m} /!\\"
+  def message( m )
+    m = "/!\\ #{m} /!\\"
     @message_mutex.synchronize do
       if @message
         @message += "<br/>#{m}"
