@@ -18,6 +18,9 @@
 
 require 'find'
 require 'time'
+require 'zlib'
+require 'stringio'
+
 require './json.rb'
 
 class Kemuri 
@@ -164,7 +167,17 @@ class String
   end
 
   def to_http( reply_code = "200 OK", mime_type = "text/html; charset=UTF-8", additional_content = '' )
-    "HTTP/1.1 #{reply_code}\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{self.bytes.to_a.size}\r\n#{additional_content}\r\n#{self}"
+    # add gzip !
+    if !$gzip
+      core = self
+    else
+      core = ""
+      gz_core = Zlib::GzipWriter.new(StringIO.new(core))
+      gz_core.write(self)
+      gz_core.close
+      additional_content += "Content-Encoding: gzip\r\n"
+    end
+    "HTTP/1.1 #{reply_code}\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{core.bytes.to_a.size}\r\n#{additional_content}\r\n#{core}"
   end
 
   def in_skel

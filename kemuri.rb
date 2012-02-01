@@ -39,6 +39,7 @@ def stop_kemuri
   Process.kill( "TERM", pid.to_i )
 end
 
+$gzip = false
 daemon = true
 OptionParser.new do |opts|
   opts.banner = "Usage: kemuri.rb [options]"
@@ -53,6 +54,10 @@ OptionParser.new do |opts|
 
   opts.on( "-t", "--time [S]", "Change sleep time for the flushing thread (10)." ) do |t|
     $sleep_time = t.to_i
+  end
+
+  opts.on( "-z", "--gzip", "Use gzip compression in replies." ) do |t|
+    $gzip = true
   end
 
   opts.on( "-r", "--restart", "Restart kemuri." ) do |r|
