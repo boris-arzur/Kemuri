@@ -28,7 +28,7 @@ function yad_bar_clear() {
     return false;
 }
 
-var yad_bar_scroll_offset = 65;
+var yad_bar_scroll_offset = 90;
 var yad_bar_placeholder = document.getElementById( "yad_bar" );
 document.addEventListener( "scroll", yad_bar_scroll_hdl, false );
 yad_bar_placeholder.style.left = 220;

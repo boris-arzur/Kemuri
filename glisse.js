@@ -57,9 +57,11 @@ function glisse_handle_end(event) {
   go_to(glisse_base + end_p + glisse_post);
 }
 
+var glisse_offset = 150;
+
 function glisse_scroll_hdl(event) {
-  document.getElementById( 'glisse' ).style.top = window.innerHeight - 75  + window.scrollY;
-};
+  document.getElementById( 'glisse' ).style.top = window.innerHeight - glisse_offset + window.scrollY;
+}
 
 function show(o)
 {
@@ -88,7 +90,5 @@ function glisse(base, up, down, left, right, post)
   glisse_right = right;
   glisse_up = up;
   glisse_down = down;
-	glisse_post = post;
-};
-
-
+  glisse_post = post;
+}

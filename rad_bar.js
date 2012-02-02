@@ -39,7 +39,7 @@ function send_form() {
   go_to( "/rad/?rad="+rads.join( "&rad=" ) );
 }
 
-var rad_bar_scroll_offset = 65;
+var rad_bar_scroll_offset = 90;
 var rad_bar_placeholder = document.getElementById( "rad_bar" );
 document.addEventListener( "scroll", rad_bar_scroll_hdl, false );
 rad_bar_placeholder.style.left = 220;
