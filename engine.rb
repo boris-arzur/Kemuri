@@ -163,10 +163,10 @@ class String
     range = split_req.find {|l| l =~ /^Range: /}
     range = range.strip.split( '=' )[1].split( '-' ) if range
 #Range: bytes=0-1
-    Request.new( type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive, range )
+    Request.new(type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive, range)
   end
 
-  def to_http( reply_code = "200 OK", mime_type = "text/html; charset=UTF-8", additional_content = '' )
+  def to_http(reply_code = "200 OK", mime_type = "text/html; charset=UTF-8", additional_content = '')
     # add gzip !
     if !$gzip
       core = self
@@ -182,7 +182,8 @@ class String
 
   def in_skel
 <<EOP
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
  <meta name="viewport" content="width=device-width"/>
  <meta name="apple-mobile-web-app-capable" content="yes"/>

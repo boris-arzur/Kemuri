@@ -37,8 +37,7 @@ class Look
     id = request[1]
     data = @@store[id]
 
-    log "id, data, @@store"
-    log id, data, @@store
+    log "id: #{id.inspect}, data: #{data.inspect}, @@store: #{@@store.inspect}"
 
     if !request.type
       rad_i = 0
@@ -69,9 +68,11 @@ class Look
         rewrote_request = Request.new( "POST", request.path, request.options, add_single_rads, true ) 
         return Look::process( rewrote_request )
       end
-      radicals_pickup << ["<input type=submit value=ok />"]
+      radicals_pickup << ["<input type='submit' value='ok'/>"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
-      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
+      rp = radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
+      log rp
+      rp 
     elsif request.post.keys[0] =~ /^r/
       @@mutex.synchronize do
         rad_i = 0
@@ -84,7 +85,7 @@ class Look
           }
         end
       end
-      log data
+      log "l88 data: #{data}"
 
       data.map_i do |ele,i|
         rads = ele[:r].flatten
@@ -118,7 +119,7 @@ class Look
       request[1] = request['kans'].gsub( ',', '' )
       Servlet::execute( request )
     else
-      '...'
+      '...' + Static::voyage
     end
   end
 end
