@@ -20,6 +20,7 @@
 .bar {
   background-color: #ccccff;
   display: table; margin-left: 0px; margin-right: 0px;
+  bottom: 60px;
   position: absolute;
   text-align: center;
 }
