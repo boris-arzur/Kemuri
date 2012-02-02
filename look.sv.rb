@@ -25,10 +25,10 @@ class Look
   end
 
   def self.start( data )
-    log "starting with this : " +data.inspect
+    #log "starting with this : " +data.inspect
     id = rand.to_id
     @@mutex.synchronize {@@store[id] = data}
-    log @@store
+    #log @@store
     req_rewrite = Request.new( false, ['look',id], {}, nil )
     Look::process req_rewrite
   end
@@ -37,7 +37,7 @@ class Look
     id = request[1]
     data = @@store[id]
 
-    log "id: #{id.inspect}, data: #{data.inspect}, @@store: #{@@store.inspect}"
+    #log "id: #{id.inspect}, data: #{data.inspect}, @@store: #{@@store.inspect}"
 
     if !request.type
       rad_i = 0
@@ -62,7 +62,7 @@ class Look
           rads.unshift(kan.style( 'color:green' ))
         }
       }.flatten(1)
-      log radicals_pickup
+      #log radicals_pickup
      
       if add_single_rads
         rewrote_request = Request.new( "POST", request.path, request.options, add_single_rads, true ) 
@@ -70,8 +70,8 @@ class Look
       end
       radicals_pickup << ["<input type='submit' value='ok'/>"]
       radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
-      rp = radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
-      log rp
+      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
+      #log rp
       rp 
     elsif request.post.keys[0] =~ /^r/
       @@mutex.synchronize do
@@ -85,13 +85,13 @@ class Look
           }
         end
       end
-      log "l88 data: #{data}"
+      #log "l88 data: #{data}"
 
       data.map_i do |ele,i|
         rads = ele[:r].flatten
         skip = ele[:s]
         
-        log ele[:s]
+        #log ele[:s]
 
         cond = []
         if skip.is_a?( String ) && skip.split( '-' ).size == 1
@@ -107,7 +107,7 @@ class Look
         cond += rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"}
         r1 = "SELECT kanjis.oid,kanjis.kanji FROM (#{cond * " INTERSECT "}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid ORDER BY kids.kid"
 
-        log r1
+        #log r1
         table_id = rand.to_id
         kanji_table( r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#' )
       end * "------<br/>" + Static::voyage + Static::look_select( data.size, request.to_url )
