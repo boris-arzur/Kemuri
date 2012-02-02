@@ -87,10 +87,12 @@ class Server
           connection.close()
         end
       elsif request == ''
-        log "#{my_id} : empty stuff, closing."
-        protect('replying') { connection.puts( "Connection: close\r\n" ) }
+        #log "#{my_id} : empty stuff size=#{request.size}, keepalive packet."
+        #protect('replying') { connection.puts( "Connection: close\r\n" ) }
+	connection.write("\x00"*6)
         connection.flush()
-        connection.close()
+	sleep(0.1)
+        #connection.close()
       else
         request = protect('parsing') {request.parse()}
         log( "#{my_id} : processing : #{request.inspect}" )
