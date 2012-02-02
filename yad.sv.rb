@@ -90,7 +90,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
                            }.to_json ) if !valid_pairs
           start = request['alt'] ? 1 : 0
           cond_r2 = Yad::find( kanjis.cut( 2, start ).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR" )
-          log cond_r2
+          #log cond_r2
         else
           cond_r1 = Yad::find( kanjis, :field => "kanji", :logic => "OR", :ope => "==" )
           cond_r2 = Yad::find( kanji, :field => "japanese", :half_whiskers => true )
@@ -103,7 +103,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
         
     if request.xml && request['kb']
       #on demande le kanji breakdown
-      log "exe1 : #{r1}"
+      #log "exe1 : #{r1}"
       rez = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m]}.to_table
       return JSON.new( { "content_as_html" => rez, "last_row" => 0, "fin" => true, "pairs" => false }.to_json )
     elsif request.xml && (request['p'] || request['pairs'])
@@ -112,7 +112,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       cond_r2 = Yad::find( kanji, :field => "japanese" ) if request['fuzz'] #on regenere la condi si on est en fuzz
       #on regen de tte facon la req, pr inserer la condi sur OID
       r2 = "SELECT OID, japanese, english FROM examples WHERE OID > #{last_oid.to_i} AND (#{cond_r2}) LIMIT #{limit}"
-      log "exe2 : #{r2}"
+      #log "exe2 : #{r2}"
       rez = $db.execute( r2 )
       this_last_oid = rez[-1][0] rescue 0
       rez.map! {|oid,jp,en| [jp,en]}
@@ -131,7 +131,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       return JSON.new( json.to_json ) 
     else
       r2 = "SELECT OID, japanese, english FROM examples WHERE #{cond_r2} LIMIT #{limit}"
-      log "exe3 : #{r2}"
+      #log "exe3 : #{r2}"
       dynamic_content = $db.execute( r2 )
       this_last_oid = dynamic_content[-1][0] rescue 0
       dynamic_content.map! {|oid,jp,en| [jp,en]}
@@ -140,12 +140,12 @@ Second call and subsequent calls, from js' xmlhttprequest :
       if dynamic_content.size == 0 && valid_kb # valid_kb means entry is kanji
         cond_r2 = Yad::find( kanji, :field => "japanese" )
         r2 = "SELECT OID, japanese, english FROM examples WHERE #{cond_r2} LIMIT #{limit}"
-        log "exe5 : #{r2}"
+        #log "exe5 : #{r2}"
         dynamic_content = $db.execute( r2 )
         this_last_oid = dynamic_content[-1][0] rescue 0
         dynamic_content.map! {|oid,jp,en| [jp,en]}
         unless dynamic_content.size > 0
-          log "exe4 : #{r1}"
+          #log "exe4 : #{r1}"
           dynamic_content = $db.execute( r1 ).map {|i,k,r,m| [k.a( '/kan/'+i.to_s ),r,m]}
           start_nextpage_js = false 
         end
