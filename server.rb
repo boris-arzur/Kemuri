@@ -33,7 +33,7 @@ else
 end
 
 def plog *t
-  log t.map{|i| i.inspect}.join( "\n" )
+  log t.map{|i| i.inspect}.join("\n")
 end
 
 $log_mx = Mutex.new
@@ -42,17 +42,17 @@ $log_bf = []
 $history_mx = Mutex.new
 $history_bf = []
 
-def log( *t )
+def log(*t)
   t = t[0] if t.size == 1
-  $log_mx.synchronize do $log_bf << "[@#{Time.new.to_i.to_s( 36 )}] #{t}" end
+  $log_mx.synchronize do $log_bf << "[@#{Time.new.to_i.to_s(36)}] #{t}" end
 end
 
-def to_history( t )
+def to_history(t)
   $history_mx.synchronize do $history_bf << t end
 end
 
-def message( m )
-  $me.message( m )
+def message(m)
+  $me.message(m)
 end
 
 require './engine.rb'
@@ -66,19 +66,19 @@ class Server
     @name = 'Kemuri'
     @listen = $kemuri_bind || '127.0.0.1'
 
-    @listener = ::TCPServer.new( @listen, @port )
+    @listener = ::TCPServer.new(@listen, @port)
     @message_mutex = Mutex.new
     @message = false
-    log( 'Running on Ruby ' + RUBY_VERSION )
-    log( "Bound to #{@listen}:#{@port}." )
+    log('Running on Ruby ' + RUBY_VERSION)
+    log("Bound to #{@listen}:#{@port}.")
   end
 
   def handle_connection connection
-    my_id = Thread.current.object_id.to_s( 36 )
+    my_id = Thread.current.object_id.to_s(36)
     until connection.closed? do
-      request = protect( 'reading' ) {
-        triggered = IO.select( [connection], [], [], 5 )
-        connection.recv_nonblock( 100000 ) if triggered and not connection.closed?
+      request = protect('reading') {
+        triggered = IO.select([connection], [], [], 5)
+        connection.recv_nonblock(100000) if triggered and not connection.closed?
       }
 
       if request.nil?
@@ -88,16 +88,17 @@ class Server
         end
       elsif request == ''
         #log "#{my_id} : empty stuff size=#{request.size}, keepalive packet."
-        #protect('replying') { connection.puts( "Connection: close\r\n" ) }
-	connection.write("\x00"*6)
+        #protect('replying') { connection.puts("Connection: close\r\n") }
+        connection.write("\x00"*6)
         connection.flush()
-	sleep(0.1)
+        sleep(0.1)
         #connection.close()
       else
+        request += missing_bits(request, connection)
         request = protect('parsing') {request.parse()}
-        log( "#{my_id} : processing : #{request.inspect}" )
+        log("#{my_id} : processing : #{request.inspect}")
         t = Time.new
-        answer = protect('executing') {Servlet::execute( request )}
+        answer = protect('executing') {Servlet::execute(request)}
         log "That took #{Time.new - t} s."
         if not request.xml
           protect('add_capture') {answer += (request['capture'] ? Static::Capture : Static::Normal)}
@@ -111,7 +112,7 @@ class Server
           answer += Static::Capture
         end
 
-        protect('replying') {connection.print( (request.xml ? answer : answer.in_skel).to_http )}
+        protect('replying') {connection.print((request.xml ? answer : answer.in_skel).to_http)}
         connection.flush()
         connection.close() unless request.keep_alive
       end
@@ -119,11 +120,22 @@ class Server
     log "#{my_id} out."
   end
 
+  def missing_bits(request, connection)
+    content_length = request.scan(/content-length:\s*\d+/im).first
+    if content_length && request[-4..-1] == "\r\n\r\n"
+      missing = content_length.split(":").last.to_i
+      log "there's more in the tubes : missing #{missing}"
+      connection.read(missing)
+    else
+      ""
+    end
+  end
+
   def start_serving
     loop do
       connection = @listener.accept
       log 'Server main loop : new connection'
-      Thread.new {handle_connection( connection )}
+      Thread.new {handle_connection(connection)}
     end
   end
 
@@ -137,19 +149,19 @@ class Server
             $log_mx.synchronize do
               #FIX
               log_buf_content = ($log_bf * "\n").force_encoding('UTF-8')
-              File::open( 'server.log' , 'a' ) {|f| f.puts( log_buf_content )}
+              File::open('server.log' , 'a') {|f| f.puts(log_buf_content)}
               $log_bf = []
             end
           end
 
           if $history_bf.size > 0
             $history_mx.synchronize do
-              File::open( 'history.log' , 'a' ) {|f| f.puts( $history_bf * "\n" )}
+              File::open('history.log' , 'a') {|f| f.puts($history_bf * "\n")}
               $history_bf = []
             end
           end
         rescue Exception => e
-          msg = "#{"\n".encoding+' --  '+$log_bf.inspect}#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join( "<br/>" )}"
+          msg = "#{"\n".encoding+' --  '+$log_bf.inspect}#{e.inspect.escape}<br/>#{e.backtrace.map{|l| l.escape}.join("<br/>")}"
           message msg
         end
       end
@@ -161,7 +173,7 @@ class Server
     "/"
   end
 
-  def message( m )
+  def message(m)
     m = "/!\\ #{m} /!\\"
     @message_mutex.synchronize do
       if @message
@@ -180,21 +192,21 @@ class Servlet
 
   def self.register_all
     Kemuri.files.each do |file|
-      Servlet::register( file ) if file =~ Ext
+      Servlet::register(file) if file =~ Ext
     end
 
     @@servlets.default = ::Quatrecentquatre.new
-    log( "Registered modules : " + @@servlets.keys.inspect )
+    log("Registered modules : " + @@servlets.keys.inspect)
   end
 
-  def self.register( file )
-    load( file )
-    name = file.gsub( Ext , '' )
-    @@servlets[name] = eval( name.capitalize + '.new' )
+  def self.register(file)
+    load(file)
+    name = file.gsub(Ext , '')
+    @@servlets[name] = eval(name.capitalize + '.new')
   end
 
-  def self.execute( request )
-    @@servlets[request[0]].execute( request )
+  def self.execute(request)
+    @@servlets[request[0]].execute(request)
   end
 end
 
@@ -202,7 +214,7 @@ def server_start
   `rm server.log;touch server.log`
   Servlet::register_all
   $me = Server.new
-  File.open( "kemuri.pid", "w" ) {|f| f.print( Process.pid )}
+  File.open("kemuri.pid", "w") {|f| f.print(Process.pid)}
   $me.start_flusher
   $me.start_serving
 end
