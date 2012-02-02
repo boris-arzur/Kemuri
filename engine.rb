@@ -188,6 +188,7 @@ class String
  <meta name="viewport" content="width=device-width"/>
  <meta name="apple-mobile-web-app-capable" content="yes"/>
  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+ <link rel="shortcut icon" href="/files.xml/favicon.ico" />
  <title>煙</title>
 </head>
 <body onload="window.scrollTo(0, 1);">
