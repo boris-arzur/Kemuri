@@ -84,6 +84,7 @@ class Server
       if request.nil?
         protect('closing') do
           log "#{my_id} : auto-close keep-alive"
+          protect('formalities') { connection.puts("Connection: close\r\n"); connection.flush() }
           connection.close()
         end
       elsif request == ''
