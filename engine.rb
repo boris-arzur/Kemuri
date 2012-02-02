@@ -274,7 +274,7 @@ end
 
 def protect name 
   begin
-    return yield
+    yield
   rescue Exception => e
 		# fix some pb, with new version of ruby and ol' sqlite3
     log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}".force_encoding('UTF-8')

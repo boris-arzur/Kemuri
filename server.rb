@@ -76,24 +76,24 @@ class Server
   def handle_connection connection
     my_id = Thread.current.object_id.to_s(36)
     until connection.closed? do
-      request = protect('reading') {
-        triggered = IO.select([connection], [], [], 5)
-        connection.recv_nonblock(100000) if triggered and not connection.closed?
-      }
+      request = begin 
+                  triggered = IO.select([connection], [], [], 5)
+                  connection.recv_nonblock(100000) if triggered and not connection.closed?
+                rescue Exception => e
+                  nil
+                end
 
-      if request.nil?
+      if request.nil? or request == ''
         protect('closing') do
-          log "#{my_id} : auto-close keep-alive"
-          protect('formalities') { connection.puts("Connection: close\r\n"); connection.flush() }
-          connection.close()
+          #log "#{my_id} : probing keep-alive"
+          begin
+            connection.write("\x00"*6)
+            connection.flush()
+            sleep(0.1)
+          rescue Exception => e
+            protect("formalities in closing the keep alive"){connection.close()}
+          end
         end
-      elsif request == ''
-        #log "#{my_id} : empty stuff size=#{request.size}, keepalive packet."
-        #protect('replying') { connection.puts("Connection: close\r\n") }
-        connection.write("\x00"*6)
-        connection.flush()
-        sleep(0.1)
-        #connection.close()
       else
         request += missing_bits(request, connection)
         request = protect('parsing') {request.parse()}
