@@ -21,9 +21,13 @@ class Yad
   def self.find what, options = {}
     whiskers = (options[:ope]||options[:half_whiskers]) ? '' : '%' #remove them % if we are using ==
     options[:ope] ||= 'LIKE'
-    if what.is_a?( Array )
-      what.map{|k| " #{options[:field]} #{options[:ope]} '#{whiskers}#{k}#{whiskers}' "}.join( options[:logic] )
+    if what.is_a?(Array)
+      what.map{|k|
+        raise "invalid char in k : #{k}" if k.include?("'")
+        " #{options[:field]} #{options[:ope]} '#{whiskers}#{k}#{whiskers}' "
+      }.join(options[:logic])
     else
+      raise "invalid char in what : #{what}" if what.include?("'")
       "#{options[:field]} #{options[:ope]} '#{whiskers}#{what}%'"
     end
   end

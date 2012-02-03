@@ -37,6 +37,8 @@ class Kanji
       @kanji, @readings, @meanings, @skip, @forder = $db.get_first_row( r )
     else
       @kanji = kid_or_kanji
+      raise "illegal length" if @kanji.size > 1
+      raise "illegal char in kanji" if @kanji == "'"
       r = "SELECT oid,readings,meanings,skip,forder FROM kanjis WHERE kanji = '#{@kanji}'"
       @kid, @readings, @meanings, @skip, @forder = $db.get_first_row( r )
     end
@@ -124,6 +126,7 @@ class KList
         @name = $db.get_first_value( r )
       else
         @name = lid_or_name
+        raise "illegal char in list name" if @name.include?("'")
         r = "SELECT oid FROM lists WHERE name = '#{@name}'"
         @lid = $db.get_first_value( r )
       end

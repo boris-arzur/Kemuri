@@ -60,6 +60,7 @@ dans Biskip
 
 class Biskip
   def matches_for skip
+    raise "skip doesn't look like one" if skip !~ /^\d-\d+-\d+$/
     r = "SELECT kanji FROM kanjis WHERE skip = '#{skip}' ORDER BY forder DESC"
     $db.execute( r )
   end

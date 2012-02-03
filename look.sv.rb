@@ -92,14 +92,16 @@ class Look
         #log ele[:s]
 
         cond = []
-        if skip.is_a?( String ) && skip.split( '-' ).size == 1
+        if skip.is_a?(String) && skip =~ /^\d+$/
           cond << "SELECT oid AS kid FROM kanjis WHERE strokes = #{skip}"
-        elsif skip.is_a?( String )
-          if skip =~ /_/
+        elsif skip.is_a?(String) && skip =~ /^(\d|_)-(\d+|_)-(\d+|_)$/
+          if skip.include?("_")
             cond << "SELECT oid AS kid FROM kanjis WHERE skip LIKE '#{skip.gsub('_','%')}'"
           else
             cond << "SELECT oid AS kid FROM kanjis WHERE skip = '#{skip}'"
           end
+        elsif skip != [] # this is what we get as the default value, means there's no skip
+          raise "invalid skip : #{skip}"
         end
 
         cond += rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"}

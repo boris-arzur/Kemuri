@@ -51,14 +51,15 @@ document.onclick=catchLinks;
 EOS
 
   def self.guess request
-		first = request['first'].url_utf8
+    first = request['first'].url_utf8
+    raise "invalide char in first : #{first}" if first.include?("'")
     log "guess : #{request[1]} with #{first}"
     
-    req1 = if request[1].split( '-' ).size == 1
-          "SELECT kanji FROM kanjis WHERE strokes = #{request[1]} ORDER BY forder DESC"
-        else
-          "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
-        end
+    req1 = if request[1] =~ /^\d+$/
+             "SELECT kanji FROM kanjis WHERE strokes = #{request[1]} ORDER BY forder DESC"
+           elsif request[1] =~ /^\d-\d+\d+$/
+             "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
+           end
 
 		res_set = $db.execute( req1 )
 
@@ -69,13 +70,16 @@ EOS
 
   def execute request
     code = request[1]
+    #log [/^\d+$/, /^\d+-\d+$/, /^\d-\d+-\d+$/, /^\d-\d+-\d+-\d-\d+-\d+$/].all? {|r| code !~ r}
+    valide = [/^\d+$/, /^\d+-\d+$/, /^\d-\d+-\d+$/, /^\d-\d+-\d+-\d-\d+-\d+$/].any? {|r| code !~ r} 
+    raise "invalid skip sequence" unless valid
     return Help + Static::voyage unless code
     return Sk::guess( request ) if request['guess']
     
     code = code.split( '-' )
     
     stroke_count_mode = code.size == 1 || code.size == 2
-    double_skip = code.size == 6 || code.size == 2
+    double_skip = code.size == 6 || code.size == 2 # double skip & stroke/skip mix in not determinist... impossible
 
     if double_skip && !stroke_count_mode
       req_path = "/sk/#{code[3..5]*'-'}?first="
