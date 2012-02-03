@@ -22,7 +22,7 @@
   var content = "c";
   var o = elements[0];
   for (var key in o){ content += key +":"+o[key]+"\\n"; };
-  alert( content );
+  alert(content);
 =end
 
 class Sk
@@ -32,14 +32,14 @@ class Sk
 <input type='checkbox' id='guess' checked='true'/><a href='javascript:toggle_guess()'>guess next</a> &nbsp;
 <script type="text/javascript">
 function toggle_guess() {
-  document.getElementById( 'guess' ).checked = !document.getElementById( 'guess' ).checked;
+  document.getElementById('guess').checked = !document.getElementById('guess').checked;
 };
 
 function catchLinks(event) {
-  if( event.target.href && // user is clicking a link
-      event.target.href.indexOf( 'javascript' ) == '-1' && // not clicking a radical
-      document.getElementById( 'guess' ).checked ) { // we actually want to guess :)
-    go_to( event.target + '&guess' );
+  if(event.target.href && // user is clicking a link
+      event.target.href.indexOf('javascript') == '-1' && // not clicking a radical
+      document.getElementById('guess').checked) { // we actually want to guess :)
+    go_to(event.target + '&guess');
     return false;
   };
 
@@ -61,11 +61,11 @@ EOS
              "SELECT kanji FROM kanjis WHERE skip = '#{request[1]}' ORDER BY forder DESC"
            end
 
-		res_set = $db.execute( req1 )
+    res_set = $db.execute(req1)
 
-		cond = res_set.map{|k| "japanese LIKE '%#{first}#{k[0]}%'"}.join( ' OR ' )
+    cond = res_set.map{|k| "japanese LIKE '%#{first}#{k[0]}%'"}.join(' OR ')
     r = "SELECT * FROM examples WHERE #{cond}"
-    $db.execute( r ).to_table + Static::voyage
+    $db.execute(r).to_table + Static::voyage
   end
 
   def execute request
@@ -74,25 +74,25 @@ EOS
     valide = [/^\d+$/, /^\d+-\d+$/, /^\d-\d+-\d+$/, /^\d-\d+-\d+-\d-\d+-\d+$/].any? {|r| code !~ r} 
     raise "invalid skip sequence" unless valid
     return Help + Static::voyage unless code
-    return Sk::guess( request ) if request['guess']
+    return Sk::guess(request) if request['guess']
     
-    code = code.split( '-' )
+    code = code.split('-')
     
     stroke_count_mode = code.size == 1 || code.size == 2
     double_skip = code.size == 6 || code.size == 2 # double skip & stroke/skip mix in not determinist... impossible
 
     if double_skip && !stroke_count_mode
       req_path = "/sk/#{code[3..5]*'-'}?first="
-			postfix = "?first="
+      postfix = "?first="
     elsif double_skip && stroke_count_mode
       req_path = "/sk/#{code[1]}?first="
-			postfix = "?first="
+      postfix = "?first="
     elsif request['first']
       req_path = "/yad/"+request['first'].url_utf8
-		  postfix = ''
+      postfix = ''
     else
       req_path = '/kan/'
-		  postfix = ''
+      postfix = ''
     end
 
     guess_switch = double_skip ? GuessSwitch : ''
@@ -103,13 +103,13 @@ EOS
            "SELECT OID,kanji FROM kanjis WHERE skip = '#{code[0..2]*'-'}' ORDER BY forder DESC"
          end
 
-    t,a,b = code[0..2].map {|e| e.to_i}
+    t, a, b = code[0..2].map(&:to_i)
     glisse = if stroke_count_mode
-               Static::glisse( '/sk/', t-1, t+1, t-1, t+1, postfix )
+               Static::glisse('/sk/', t-1, t+1, t-1, t+1, postfix)
              else
-               Static::glisse( "/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}", postfix )
+               Static::glisse("/sk/#{t}-","#{a-1}-#{b}","#{a+1}-#{b}","#{a}-#{b-1}","#{a}-#{b+1}", postfix)
              end
 
-    guess_switch + kanji_table( r1, req_path )  + Static::voyage + glisse 
+    guess_switch + kanji_table(r1, req_path)  + Static::voyage + glisse 
   end
 end

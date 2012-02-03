@@ -24,12 +24,12 @@ class Look
     Look::process request
   end
 
-  def self.start( data )
+  def self.start(data)
     #log "starting with this : " +data.inspect
     id = rand.to_id
     @@mutex.synchronize {@@store[id] = data}
     #log @@store
-    req_rewrite = Request.new( false, ['look',id], {}, nil )
+    req_rewrite = Request.new(false, ['look',id], {}, nil)
     Look::process req_rewrite
   end
 
@@ -59,18 +59,18 @@ class Look
             end
 
           rads.unshift("&rarr;")
-          rads.unshift(kan.style( 'color:green' ))
+          rads.unshift(kan.style('color:green'))
         }
       }.flatten(1)
       #log radicals_pickup
      
       if add_single_rads
-        rewrote_request = Request.new( "POST", request.path, request.options, add_single_rads, true ) 
-        return Look::process( rewrote_request )
+        rewrote_request = Request.new("POST", request.path, request.options, add_single_rads, true) 
+        return Look::process(rewrote_request)
       end
       radicals_pickup << ["<input type='submit' value='ok'/>"]
-      radicals_pickup = radicals_pickup.to_table( :td_opts => {:style=>'font-size:3em'} )
-      radicals_pickup.tag( "form", :action => request.to_url, :method => "post" ) + Static::voyage
+      radicals_pickup = radicals_pickup.to_table(:td_opts => {:style=>'font-size:3em'})
+      radicals_pickup.tag("form", :action => request.to_url, :method => "post") + Static::voyage
     elsif request.post.keys[0] =~ /^r/
       @@mutex.synchronize do
         rad_i = 0
@@ -79,7 +79,7 @@ class Look
           rad_i += 1
           ele[:r].map! {|kan|
             rad_j += 1
-            request.post["r#{rad_i}-#{rad_j}"] or (message( "missing a rad ?" ) and 0)
+            request.post["r#{rad_i}-#{rad_j}"] or (message("missing a rad ?") and 0)
           }
         end
       end
@@ -89,7 +89,7 @@ class Look
         rads = ele[:r].flatten
         skip = ele[:s]
         
-        #log ele[:s]
+        log ele[:s]
 
         cond = []
         if skip.is_a?(String) && skip =~ /^\d+$/
@@ -109,15 +109,15 @@ class Look
 
         #log r1
         table_id = rand.to_id
-        kanji_table( r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#' )
-      end * "------<br/>" + Static::voyage + Static::look_select( data.size, request.to_url )
+        kanji_table(r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#')
+      end * "------<br/>" + Static::voyage + Static::look_select(data.size, request.to_url)
     elsif request['kans']
       id = request[1]
-      @@mutex.synchronize do @@store.delete( id ) end
+      @@mutex.synchronize do @@store.delete(id) end
 
       request[0] = 'yad'
-      request[1] = request['kans'].gsub( ',', '' )
-      Servlet::execute( request )
+      request[1] = request['kans'].gsub(',', '')
+      Servlet::execute(request)
     else
       '...' + Static::voyage
     end

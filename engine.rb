@@ -228,13 +228,8 @@ end
 
 
 class Array
-  def map_i
-    i = 0
-    map {|e|
-      r = yield( e,i )
-      i += 1
-      r
-    }
+  def map_i(&b)
+    each_with_index.map(&b)
   end
  
   def cut n, start = 0

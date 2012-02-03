@@ -18,7 +18,7 @@
 
 class Rad
   def initialize
-    Static::add_hidden_button( 'r','rad' )
+    Static::add_hidden_button('r','rad')
   end
 
   RowSize = 5
@@ -31,32 +31,33 @@ SELECT oid,radical
  ORDER BY strokes;
 EOR
 
-  def self.to_checkbox( radical, rid )
-    "<input type='checkbox' value='#{rid}'/>#{radical.a( "/rad/#{rid}" )}".tag( 'td' )
+  def self.to_checkbox(radical, rid)
+    "<input type='checkbox' value='#{rid}'/>#{radical.a("/rad/#{rid}")}".tag('td')
   end
 
   def self.select_rads
     stroke2rad = Hash.new {|h,k| h[k]=[]}
-    $db.execute( GetAllRads ).each {|i,e,s| stroke2rad[s] << Rad::to_checkbox(e,i)}
+    $db.execute(GetAllRads).each {|i,e,s| stroke2rad[s] << Rad::to_checkbox(e,i)}
 
     table_of_matches = stroke2rad.sort_by{|s,chkbxz| s.to_i}.map {|s,chkbxz|
-      chkbxz.cut( RowSize ).map{|row| row.join.tr}.join
-    }.join( HDelim ).table
+      chkbxz.cut(RowSize).map{|row| row.join.tr}.join
+    }.join(HDelim).table
 
-    table_of_matches.tag( "form", :name => "rads" ) + Style + Static::voyage + Static::rad_bar
+    table_of_matches.tag("form", :name => "rads") + Style + Static::voyage + Static::rad_bar
   end
 
   def execute request
-    if request["rad"].is_a?( Array )
+    if request["rad"].is_a?(Array)
       rads = request["rad"]
     elsif request["rad"] and request["rad"].is_num
       rads = [request["rad"]]
     elsif request[1] and request[1].is_num
       rads = [request[1]]
     elsif request[1]
-      rads = request[1].split( '+' ).map {|blk| 
+      rads = request[1].split('+').map {|blk| 
         kan = blk.url_utf8
-        $db.get_first_value( "SELECT oid FROM radicals WHERE radical = '#{kan}'" )
+        raise "invalid char in kan" if kan.include?("'")
+        $db.get_first_value("SELECT oid FROM radicals WHERE radical = '#{kan}'")
       }
     else
       return Rad::select_rads
@@ -65,6 +66,6 @@ EOR
     rad_cond = rads.map {|rid| "SELECT kid FROM kan2rad WHERE rid = #{rid}"} * " INTERSECT "
     r1 = "SELECT kanjis.oid,kanjis.kanji FROM (#{rad_cond}) AS kids LEFT JOIN kanjis ON kids.kid = kanjis.oid ORDER BY kids.kid"
 
-    kanji_table( r1, '/kan/' ) + Static::voyage
+    kanji_table(r1, '/kan/') + Static::voyage
   end
 end
