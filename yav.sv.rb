@@ -16,8 +16,8 @@
 #    You should have received a copy of the GNU Affero General Public
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
-#Style = "td{font-size:2em;}".tag( 'style','type'=>'text/css')
-Pool_size = 5
+#Style = "td{font-size:2em;}".tag('style','type'=>'text/css')
+Pool_size = 15
 
 class Yav
   def initialize
@@ -28,27 +28,27 @@ class Yav
   end
 
   def execute request
-    return KList.lists.map {|list| list.name.a( "/yav/?lid=#{list.lid}" ) }*'<br/>' unless @list || request['lid']
+    return KList.lists.map {|list| list.name.a("/yav/?lid=#{list.lid}") }*'<br/>' unless @list || request['lid']
 
-    @list = KList.new( request['lid'] ) if request['lid']
+    @list = KList.new(request['lid']) if request['lid']
 
     case request[1]
-    when 'y' then @kanjis.delete( @kanji ); @step = 0
+    when 'y' then @kanjis.delete(@kanji); @step = 0
     when 'n' then @step = 0
-    when 'h' then @list.toggle_sleepy( @kanji ); @kanjis.delete( @kanji ); @step = 0
+    when 'h' then @list.toggle_sleepy(@kanji); @kanjis.delete(@kanji); @step = 0
     end
 
     Pool_size.times do @kanjis << @list.next_kanji end if @kanjis.size == 0
 
-    @kanji = @kanjis.sort_by {rand}[0] if @step == 0
+    @kanji = @kanjis[(rand()*Pool_size).to_i] if @step == 0
 
     le_bubun = if @step < 2
-                 Static::glisse( '/yav/', '', '', '', '', '' )
+                 Static::glisse('/yav/', '', '', '', '', '')
                else
-                 Static::glisse( '/yav/', 'n', 'h', 'n', 'y', '' )
+                 Static::glisse('/yav/', 'n', 'h', 'n', 'y', '')
                end
 
-    reply = le_bubun + @kanji.to_html( @step )#.a( link ) #+ Style
+    reply = le_bubun + @kanji.to_html(@step)#.a(link) #+ Style
     @step += 1
     reply + Static::voyage
   end
