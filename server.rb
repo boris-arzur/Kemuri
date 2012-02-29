@@ -87,9 +87,9 @@ class Server
         protect('closing') do
           #log "#{my_id} : probing keep-alive"
           begin
-            connection.write("\x00"*6)
+            #connection.write("\x00"*6)
             connection.flush()
-            sleep(0.1)
+            sleep(0.01)
           rescue Exception => e
             protect("formalities in closing the keep alive"){connection.close()}
           end
