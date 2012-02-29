@@ -123,7 +123,7 @@ class String
   end
 
   def url_utf8
-    raise 'we will not eval this' unless self.downcase =~ /^(%[0-9a-f]{2})+$/
+    raise 'this was mistaken for a kanji by the parser, please check the syntax of your request : '+self unless self.downcase =~ /^(%[0-9a-f]{2})+$/
     byte_form = self.gsub( '%', '\x' )
     #we need to be extra careful here
     eval( '"'+byte_form+'"' )
