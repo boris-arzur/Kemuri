@@ -70,6 +70,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       cond_r2 = Yad::find(entry, :field => "english")
     else
       kanji = entry
+      kanji.force_encoding(Encoding::UTF_8)
       valid_fuzz = true
 
       #kana ? kanji ?
@@ -80,7 +81,6 @@ Second call and subsequent calls, from js' xmlhttprequest :
         cond_r1 = Yad::find(kanji, :field => "readings")
         cond_r2 = Yad::find(kanji, :field => "japanese")
       else
-        kanji.force_encoding(Encoding::UTF_8)
         kanjis = kanji.split(//u)
         valid_pairs = kanjis.size >= 3
         valid_kb = true
