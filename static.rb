@@ -27,10 +27,11 @@ class Static
       raw_content = File::read( file )
     end
 
-    clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
+    clean_content = raw_content
+    #clean_content = raw_content.gsub( /\/\*.*?\*\//m, '' ).gsub( "\n", "" )
 
-    while clean_content.gsub!( "  ", " " )
-    end
+    #while clean_content.gsub!( "  ", " " )
+    #end
     
     if file =~ /\.js$/
       clean_content.script
@@ -157,17 +158,19 @@ EOS
   end
 
   def self.yad_bar request
+    request += request.include?('?') ? "&links" : "?links"
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='go_to( \"#{request.to_url( :links => true )}\" )'>環</button>
+  <button onclick='go_to( \"#{request}\" )'>環</button>
 </div>
 EOS
     res + BarStyle + Yad_barScript
   end
 
-  def self.yad_head request, options = {}
+  def self.yad_head request_xml, options = {}
+    request_xml += request_xml.include?('?') ? "&kb" : "?kb"
     res = "<div id=\"yad_head\">"
-    res += "<button onclick='ajax_get( \"#{request.to_urlxml( :kb => true )}\" )'>k.b.</button>" if options[:kb]
+    res += "<button onclick='ajax_get( \"#{request_xml}\" )'>k.b.</button>" if options[:kb]
     res += "<button onclick='do_fuzz();'>fuzz</button>" if options[:fuzz]
     res += "<button onclick='do_pairs();'>pairs</button><button onclick='do_alt();'>alt</button>" if options[:pairs]
     res += "</div>"

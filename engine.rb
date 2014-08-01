@@ -18,10 +18,7 @@
 
 require 'find'
 require 'time'
-require 'zlib'
-require 'stringio'
-
-require './json.rb'
+require 'json'
 
 class Kemuri 
   @@files = nil
@@ -36,82 +33,13 @@ class Kemuri
   end
 end
 
-class Request
-  attr_accessor :type, :xml, :keep_alive, :post, :path, :options, :range
-  def initialize type, path, options, post, keep_alive = false, range = nil
-    @path = path
-    if path[0] =~ /\.xml$/
-      @xml = true
-      path[0].gsub!( /\.xml$/, '' )
-    end
-    @options = options
-    @type = type
-    @post = post
-    @keep_alive = keep_alive
-    @range = range
-  end
-
-  def to_url(mod_options = {})
-    saved_options = @options.clone
-		@options.merge!( mod_options )
-    url = $me.to_url + @path.join( '/' ) + '?' + @options.map{|k,v| v.is_a?(TrueClass) ? k : "#{k}=#{v}"}.join( '&' )
-		@options = saved_options
-		url
-  end
-
-  def to_urlxml(mod_options = {})
-    old_module = @path[0]
-    @path[0] += '.xml' unless @xml
-    urlxml = to_url(mod_options)
-    @path[0] = old_module
-    urlxml
-  end
-
-  def [] i
-    if i.is_a?( Fixnum ) or i.is_a?( Range )
-      @path[i]
-    else
-      @options[i]
-    end
-  end
-
-  def []= i, v
-    if i.is_a?( Fixnum )
-      @path[i]= v
-    else
-      @options[i]= v
-    end
-  end
-end
-
 class Fixnum
   def is_num
     true
   end
 end
 
-class Float
-  def to_id
-    (self * 1_000_000_000).to_i.to_s( 36 )
-  end
-end
-
 class String
-  def extract_options
-    options_hash = {}
-    split( '&' ).each {|p| 
-      k,v = p.split( '=' )
-      v ||= true
-      if options_hash[k]
-        options_hash[k] = [options_hash[k]] unless options_hash[k].is_a?( Array )
-        options_hash[k] << v
-      else
-        options_hash[k] = v
-      end
-    }
-    options_hash
-  end
-
   def cut n
     return [] if size == 0
     res = []
@@ -120,13 +48,6 @@ class String
       res[-1] << c
     end
     res
-  end
-
-  def url_utf8
-    raise 'this was mistaken for a kanji by the parser, please check the syntax of your request : '+self unless self.downcase =~ /^(%[0-9a-f]{2})+$/
-    byte_form = self.gsub( '%', '\x' )
-    #we need to be extra careful here
-    eval( '"'+byte_form+'"' )
   end
 
   def is_num
@@ -148,48 +69,10 @@ class String
     self.gsub( /</ , '&lt;' ).gsub( />/ , '&gt;' )
   end
 
-  def parse
-    log self.inspect
-    split_req = self.split( "\n" )
-    raw_path = split_req.find {|l| l =~ /^([^ ]+) /}
-    type = $1
-    raw_path = raw_path.match( /^#{type} ([^\s]*)\s/ )[1]
-    real_path,options = raw_path.split( '?' )
-    options ||= ''
-    real_path = real_path.split( '/' ).select {|e| e.size > 0}
-    raw_post_data = split_req[split_req.find_index( "\r" )+1] || ''
-    keep_alive = !!split_req[0].strip =~ /HTTP\/1.1$/
-    keep_alive ||= !!split_req.find {|l| l.strip == "Connection: keep-alive"}
-    range = split_req.find {|l| l =~ /^Range: /}
-    range = range.strip.split( '=' )[1].split( '-' ) if range
-#Range: bytes=0-1
-    Request.new(type, real_path, options.extract_options, raw_post_data.extract_options, keep_alive, range)
-  end
-
-  def to_http(reply_code = "200 OK", mime_type = "text/html; charset=UTF-8", additional_content = '')
-    # add gzip !
-    if !$gzip
-      core = self
-    else
-      core = ""
-      gz_core = Zlib::GzipWriter.new(StringIO.new(core))
-      gz_core.write(self)
-      gz_core.close
-      additional_content += "Content-Encoding: gzip\r\n"
-    end
-    "HTTP/1.1 #{reply_code}\r\nDate: #{Time.new.httpdate}\r\nCache-Control: no-cache\r\nAge: 0\r\nAccept-Ranges: bytes\r\nContent-Type: #{mime_type}\r\nKeep-Alive: timeout=5, max=100\r\nContent-Length: #{core.bytes.to_a.size}\r\n#{additional_content}\r\n#{core}"
-  end
-
   def in_skel
-#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-#<html xmlns="http://www.w3.org/1999/xhtml">
 <<EOP
 <html>
 <head>
- <meta name="viewport" content="width=device-width"/>
- <meta name="apple-mobile-web-app-capable" content="yes"/>
- <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
- <link rel="shortcut icon" href="/files.xml/favicon.ico" />
  <title>煙</title>
 </head>
 <body onload="window.scrollTo(0, 1);">
@@ -272,7 +155,7 @@ def protect name
     yield
   rescue Exception => e
 		# fix some pb, with new version of ruby and ol' sqlite3
-    log "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}".force_encoding('UTF-8')
+    print "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}".force_encoding('UTF-8')
     "503. internal error.".a( '/log' )
   end
 end

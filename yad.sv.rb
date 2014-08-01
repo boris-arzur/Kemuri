@@ -41,7 +41,7 @@ class Yad
   end
 
 #entry point
-  def execute request
+  def execute request, path, query, response
 =begin
   ** Code flow : **
 
@@ -53,23 +53,22 @@ Second call and subsequent calls, from js' xmlhttprequest :
   when all results are exhausted, we switch to pairs= if we were querying for p=
   and we stop the ajax autoscroll if we were already querying for pairs=.
 =end
-    to_history('/yad/' + request[1]) if request[1] and not request.xml
+    #restore this capacity
+    #to_history('/yad/' + path[1]) if path[1] and not path.xml
         
-    entry = request[1] || 'start'
-    entry.gsub!('%20', ' ')
-   
+    entry = path[1] || 'start'
     cond_r1 = nil
     cond_r2 = nil
     valid_pairs = false #display 'pairs' & 'alt' buttons
     valid_kb = false # same same with k.b.
     valid_fuzz = false # guess :)
 
-    unless entry.include?('%')
-      #entry is pure ascii
+    if entry[0] < "ぁ"
+      #entry is ascii
       cond_r1 = Yad::find(entry, :field => "meanings")
       cond_r2 = Yad::find(entry, :field => "english")
     else
-      kanji = entry.url_utf8
+      kanji = entry
       valid_fuzz = true
 
       #kana ? kanji ?
@@ -80,19 +79,21 @@ Second call and subsequent calls, from js' xmlhttprequest :
         cond_r1 = Yad::find(kanji, :field => "readings")
         cond_r2 = Yad::find(kanji, :field => "japanese")
       else
-        kanjis = kanji.split(//)
+        kanji.force_encoding(Encoding::UTF_8)
+        kanjis = kanji.split(//u)
         valid_pairs = kanjis.size >= 3
         valid_kb = true
 
-        if request['pairs']
+        if query.include?('pairs')
           #dont bother if not enough kanjis
-          return JSON.new({ 
+          response.content_type = "application/json"
+          return { 
                              "content_as_html" => "too small to use pairs lookup<br/>",
                              "last_row" => 0, 
                              "fin" => true, 
                              "pairs" => false 
-                           }.to_json) if !valid_pairs
-          start = request['alt'] ? 1 : 0
+                 }.to_json if !valid_pairs
+          start = query.include?('alt') ? 1 : 0
           cond_r2 = Yad::find(kanjis.cut(2, start).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR")
           #log cond_r2
         else
@@ -102,18 +103,18 @@ Second call and subsequent calls, from js' xmlhttprequest :
       end
     end
 
-    limit = request['limit'] || 10
+    limit = query['limit'] || 10
     r1 = "SELECT oid, kanji, readings, meanings FROM kanjis WHERE #{cond_r1} ORDER BY forder DESC"
-        
-    if request.xml && request['kb']
+    if query.include?('xml') && query.include?('kb') 
       #on demande le kanji breakdown
       #log "exe1 : #{r1}"
       rez = $db.execute(r1).map {|i,k,r,m| [k.a('/kan/'+i.to_s),r,m]}.to_table
-      return JSON.new({ "content_as_html" => rez, "last_row" => 0, "fin" => true, "pairs" => false }.to_json)
-    elsif request.xml && (request['p'] || request['pairs'])
+      response.content_type = "application/json"
+      return { "content_as_html" => rez, "last_row" => 0, "fin" => true, "pairs" => false }.to_json
+    elsif query.include?('xml') && (query.include?('p') || query.include?('pairs'))
       #c'est un appel de xmlhttpreq, par ajax (requete d'une nouvelle page) donc c'est un fuzz ou un pair
-      last_oid = request['p'] || request['pairs']
-      cond_r2 = Yad::find(kanji, :field => "japanese") if request['fuzz'] #on regenere la condi si on est en fuzz
+      last_oid = query['p'] || query['pairs']
+      cond_r2 = Yad::find(kanji, :field => "japanese") if query.include?('fuzz') #on regenere la condi si on est en fuzz
       #on regen de tte facon la req, pr inserer la condi sur OID
       r2 = "SELECT OID, japanese, english FROM examples WHERE OID > #{last_oid.to_i} AND (#{cond_r2}) LIMIT #{limit}"
       #log "exe2 : #{r2}"
@@ -121,18 +122,19 @@ Second call and subsequent calls, from js' xmlhttprequest :
       this_last_oid = rez[-1][0] rescue 0
       rez.map! {|oid,jp,en| [jp,en]}
       content_table = rez.to_table
-      Yad::linkify_kanjis!(content_table) if request['links']
+      Yad::linkify_kanjis!(content_table) if query.include?('links')
 
       json = { "content_as_html" => content_table, "last_row" => this_last_oid, "fin" => false, "pairs" => false }
       if rez.size < limit
-        if request['pairs']
+        if query.include?('pairs') 
           json["fin"] = true
         else
           json["pairs"] = true
         end
       end
 
-      return JSON.new(json.to_json) 
+      response.content_type = "application/json"
+      return json.to_json
     else
       r2 = "SELECT OID, japanese, english FROM examples WHERE #{cond_r2} LIMIT #{limit}"
       #log "exe3 : #{r2}"
@@ -157,14 +159,18 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       dynamic_content = dynamic_content.to_table
 
-      xml_url = request.to_urlxml
-      Yad::linkify_kanjis!(dynamic_content) if request['links']
+      #xml_url = path.to_urlxml
+      xml_url = request.unparsed_uri + "?"
+      if ! query.include?('xml')
+          xml_url.gsub!(/yad/, "yad.xml")
+      end
+      Yad::linkify_kanjis!(dynamic_content) if query.include?('links')
 
       Static::voyage +
-        Static::yad_head(request, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz) +
+        Static::yad_head(xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz) +
         dynamic_content +
         Static::next_page(xml_url, start_nextpage_js, this_last_oid) +
-        Static::yad_bar(request) + 
+        Static::yad_bar(request.unparsed_uri + "?") + 
         Static::search
     end
   end
