@@ -18,21 +18,21 @@
 
 class Slook 
   def execute request, path, query, response
-    Slook::process( request[1] ) 
-  end
+    expression = path[1] 
 
-  def self.process expression
-    Look::start( expression.split( "+" ).map {|t| 
+    expression.force_encoding(Encoding::UTF_8)
+    data = expression.split( "+" ).map {|t| 
       kanji_def = Hash.new {|h,k| h[k] = []}
       t.split( "&" ).each {|e|
         next if e.size == 0
         if e =~ /^[\d]-[_\d]+-[_\d]+$|^[\d]+$/
           kanji_def[:s] = e
         else
-          kanji_def[:r] << e.url_utf8
+          kanji_def[:r] << e
         end
       }
       kanji_def
-    })
+    }
+    Look.new.start(data, request, path, query, response)
   end
 end

@@ -1,4 +1,5 @@
 # encoding: UTF-8
+# request.unparsed_uri
 #    Copyright 2008, 2009, 2010 Boris ARZUR
 #
 #    This file is part of Kemuri.
@@ -159,18 +160,14 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       dynamic_content = dynamic_content.to_table
 
-      #xml_url = path.to_urlxml
-      xml_url = request.unparsed_uri + "?"
-      if ! query.include?('xml')
-          xml_url.gsub!(/yad/, "yad.xml")
-      end
+      xml_url = "/yad.xml/#{path[1]}?"
       Yad::linkify_kanjis!(dynamic_content) if query.include?('links')
 
       Static::voyage +
         Static::yad_head(xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz) +
         dynamic_content +
         Static::next_page(xml_url, start_nextpage_js, this_last_oid) +
-        Static::yad_bar(request.unparsed_uri + "?") + 
+        Static::yad_bar("/yad/#{path[1]}?") + 
         Static::search
     end
   end

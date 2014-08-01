@@ -20,26 +20,20 @@ class Look
   @@mutex = Mutex.new
   @@store = {}
 
-  def execute request, path, query, response
-    Look::process request
-  end
-
-  def self.start(data)
-    #log "starting with this : " +data.inspect
+  def start data, request, path, query, response
     id = rand.to_id
     @@mutex.synchronize {@@store[id] = data}
-    #log @@store
-    req_rewrite = Request.new(false, ['look',id], {}, nil)
-    Look::process req_rewrite
+    execute request, ["look", id], {}, response
   end
 
   def execute request, path, query, response
-    id = request[1]
+    id = path[1]
     data = @@store[id]
+    url = "/look/#{id}?"
 
     #log "id: #{id.inspect}, data: #{data.inspect}, @@store: #{@@store.inspect}"
-
-    if !request.type
+    #p query, id, data #TODO
+    if ! query.include?(:force_post) and ! query.include?("kans") and request.request_method == "GET"
       rad_i = 0
       rad_j = 0
       add_single_rads = {}
@@ -47,7 +41,6 @@ class Look
         rad_i += 1
         ele[:r].map {|kan| 
           rad_j += 1
-          #TODO if just one rad -> change input type 
           rads = Kanji.new(kan).get_radicals
           rads =
             if rads.size == 1
@@ -65,13 +58,22 @@ class Look
       #log radicals_pickup
      
       if add_single_rads
-        rewrote_request = Request.new("POST", request.path, request.options, add_single_rads, true) 
-        return Look::process(rewrote_request)
+        #rewrote_request = Request.new("POST", request.path, request.options, add_single_rads, true) 
+        p add_single_rads
+        query[:force_post] = true
+        
+        return execute(request, path, query.merge(add_single_rads), response)
       end
       radicals_pickup << ["<input type='submit' value='ok'/>"]
       radicals_pickup = radicals_pickup.to_table(:td_opts => {:style=>'font-size:3em'})
-      radicals_pickup.tag("form", :action => request.to_url, :method => "post") + Static::voyage
-    elsif request.post.keys[0] =~ /^r/
+      radicals_pickup.tag("form", :action => url, :method => "post") + Static::voyage
+    elsif query.include?('kans')
+      @@mutex.synchronize do @@store.delete(id) end
+
+      kans = query['kans'].gsub(',', '')
+      query[:force_unparsed_uri] = "/yad/#{kans}"
+      Yad.new.execute(request, ["yad", kans], {}, response)
+    elsif query.keys.any? {|k| k =~ /^r/}
       @@mutex.synchronize do
         rad_i = 0
         rad_j = 0
@@ -79,17 +81,16 @@ class Look
           rad_i += 1
           ele[:r].map! {|kan|
             rad_j += 1
-            request.post["r#{rad_i}-#{rad_j}"] or (message("missing a rad ?") and 0)
+            query["r#{rad_i}-#{rad_j}"] or (message("missing a rad ?") and 0)
           }
         end
       end
-      #log "l88 data: #{data}"
 
       data.map_i do |ele,i|
         rads = ele[:r].flatten
         skip = ele[:s]
         
-        log ele[:s]
+        #log ele[:s]
 
         cond = []
         if skip.is_a?(String) && skip =~ /^\d+$/
@@ -110,14 +111,7 @@ class Look
         #log r1
         table_id = rand.to_id
         kanji_table(r1, "javascript:select(\"#{i}\",\"#kid#\",\"#{table_id}\")", table_id, '#kid#')
-      end * "------<br/>" + Static::voyage + Static::look_select(data.size, request.to_url)
-    elsif request['kans']
-      id = request[1]
-      @@mutex.synchronize do @@store.delete(id) end
-
-      request[0] = 'yad'
-      request[1] = request['kans'].gsub(',', '')
-      Servlet::execute(request)
+      end * "------<br/>" + Static::voyage + Static::look_select(data.size, url)
     else
       '...' + Static::voyage
     end

@@ -7,7 +7,11 @@ load "./servlets.rb"
 Servlets::register_all
 
 class MasterServlet < WEBrick::HTTPServlet::AbstractServlet
-  def do_GET (request, response)
+  def do_POST request, response
+    do_GET request, response
+  end
+
+  def do_GET request, response
     response.status = 200
     path = request.path.split('/')[1..-1]
     query = request.query
