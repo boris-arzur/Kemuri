@@ -89,10 +89,10 @@ Second call and subsequent calls, from js' xmlhttprequest :
           #dont bother if not enough kanjis
           response.content_type = "application/json"
           return { 
-                             "content_as_html" => "too small to use pairs lookup<br/>",
-                             "last_row" => 0, 
-                             "fin" => true, 
-                             "pairs" => false 
+                   "content_as_html" => "too small to use pairs lookup<br/>",
+                   "last_row" => 0, 
+                   "fin" => true, 
+                   "pairs" => false 
                  }.to_json if !valid_pairs
           start = query.include?('alt') ? 1 : 0
           cond_r2 = Yad::find(kanjis.cut(2, start).find_all {|p| p.size == 2}.map{|p| p.join}, :field => "japanese", :logic => "OR")
@@ -160,15 +160,21 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       dynamic_content = dynamic_content.to_table
 
-      xml_url = "/yad.xml/#{path[1]}?"
+      xml_url = "/yad.xml/#{entry}?"
+      xml_url += "kb" if query.include?("kb")
+      xml_url += "links" if query.include?("links")
+      xml_url += "pairs" if query.include?("pairs")
+
       Yad::linkify_kanjis!(dynamic_content) if query.include?('links')
 
-      Static::voyage +
-        Static::yad_head(xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz) +
-        dynamic_content +
-        Static::next_page(xml_url, start_nextpage_js, this_last_oid) +
-        Static::yad_bar("/yad/#{path[1]}?") + 
-        Static::search
+      v = Static::voyage
+      yh = Static::yad_head(xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz)
+      c = dynamic_content
+      np = Static::next_page(xml_url, start_nextpage_js, this_last_oid)
+      np.force_encoding(Encoding::UTF_8)
+      yb = Static::yad_bar("/yad/#{entry}?")
+      s = Static::search
+      v + yh + c + np + yb + s
     end
   end
 end

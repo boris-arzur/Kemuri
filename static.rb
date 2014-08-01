@@ -156,6 +156,8 @@ EOS
 
   def self.yad_bar request
     request += request.include?('?') ? "&links" : "?links"
+    request.force_encoding(Encoding::UTF_8)
+
     res = <<-EOS
 <div id="yad_bar" class="bar">
   <button onclick='window.location = \"#{request}\"'>環</button>
