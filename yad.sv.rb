@@ -71,17 +71,20 @@ Second call and subsequent calls, from js' xmlhttprequest :
     else
       kanji = entry
       kanji.force_encoding(Encoding::UTF_8)
+      kanjis = kanji.split(//u)
       valid_fuzz = true
 
       #kana ? kanji ?
       # 一 is the first kanji, in lexicographic order
       # ぁ is the mother of all kana
-      if kanji[0] >= "ぁ" && kanji[0] < "一"
+      if kanjis[0] >= "ぁ" && kanjis[0] < "一"
+        p "kana"
+        # TODO kana is broken ?
         #kana
         cond_r1 = Yad::find(kanji, :field => "readings")
         cond_r2 = Yad::find(kanji, :field => "japanese")
+        p cond_r1, cond_r2
       else
-        kanjis = kanji.split(//u)
         valid_pairs = kanjis.size >= 3
         valid_kb = true
 
