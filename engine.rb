@@ -150,12 +150,9 @@ class Array
   end
 end
 
-def protect name 
-  begin
-    yield
-  rescue Exception => e
-		# fix some pb, with new version of ruby and ol' sqlite3
-    print "Error in #{name} : #{e.inspect}\n#{e.backtrace.join( "\n" )}".force_encoding('UTF-8')
-    "503. internal error.".a( '/log' )
+class Float
+  def to_id
+    (self * 1_000_000_000).to_i.to_s( 36 )
   end
 end
+

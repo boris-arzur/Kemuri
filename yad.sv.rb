@@ -36,7 +36,7 @@ class Yad
   def self.linkify_kanjis! text
     # 一 is the first kanji, in lexicographic order
     # it verifies "一" > kana & ascii
-    modded_text = text.split(//).map {|c| c >= "一" ? c.a('/kan/'+c) : c}.join
+    modded_text = text.split(//u).map {|c| c >= "一" ? c.a('/kan/'+c) : c}.join
     text.replace(modded_text)
   end
 

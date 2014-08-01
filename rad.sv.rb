@@ -25,11 +25,7 @@ class Rad
   Style = "TD{font-size:3em;}".style
   HDelim = ("<hr size='1'/>".td*RowSize).tr
 
-  GetAllRads = <<EOR
-SELECT oid,radical
- FROM radicals
- ORDER BY strokes;
-EOR
+  GetAllRads = "SELECT oid,radical FROM radicals ORDER BY strokes;"
 
   def self.to_checkbox(radical, rid)
     "<input type='checkbox' value='#{rid}'/>#{radical.a("/rad/#{rid}")}".tag('td')
@@ -46,18 +42,13 @@ EOR
     table_of_matches.tag("form", :name => "rads") + Style + Static::voyage + Static::rad_bar
   end
 
-  def execute request
-    if request["rad"].is_a?(Array)
-      rads = request["rad"]
-    elsif request["rad"] and request["rad"].is_num
-      rads = [request["rad"]]
-    elsif request[1] and request[1].is_num
-      rads = [request[1]]
-    elsif request[1]
-      rads = request[1].split('+').map {|blk| 
-        kan = blk.url_utf8
-        raise "invalid char in kan" if kan.include?("'")
-        $db.get_first_value("SELECT oid FROM radicals WHERE radical = '#{kan}'")
+  def execute request, path, query, response
+    path = path.map{|p| p.force_encoding(Encoding::UTF_8)}
+    if path.size > 1 and path[1..-1].all?{|p| p.is_num}
+      rads = path[1..-1]
+    elsif path[1]
+      rads = path[1].split('+').map {|blk| 
+        $db.get_first_value("SELECT oid FROM radicals WHERE radical = ?", [kan])
       }
     else
       return Rad::select_rads

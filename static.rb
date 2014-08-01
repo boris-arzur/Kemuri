@@ -57,9 +57,6 @@ class Static
 
   SearchScript = load_content( 'search.js' )
 
-  Capture = load_content( 'capture.js' )  
-  Normal = "function go_to( normal_url ){window.location = normal_url;}".script
-
   def self.kanji_table id_table 
     kanji_table = File::read( 'kanji_table.html' )
     kanji_table.gsub( /#id_table#/, id_table )
@@ -77,7 +74,7 @@ EOS
   end
 
   def self.add_hidden_button name, path = name
-    button = "<button onclick='go_to( \"/#{path}\" )'>#{name}</button> "
+    button = "<button onclick='window.location = \"/#{path}\"'>#{name}</button> "
     @@voyage_hidden_buttons << button
   end
   
@@ -100,7 +97,7 @@ function select(id,kan,id_table) {
   document.getElementById('radi_up-' + id_table).style.display = 'none';
   document.getElementById('radi_down-' + id_table).style.display = 'none';
 
-  if(selection.length == #{max}) go_to( "#{url}kans=" + selection.toString() ); 
+  if(selection.length == #{max})  window.location = "#{url}kans=" + selection.toString(); 
 
   var link = document.createElement('a');
   link.setAttribute('href', 'javascript:reshow("' + id_table + '")');
@@ -161,7 +158,7 @@ EOS
     request += request.include?('?') ? "&links" : "?links"
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='go_to( \"#{request}\" )'>環</button>
+  <button onclick='window.location = \"#{request}\"'>環</button>
 </div>
 EOS
     res + BarStyle + Yad_barScript

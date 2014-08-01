@@ -36,7 +36,7 @@ function send_form() {
        if( chkbxz[i].checked )
            rads.unshift( chkbxz[i].value );
 
-  go_to( "/rad/?rad="+rads.join( "&rad=" ) );
+  window.location = "/rad/"+rads.join( "/" );
 }
 
 var rad_bar_scroll_offset = 90;

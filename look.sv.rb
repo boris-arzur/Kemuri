@@ -20,7 +20,7 @@ class Look
   @@mutex = Mutex.new
   @@store = {}
 
-  def execute request
+  def execute request, path, query, response
     Look::process request
   end
 
@@ -33,7 +33,7 @@ class Look
     Look::process req_rewrite
   end
 
-  def self.process request
+  def execute request, path, query, response
     id = request[1]
     data = @@store[id]
 

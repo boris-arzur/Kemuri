@@ -17,7 +17,7 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Slook 
-  def execute request
+  def execute request, path, query, response
     Slook::process( request[1] ) 
   end
 

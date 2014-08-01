@@ -47,7 +47,7 @@ function ajax_get( url ) {
     req.send( null );
     /* eval( req.responseText ); this -might be- -IS- WAS a security hole */
     json = JSON.parse( req.responseText );
-    console.dir( json );
+    /* console.dir( json ); */ 
     append( json["content_as_html"] );
     if( json["fin"] ) finished();
     if( json["pairs"] ) do_pairs();

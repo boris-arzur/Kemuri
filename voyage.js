@@ -57,7 +57,7 @@ function voyage_update_options() {
         else
             destination = '/yad/';
         
-        go_to( destination + dokomade );
+        window.location = destination + dokomade;
    } else {
         voyage_blur_input( null );
    }
