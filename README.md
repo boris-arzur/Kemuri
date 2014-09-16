@@ -50,7 +50,13 @@ Examples :
 
 ##Installation & Usage
 
-You can use docker : docker build -t demo/kemuri.
+You can use docker : 
+    # apt-or-something install docker
+    $ docker build -t demo/kemuri github.com/boris-arzur/Kemuri
+    $ KEMURI_ID=$(docker run -d -p 1234 demo/kemuri)
+    $ KEMURI_IP=$(docker inspect $KEMURI_ID | grep IPAd | awk -F'"' '{print $4}')
+    $ w3m http://${KEMURI_IP}:1234/yad/wow # or, you know, any browser ...
+    $ docker logs ${KEMURI_ID}
 
 On most modules, you will find a 'smart' input box, you can push
 text (we call it $1 in what follows) in it, it will try to redirect you :
