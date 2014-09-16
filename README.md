@@ -44,9 +44,8 @@ these descriptions together with '&', add the possibility to look for more than
 one kanji at a time with '+' and you have the ultimate kanji searching application.
 
 Examples :
-  - typing 帯&1-3-_+在 in voyage, when you are looking for 滞在;
-  - 特+残&1-_-_+医+病&小+研+究 for 特殊医療研究...
-
+  - typing 帯&1-3-\_+在 in voyage, when you are looking for 滞在;
+  - 特+残&1-\_-\_+医+病&小+研+究 for 特殊医療研究...
 
 ##Installation & Usage
 
