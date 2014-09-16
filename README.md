@@ -50,7 +50,8 @@ Examples :
 
 ##Installation & Usage
 
-You can use docker : 
+You can use docker.
+
     # apt-or-something install docker
     $ docker build -t demo/kemuri github.com/boris-arzur/Kemuri
     $ KEMURI_ID=$(docker run -d -p 1234 demo/kemuri)
