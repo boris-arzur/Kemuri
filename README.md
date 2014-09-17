@@ -53,10 +53,10 @@ You can use docker.
 
     # apt-or-something install docker
     $ docker build -t demo/kemuri github.com/boris-arzur/Kemuri
-    $ KEMURI_ID=$(docker run -d -p 1234 demo/kemuri)
-    $ KEMURI_IP=$(docker inspect $KEMURI_ID | grep IPAd | awk -F'"' '{print $4}')
-    $ w3m http://${KEMURI_IP}:1234/yad/wow # or, you know, any browser ...
-    $ docker logs ${KEMURI_ID}
+    $ MY\_DOCKER\_NAME=$(docker run -d 127.0.0.1:1234:1234 demo/kemuri)
+    $ w3m http://127.0.0.1:1234/yad/wow # or, you know, any browser ...
+    $ docker ps
+    $ docker stop ${MY\_DOCKER\_NAME}
 
 On most modules, you will find a 'smart' input box, you can push
 text (we call it $1 in what follows) in it, it will try to redirect you :
@@ -69,7 +69,7 @@ text (we call it $1 in what follows) in it, it will try to redirect you :
   - single kanjis to /kan/$1 or /yad/$1 (you have to choose);
   - multiple kanjis or kana to /yad/$1.
   - expression containing & or + to /slook/$1, then to
-    /look/a_random_string, see the **Search** section.
+    /look/a\_random\_string, see the **Search** section.
 
 This is the prefered way of interacting with Kemuri.
 
