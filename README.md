@@ -53,10 +53,10 @@ You can use docker.
 
     # apt-or-something install docker
     $ docker build -t demo/kemuri github.com/boris-arzur/Kemuri
-    $ MY\_DOCKER\_NAME=$(docker run -d 127.0.0.1:1234:1234 demo/kemuri)
+    $ docker run -d -p 127.0.0.1:1234:1234 --name kemuri demo/kemuri
     $ w3m http://127.0.0.1:1234/yad/wow # or, you know, any browser ...
     $ docker ps
-    $ docker stop ${MY\_DOCKER\_NAME}
+    $ docker stop kemuri
 
 On most modules, you will find a 'smart' input box, you can push
 text (we call it $1 in what follows) in it, it will try to redirect you :
