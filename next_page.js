@@ -5,7 +5,7 @@ function append( content ) {
 
 var ask_for = 'p=';
 function next_page_scroll_hdl( event ) {
-  if( free_ajax && update && (window.scrollY + window.innerHeight >= 0.90 * document.getElementById( 'bottom' ).offsetTop) ) {
+  if( free_ajax && update && (window.scrollY + window.innerHeight >= 0.90 * document.body.offsetHeight) ) {
     /* glue is defined in static.rb */
     var url = next_page_url_base + glue + ask_for + next_page;
     ajax_get( url );
