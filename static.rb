@@ -17,7 +17,7 @@
 #    License along with Kemuri. If not, see http://www.gnu.org/licenses.
 
 class Static
-  @@voyage_hidden_buttons = ""
+  @@voyage_buttons = ""
 
   def self.load_content file
     if file =~ /.gz$/
@@ -42,24 +42,21 @@ class Static
     end
   end
 
-  VoyageStyle = load_content( 'voyage.css' )
+  BarStyle = load_content( 'bar.css' )
   VoyageScript = load_content( 'voyage.js' )
   
   Next_pageScript = load_content( 'next_page.js' )
 
-  BarStyle = load_content( 'bar.css' )
-
   Rad_barScript = load_content( 'rad_bar.js' )
-  Yad_barScript = load_content( 'yad_bar.js' )
 
   def self.kanji_table id_table 
     kanji_table = File::read( 'kanji_table.html' )
     kanji_table.gsub( /#id_table#/, id_table )
   end
 
-  def self.add_hidden_button name, path = name
+  def self.add_button name, path = name
     button = "<button onclick='window.location = \"/#{path}\"'>#{name}</button> "
-    @@voyage_hidden_buttons << button
+    @@voyage_buttons << button
   end
   
   def self.look_select max, url
@@ -106,12 +103,11 @@ EOS
 
   def self.voyage
     res = <<-EOS
-<div id="voyage">
-<input type="text" id="dokomade" autocapitalize="off" size='10'/>
-<div id="voyage_btns">#{@@voyage_hidden_buttons}</div>
+<div id="voyage" class="bar">
+<input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
 </div>
 EOS
-    res + VoyageStyle + VoyageScript
+    res + VoyageScript
   end
 
   def self.next_page base, start, next_page
@@ -129,31 +125,29 @@ EOS
   def self.rad_bar
     res = <<-EOS
 <div id="rad_bar" class="bar">
-  <button onclick='send_form()'>検索</button>
-  <button onclick='rad_bar_clear()'>消</button>
+  <input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
+  <button onclick='send_form()'>search</button>
+  <button onclick='rad_bar_clear()'>clear</button>
 </div>
 EOS
-    res + BarStyle + Rad_barScript
+    res + BarStyle + Rad_barScript + VoyageScript
   end
 
-  def self.yad_bar request
+  def self.yad_head request, request_xml, options = {}
     request += request.include?('?') ? "&links" : "?links"
     request.force_encoding(Encoding::UTF_8)
+    request_xml += request_xml.include?('?') ? "&kb" : "?kb"
 
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <button onclick='window.location = \"#{request}\"'>環</button>
-</div>
+  <input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
+  <button onclick='window.location = \"#{request}\"'>make links on all kanjis</button>
 EOS
-    res + BarStyle + Yad_barScript
-  end
 
-  def self.yad_head request_xml, options = {}
-    request_xml += request_xml.include?('?') ? "&kb" : "?kb"
-    res = "<div id=\"yad_head\">"
-    res += "<button onclick='ajax_get( \"#{request_xml}\" )'>k.b.</button>" if options[:kb]
+    res += "<button onclick='ajax_get( \"#{request_xml}\" )'>search kanjis one by one</button>" if options[:kb]
     res += "<button onclick='do_fuzz();'>fuzz</button>" if options[:fuzz]
-    res += "<button onclick='do_pairs();'>pairs</button><button onclick='do_alt();'>alt</button>" if options[:pairs]
+    res += "<button onclick='do_pairs();'>search pairs of kanjis</button><button onclick='do_alt();'>search alternative pairs</button>" if options[:pairs]
     res += "</div>"
+    res + BarStyle + VoyageScript
   end
 end

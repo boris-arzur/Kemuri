@@ -18,7 +18,7 @@
 
 class Rad
   def initialize
-    Static::add_hidden_button('r','rad')
+    Static::add_button('go to radical selection','rad')
   end
 
   RowSize = 5

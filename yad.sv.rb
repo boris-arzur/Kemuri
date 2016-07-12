@@ -168,14 +168,11 @@ Second call and subsequent calls, from js' xmlhttprequest :
 
       Yad::linkify_kanjis!(dynamic_content) if query.include?('links')
 
-      v = Static::voyage
-      yh = Static::yad_head(xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz)
+      yh = Static::yad_head("/yad/#{entry}?", xml_url, :pairs => valid_pairs, :kb => valid_kb, :fuzz => valid_fuzz)
       c = dynamic_content
       np = Static::next_page(xml_url, start_nextpage_js, this_last_oid)
       np.force_encoding(Encoding::UTF_8)
-      yb = Static::yad_bar("/yad/#{entry}?")
-      s = Static::search
-      v + yh + c + np + yb + s
+      yh + c + np
     end
   end
 end
