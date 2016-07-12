@@ -42,9 +42,6 @@ class Static
     end
   end
 
-  GlisseStyle = load_content( 'glisse.css' )
-  GlisseScript = load_content( 'glisse.js' )
-
   VoyageStyle = load_content( 'voyage.css' )
   VoyageScript = load_content( 'voyage.js' )
   
@@ -60,17 +57,6 @@ class Static
   def self.kanji_table id_table 
     kanji_table = File::read( 'kanji_table.html' )
     kanji_table.gsub( /#id_table#/, id_table )
-  end
-
-  def self.glisse( url_base, haut, bas, gauche, droite, postfix )
-    res = <<-EOS
-<script type="text/javascript" charset="utf-8">
-  function load() { glisse( '#{url_base}','#{haut}','#{bas}','#{gauche}','#{droite}', '#{postfix}' ); };
-  window.addEventListener("load", load, false);
-</script>
-<div id="glisse"></div>
-EOS
-    res + GlisseStyle + GlisseScript
   end
 
   def self.add_hidden_button name, path = name
