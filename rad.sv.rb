@@ -39,7 +39,7 @@ class Rad
       chkbxz.cut(RowSize).map{|row| row.join.tr}.join
     }.join(HDelim).table
 
-    table_of_matches.tag("form", :name => "rads") + Style + Static::voyage + Static::rad_bar
+    table_of_matches.tag("form", :name => "rads", :id => 'content') + Style + Static::rad_bar
   end
 
   def execute request, path, query, response

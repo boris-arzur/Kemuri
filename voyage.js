@@ -79,3 +79,4 @@ voyage_placeholder.addEventListener( "blur", voyage_blur_input, true );
 
 voyage_placeholder.style.left = 220;
 window.addEventListener( "load", function(){window.setTimeout(function(){voyage_scroll_hdl( null );}, 50);}, false);
+addEventListener("load", function(){ document.getElementById( 'content' ).style.marginTop= document.getElementsByClassName('bar')[0].offsetHeight; }, false);

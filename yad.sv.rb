@@ -110,7 +110,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
     if query.include?('xml') && query.include?('kb') 
       #on demande le kanji breakdown
       #log "exe1 : #{r1}"
-      rez = $db.execute(r1).map {|i,k,r,m| [k.a('/kan/'+i.to_s),r,m]}.to_table
+      rez = $db.execute(r1).map {|i,k,r,m| [k.a('/kan/'+i.to_s),r,m]}.to_table(:raw => true)
       response.content_type = "application/json"
       return { "content_as_html" => rez, "last_row" => 0, "fin" => true, "pairs" => false }.to_json
     elsif query.include?('xml') && (query.include?('p') || query.include?('pairs'))
@@ -123,7 +123,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
       rez = $db.execute(r2)
       this_last_oid = rez[-1][0] rescue 0
       rez.map! {|oid,jp,en| [jp,en]}
-      content_table = rez.to_table
+      content_table = rez.to_table(:raw => true)
       Yad::linkify_kanjis!(content_table) if query.include?('links')
 
       json = { "content_as_html" => content_table, "last_row" => this_last_oid, "fin" => false, "pairs" => false }
@@ -159,7 +159,7 @@ Second call and subsequent calls, from js' xmlhttprequest :
         end
       end
 
-      dynamic_content = dynamic_content.to_table
+      dynamic_content = dynamic_content.to_table(:options => ' id="content"')
 
       xml_url = "/yad.xml/#{entry}?"
       xml_url += "kb" if query.include?("kb")

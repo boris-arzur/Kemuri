@@ -89,7 +89,7 @@ class Kanji
     res << [@skip.a( '/sk/'+@skip )] << [@forder.to_s] if i > 990 and @skip
     
     #ajouter lien pour mettre ds liste
-    return res.to_table
+    return res.to_table(:options => ' id="content"')
   end
 
   def save_annex

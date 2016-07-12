@@ -104,8 +104,8 @@ EOP
     "<tr>#{self}</tr>"
   end
 
-  def table
-    "<table>#{self}</table>"
+  def table opts=''
+    "<table#{opts}>#{self}</table>"
   end
 end
 
@@ -132,13 +132,16 @@ class Array
     res
   end
 
-  def table
-    join.table
+  def table opts=''
+    join.table(opts)
   end
 
-  def to_table opts = {}
+  def to_table opts={}
     w = max {|l,k| l.size <=> k.size}
-    map {|l| l.to_row( w.size, opts[:td_opts] )}.table
+    content = map {|l| l.to_row( w.size, opts[:td_opts] )}
+    return content.join if opts[:raw]
+    return content.table(opts[:options]) if opts[:options]
+    return content.table
   end
 
   def to_row w, addendum = nil

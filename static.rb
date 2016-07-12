@@ -122,8 +122,6 @@ EOS
   var glue = "#{(base =~ /\?$/ )?"":"&"}";
   var next_page = #{next_page};
 </script>
-<div id='add'></div>
-<div id='bottom'></div>
 EOS
     res + Next_pageScript
   end
