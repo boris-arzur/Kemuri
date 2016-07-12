@@ -52,8 +52,6 @@ class Static
   Rad_barScript = load_content( 'rad_bar.js' )
   Yad_barScript = load_content( 'yad_bar.js' )
 
-  SearchScript = load_content( 'search.js' )
-
   def self.kanji_table id_table 
     kanji_table = File::read( 'kanji_table.html' )
     kanji_table.gsub( /#id_table#/, id_table )
@@ -159,14 +157,5 @@ EOS
     res += "<button onclick='do_fuzz();'>fuzz</button>" if options[:fuzz]
     res += "<button onclick='do_pairs();'>pairs</button><button onclick='do_alt();'>alt</button>" if options[:pairs]
     res += "</div>"
-  end
-
-  def self.search
-    res = <<-EOS
-<div id="search_bar" class="bar">
-  <button onclick='searchPrompt()'>検索</button>
-</div>
-EOS
-    res + BarStyle + SearchScript
   end
 end
