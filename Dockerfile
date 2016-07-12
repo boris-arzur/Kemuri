@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM armv7/armhf-debian:jessie
 
 MAINTAINER boris
 RUN apt-get -y update && apt-get -y upgrade
