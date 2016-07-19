@@ -16,10 +16,10 @@ function voyage_update_options() {
             destination = '/yad/';
         
         window.location = destination + dokomade;
-   } else {
-        voyage_blur_input( null );
-   }
+   };
 };
 
-document.getElementById( 'dokomade' ).addEventListener( "change", voyage_update_options, false );
-addEventListener("load", function(){ document.getElementById( 'content' ).style.marginTop= document.getElementsByClassName('bar')[0].offsetHeight; }, false);
+addEventListener("load", function(){ 
+    document.getElementById( 'content' ).style.marginTop= document.getElementsByClassName('bar')[0].offsetHeight;
+    document.getElementById( 'content' ).style.width= '100%';
+}, false);

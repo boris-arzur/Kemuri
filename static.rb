@@ -104,7 +104,9 @@ EOS
   def self.voyage
     res = <<-EOS
 <div id="voyage" class="bar">
-<input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
+  <input type="text" id="dokomade" autocapitalize="off" size='10'/> 
+  <button onclick='voyage_update_options()'>←search</button>
+  #{@@voyage_buttons}
 </div>
 EOS
     res + VoyageScript
@@ -125,7 +127,9 @@ EOS
   def self.rad_bar
     res = <<-EOS
 <div id="rad_bar" class="bar">
-  <input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
+  <input type="text" id="dokomade" autocapitalize="off" size='10'/>
+  <button onclick='voyage_update_options()'>←search</button>
+  #{@@voyage_buttons}
   <button onclick='send_form()'>search</button>
   <button onclick='rad_bar_clear()'>clear</button>
 </div>
@@ -140,7 +144,9 @@ EOS
 
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <input type="text" id="dokomade" autocapitalize="off" size='10'/> #{@@voyage_buttons}
+  <input type="text" id="dokomade" autocapitalize="off" size='10'/>
+  <button onclick='voyage_update_options()'>←search</button>
+  #{@@voyage_buttons}
   <button onclick='window.location = \"#{request}\"'>make links on all kanjis</button>
 EOS
 
