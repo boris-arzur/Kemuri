@@ -26,6 +26,6 @@ class Kan
     
     kan_lists = kanji.lists
 
-    kanji.to_html + kanji.radicals + Static::voyage
+    kanji.to_html + kanji.radicals
   end
 end
