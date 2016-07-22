@@ -104,7 +104,7 @@ EOS
   def self.voyage
     res = <<-EOS
 <div id="voyage" class="bar">
-  <input type="text" id="dokomade" autocapitalize="off" size='10'/> 
+  <form onsubmit='voyage_update_options(); return false;'><input type="text" id="dokomade" autocapitalize="off" size='10'/></form>
   <button onclick='voyage_update_options()'>←search</button>
   #{@@voyage_buttons}
 </div>
@@ -127,7 +127,7 @@ EOS
   def self.rad_bar
     res = <<-EOS
 <div id="rad_bar" class="bar">
-  <input type="text" id="dokomade" autocapitalize="off" size='10'/>
+  <form onsubmit='voyage_update_options(); return false;'><input type="text" id="dokomade" autocapitalize="off" size='10'/></form>
   <button onclick='voyage_update_options()'>←search</button>
   #{@@voyage_buttons}
   <button onclick='send_form()'>search</button>
@@ -144,7 +144,7 @@ EOS
 
     res = <<-EOS
 <div id="yad_bar" class="bar">
-  <input type="text" id="dokomade" autocapitalize="off" size='10'/>
+  <form onsubmit='voyage_update_options(); return false;'><input type="text" id="dokomade" autocapitalize="off" size='10'/></form>
   <button onclick='voyage_update_options()'>←search</button>
   #{@@voyage_buttons}
   <button onclick='window.location = \"#{request}\"'>make links on all kanjis</button>
