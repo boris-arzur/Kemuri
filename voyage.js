@@ -1,7 +1,7 @@
 function voyage_update_options() {
     var dokomade = document.getElementById( 'dokomade' ).value;
     var destination = '/yad/';
-    if( dokomade.size != 0) {
+    if( dokomade.size != 0 ) {
         if( dokomade.match(/^\d-\d+-\d+$/) || dokomade.match(/^\d+$/) )
             destination = '/sk/';
         else if( dokomade.match(/^\d-\d+-\d+\+\d-\d+-\d+$/) )
